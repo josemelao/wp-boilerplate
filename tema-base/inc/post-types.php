@@ -14,22 +14,28 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @param string $singular Singular.
  * @param string $plural   Plural.
+ * @param bool   $feminine Se o substantivo é feminino (História/Histórias).
  * @return array
  */
-function tb_post_type_labels( $singular, $plural ) {
+function tb_post_type_labels( $singular, $plural, $feminine = false ) {
+	$all_items  = $feminine ? sprintf( 'Todas as %s', $plural ) : sprintf( 'Todos os %s', $plural );
+	$not_found  = $feminine ? sprintf( 'Nenhuma %s encontrada.', $singular ) : sprintf( 'Nenhum %s encontrado.', $singular );
+	$in_trash   = $feminine ? sprintf( 'Nenhuma %s na lixeira.', $singular ) : sprintf( 'Nenhum %s na lixeira.', $singular );
+	$new_item   = $feminine ? sprintf( 'Nova %s', $singular ) : sprintf( 'Novo %s', $singular );
+
 	return array(
 		'name'                  => $plural,
 		'singular_name'         => $singular,
 		'menu_name'             => $plural,
-		'all_items'             => sprintf( 'Todos os %s', $plural ),
+		'all_items'             => $all_items,
 		'add_new'               => 'Adicionar novo',
 		'add_new_item'          => sprintf( 'Adicionar %s', $singular ),
 		'edit_item'             => sprintf( 'Editar %s', $singular ),
-		'new_item'              => sprintf( 'Novo %s', $singular ),
+		'new_item'              => $new_item,
 		'view_item'             => sprintf( 'Ver %s', $singular ),
 		'search_items'          => sprintf( 'Buscar %s', $plural ),
-		'not_found'             => sprintf( 'Nenhum %s encontrado.', $singular ),
-		'not_found_in_trash'    => sprintf( 'Nenhum %s na lixeira.', $singular ),
+		'not_found'             => $not_found,
+		'not_found_in_trash'    => $in_trash,
 		'featured_image'        => 'Imagem',
 		'set_featured_image'    => 'Definir imagem',
 		'remove_featured_image' => 'Remover imagem',
@@ -104,7 +110,7 @@ function tb_register_post_types() {
 		array_merge(
 			$base,
 			array(
-				'labels'        => tb_post_type_labels( 'História', 'Histórias' ),
+				'labels'        => tb_post_type_labels( 'História', 'Histórias', true ),
 				'description'   => 'Itens da seção "Histórias". Imagem de fundo recomendada: 1600 × 900 px.',
 				'menu_icon'     => 'dashicons-book-alt',
 				'menu_position' => 23,

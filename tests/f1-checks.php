@@ -15,6 +15,13 @@ if ( ! defined( 'WP_CLI' ) ) {
 $GLOBALS['tb_test_failures'] = array();
 $GLOBALS['tb_test_passes']   = 0;
 
+// Estado do banco que o teste não pode destruir (restaurado no final).
+$GLOBALS['tb_saved_options']      = get_option( 'tb_options', null );
+$GLOBALS['tb_saved_front']        = get_option( 'show_on_front' );
+$GLOBALS['tb_saved_page_on_front'] = get_option( 'page_on_front' );
+$GLOBALS['tb_saved_page_for_posts'] = get_option( 'page_for_posts' );
+$GLOBALS['tb_saved_sticky']       = get_option( 'sticky_posts' );
+
 /**
  * Registra uma verificação.
  *
@@ -99,6 +106,11 @@ $tb_socio = get_post_type_object( 'socio' );
 tb_test_check( $tb_socio && 'socios' === $tb_socio->rewrite['slug'], 'CPT socio usa /socios/' );
 tb_test_check( post_type_supports( 'socio', 'editor' ), 'CPT socio suporta biografia (editor)' );
 
+$tb_historia = get_post_type_object( 'historia' );
+tb_test_check( $tb_historia && 'Todas as Histórias' === $tb_historia->labels->all_items, 'rótulo de História no feminino (all_items)' );
+tb_test_check( $tb_historia && 'Nova História' === $tb_historia->labels->new_item, 'rótulo de História no feminino (new_item)' );
+tb_test_check( $tb_historia && 'Nenhuma História encontrada.' === $tb_historia->labels->not_found, 'rótulo de História no feminino (not_found)' );
+
 /* -------------------------------------------------------------------------
  * 3. Metas registradas para REST
  * ---------------------------------------------------------------------- */
@@ -124,6 +136,14 @@ foreach ( $tb_meta_map as $tb_type => $tb_keys ) {
 
 		tb_test_check( $tb_ok, $tb_type . ' → ' . $tb_key . ' registrada em REST com auth_callback' );
 	}
+}
+
+// O auth_callback não pode liberar visitante anônimo.
+$tb_banner_meta = get_registered_meta_keys( 'post', 'banner' );
+if ( isset( $tb_banner_meta['_tb_label']['auth_callback'] ) ) {
+	wp_set_current_user( 0 );
+	$tb_allowed = call_user_func( $tb_banner_meta['_tb_label']['auth_callback'], false, '_tb_label', 0 );
+	tb_test_check( false === (bool) $tb_allowed, 'auth_callback nega visitante anônimo' );
 }
 
 /* -------------------------------------------------------------------------
@@ -190,8 +210,27 @@ foreach ( $tb_expected_keys as $tb_key ) {
 if ( function_exists( 'tb_opt' ) ) {
 	update_option( 'tb_options', array( 'insights_heading' => 'Artigos' ) );
 	tb_test_check( 'Artigos' === tb_opt( 'insights_heading' ), 'tb_opt lê valor salvo' );
-	tb_test_check( '' !== tb_opt( 'footer_note' ), 'tb_opt cai no default quando vazio' );
+
+	// Opção salva e vazia deve continuar vazia (o cliente apagou o texto).
+	update_option( 'tb_options', array( 'footer_note' => '' ) );
+	tb_test_check( '' === tb_opt( 'footer_note' ), 'valor vazio salvo continua vazio' );
+
+	// Sem opção salva, vale o default do tema.
+	delete_option( 'tb_options' );
+	tb_test_check( '' !== tb_opt( 'footer_note' ), 'sem opção salva, tb_opt usa o default' );
 	tb_test_check( false === tb_opt( 'inexistente', false ), 'tb_opt devolve default para chave inexistente' );
+}
+
+if ( function_exists( 'tb_register_options' ) ) {
+	// admin_init não roda no CLI; registra manualmente antes de inspecionar.
+	tb_register_options();
+
+	$tb_settings = get_registered_settings();
+	tb_test_check( isset( $tb_settings['tb_options'] ), 'opção tb_options registrada' );
+	tb_test_check(
+		isset( $tb_settings['tb_options']['sanitize_callback'] ) && 'tb_sanitize_options' === $tb_settings['tb_options']['sanitize_callback'],
+		'register_setting tem sanitize_callback'
+	);
 }
 
 $tb_editor = get_role( 'editor' );
@@ -246,6 +285,16 @@ $tb_post_id = wp_insert_post(
 );
 
 tb_test_check( $tb_post_id > 0, 'post de teste criado' );
+tb_test_check( has_action( 'save_post', 'tb_save_meta' ), 'save_post ligado a tb_save_meta' );
+
+if ( $tb_post_id > 0 && function_exists( 'tb_render_meta_box' ) ) {
+	ob_start();
+	tb_render_meta_box( get_post( $tb_post_id ) );
+	$tb_box = ob_get_clean();
+
+	tb_test_check( false !== strpos( $tb_box, 'name="_tb_label"' ), 'meta box renderiza os campos' );
+	tb_test_check( false !== strpos( $tb_box, 'name="tb_meta_nonce"' ), 'meta box imprime nonce' );
+}
 
 if ( $tb_post_id > 0 && function_exists( 'tb_save_meta' ) ) {
 	$_POST = array(
@@ -263,6 +312,12 @@ if ( $tb_post_id > 0 && function_exists( 'tb_save_meta' ) ) {
 	tb_test_check( false === strpos( get_post_meta( $tb_post_id, '_tb_text', true ), '<script>' ), 'texto salvo sem script' );
 	tb_test_check( '' === get_post_meta( $tb_post_id, '_tb_link', true ), 'URL javascript: descartada' );
 	tb_test_check( 'Conheça' === get_post_meta( $tb_post_id, '_tb_link_label', true ), 'link_label salvo' );
+
+	// O mesmo callback deve liberar quem pode editar o post.
+	if ( isset( $tb_banner_meta['_tb_label']['auth_callback'] ) ) {
+		$tb_allowed_post = call_user_func( $tb_banner_meta['_tb_label']['auth_callback'], false, '_tb_label', $tb_post_id );
+		tb_test_check( true === (bool) $tb_allowed_post, 'auth_callback libera admin no próprio post' );
+	}
 
 	// Nonce inválido não altera nada.
 	$_POST['tb_meta_nonce'] = 'invalido';
@@ -304,15 +359,33 @@ $tb_columns_dep = apply_filters( 'manage_depoimento_posts_columns', array( 'titl
 tb_test_check( ! isset( $tb_columns_dep['tb_image'] ), 'depoimento não mostra coluna Imagem (sem thumbnail)' );
 tb_test_check( isset( $tb_columns_dep['tb_order'] ), 'depoimento mostra coluna Ordem' );
 tb_test_check( has_action( 'admin_menu', 'tb_add_options_page' ), 'página de opções registrada no menu' );
+
+if ( function_exists( 'tb_image_size_tips' ) ) {
+	$tb_tips = tb_image_size_tips();
+	tb_test_check( isset( $tb_tips['post'] ) && 720 === $tb_tips['post'][0] && 480 === $tb_tips['post'][1], 'dica de imagem para posts (tb-card)' );
+}
 tb_test_check( has_action( 'pre_get_posts', 'tb_admin_default_order' ), 'ordem padrão no admin registrada' );
 tb_test_check( has_action( 'admin_post_thumbnail_html', 'tb_thumbnail_tip' ), 'dica de tamanho da imagem registrada' );
 tb_test_check( has_action( 'admin_notices', 'tb_reading_notice' ), 'aviso de Leitura registrado' );
 
 if ( function_exists( 'tb_reading_notice_needed' ) ) {
-	$tb_saved_front = get_option( 'show_on_front' );
 	update_option( 'show_on_front', 'posts' );
 	tb_test_check( true === tb_reading_notice_needed(), 'aviso aparece sem página inicial estática' );
-	update_option( 'show_on_front', $tb_saved_front );
+
+	// show_on_front=page, mas sem page_on_front (home apagada).
+	update_option( 'show_on_front', 'page' );
+	update_option( 'page_on_front', 0 );
+	update_option( 'page_for_posts', 123 );
+	tb_test_check( true === tb_reading_notice_needed(), 'aviso aparece sem página inicial definida' );
+
+	// Configuração completa: sem aviso.
+	update_option( 'page_on_front', 123 );
+	update_option( 'page_for_posts', 456 );
+	tb_test_check( false === tb_reading_notice_needed(), 'aviso some com tudo configurado' );
+
+	update_option( 'show_on_front', $GLOBALS['tb_saved_front'] );
+	update_option( 'page_on_front', $GLOBALS['tb_saved_page_on_front'] );
+	update_option( 'page_for_posts', $GLOBALS['tb_saved_page_for_posts'] );
 }
 
 /* -------------------------------------------------------------------------
@@ -347,10 +420,31 @@ if ( function_exists( 'tb_query' ) ) {
 	tb_test_check( 'publish' === $tb_q->query_vars['post_status'], 'tb_query só publicados' );
 }
 
-if ( function_exists( 'tb_featured_posts' ) && function_exists( 'tb_query' ) ) {
+if ( function_exists( 'tb_featured_posts' ) ) {
+	$tb_post_ids = array();
+
+	for ( $tb_i = 1; $tb_i <= 4; $tb_i++ ) {
+		$tb_post_ids[] = wp_insert_post(
+			array(
+				'post_type'   => 'post',
+				'post_title'  => 'Post de teste F1 ' . $tb_i,
+				'post_status' => 'publish',
+			)
+		);
+	}
+
+	stick_post( $tb_post_ids[0] );
+
 	$tb_feat = tb_featured_posts( 3 );
-	tb_test_check( is_array( $tb_feat ), 'tb_featured_posts devolve array' );
-	tb_test_check( count( $tb_feat ) <= 3, 'tb_featured_posts respeita o limite' );
+	tb_test_check( 3 === count( $tb_feat ), 'tb_featured_posts devolve exatamente 3', 'count=' . count( $tb_feat ) );
+	tb_test_check( ! empty( $tb_feat ) && (int) $tb_feat[0]->ID === (int) $tb_post_ids[0], 'post fixado vem primeiro' );
+
+	unstick_post( $tb_post_ids[0] );
+	update_option( 'sticky_posts', $GLOBALS['tb_saved_sticky'] );
+
+	foreach ( $tb_post_ids as $tb_cleanup_id ) {
+		wp_delete_post( $tb_cleanup_id, true );
+	}
 }
 
 /* -------------------------------------------------------------------------
@@ -394,8 +488,10 @@ if ( function_exists( 'get_header' ) ) {
 
 	tb_test_check( false !== strpos( $tb_header, 'skip-link' ), 'header tem link pular para o conteúdo' );
 	tb_test_check( false !== strpos( $tb_header, 'site-header' ), 'header tem cabeçalho do site' );
-	tb_test_check( false !== strpos( $tb_header, 'primary' ) || false !== strpos( $tb_header, 'menu' ), 'header imprime menu principal' );
+	tb_test_check( false !== strpos( $tb_header, '<nav' ) && false !== strpos( $tb_header, 'id="menu-principal"' ), 'header imprime nav do menu principal' );
 	tb_test_check( false !== strpos( $tb_header, '<html' ), 'header abre o documento' );
+	tb_test_check( false !== strpos( $tb_header, 'no-js' ), 'header marca html sem JS (fallback do menu)' );
+	tb_test_check( false !== strpos( $tb_header, 'tabindex="-1"' ), 'main é focável (skip link funciona)' );
 }
 
 if ( function_exists( 'get_footer' ) ) {
@@ -410,11 +506,26 @@ if ( function_exists( 'get_footer' ) ) {
 }
 
 /* -------------------------------------------------------------------------
+ * 11. Requisitos do tema declarados
+ * ---------------------------------------------------------------------- */
+
+WP_CLI::log( '' );
+WP_CLI::log( '== Requisitos' );
+
+$tb_style = file_get_contents( TB_DIR . '/style.css' );
+tb_test_check( false !== strpos( $tb_style, 'Requires at least: 6.3' ), 'tema declara requisito 6.3 (strategy/defer)' );
+tb_test_check( false !== strpos( $tb_style, 'Requires PHP: 7.4' ), 'tema declara PHP 7.4' );
+
+/* -------------------------------------------------------------------------
  * Resultado
  * ---------------------------------------------------------------------- */
 
-// Devolve as opções ao estado padrão (o teste não deixa sujeira no banco).
-delete_option( 'tb_options' );
+// Restaura o banco (o teste não pode apagar a configuração do site).
+if ( null === $GLOBALS['tb_saved_options'] ) {
+	delete_option( 'tb_options' );
+} else {
+	update_option( 'tb_options', $GLOBALS['tb_saved_options'] );
+}
 
 WP_CLI::log( '' );
 

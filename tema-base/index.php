@@ -1,19 +1,32 @@
 <?php
 /**
- * Template de fallback (blog, categorias, busca).
+ * Template de fallback (blog, categorias, busca, arquivos).
  *
  * @package Tema_Base
  */
 
 get_header();
+
+$tb_heading = '';
+
+if ( is_search() ) {
+	/* translators: %s: termo buscado */
+	$tb_heading = sprintf( __( 'Resultados para: %s', 'tema-base' ), get_search_query() );
+} elseif ( is_archive() ) {
+	$tb_heading = get_the_archive_title();
+} elseif ( is_singular() ) {
+	$tb_heading = get_the_title();
+} else {
+	$tb_heading = get_bloginfo( 'name' );
+}
 ?>
 
 <div class="tb-container tb-section">
-	<?php if ( have_posts() ) : ?>
-		<?php if ( is_home() && ! is_front_page() ) : ?>
-			<h1 class="tb-section__title"><?php single_post_title(); ?></h1>
-		<?php endif; ?>
+	<?php if ( '' !== $tb_heading ) : ?>
+		<h1 class="tb-section__title"><?php echo wp_kses_post( $tb_heading ); ?></h1>
+	<?php endif; ?>
 
+	<?php if ( have_posts() ) : ?>
 		<div class="tb-posts">
 			<?php
 			while ( have_posts() ) :

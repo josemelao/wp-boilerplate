@@ -178,7 +178,7 @@ Não testado ainda: telas do tema, navegação completa, acessibilidade e respon
 
 ## O que foi testado (F1)
 
-- `tools\test.ps1` → **135 verificações, 0 falhas**.
+- `tools\test.ps1` → **153 verificações, 0 falhas** (executado em 29/10/2026 após as alterações locais desta entrega).
 - Painel: os 5 tipos aparecem no menu (`Banners do topo`, `Destaques`, `Depoimentos`, `Histórias`, `Sócios`), com ícones diferentes.
 - `post-new.php?post_type=banner` → **200**, com os 4 campos, nonce e a dica de tamanho de imagem; “Ordem” (Atributos) presente.
 - Listagens: colunas **Imagem** e **Ordem**; dois banners com ordens 1 e 2 apareceram na ordem certa (1 antes de 2).

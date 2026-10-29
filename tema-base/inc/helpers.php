@@ -49,7 +49,8 @@ function tb_options_defaults() {
 function tb_opt( $key, $default = null ) {
 	$options = get_option( 'tb_options', array() );
 
-	if ( is_array( $options ) && isset( $options[ $key ] ) && '' !== $options[ $key ] ) {
+	// Chave presente vale mesmo vazia: o cliente pode apagar um texto de propósito.
+	if ( is_array( $options ) && array_key_exists( $key, $options ) ) {
 		return $options[ $key ];
 	}
 

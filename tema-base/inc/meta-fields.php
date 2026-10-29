@@ -328,7 +328,14 @@ function tb_register_meta() {
 					'sanitize_callback' => function ( $value ) use ( $field_type ) {
 						return tb_sanitize_meta_value( $value, $field_type );
 					},
-					'auth_callback'     => function () {
+					'auth_callback'     => function ( $allowed = false, $meta_key = '', $post_id = 0 ) {
+						$post_id = (int) $post_id;
+
+						// Em criação via REST ainda não há post: exige edit_posts.
+						if ( $post_id > 0 ) {
+							return current_user_can( 'edit_post', $post_id );
+						}
+
 						return current_user_can( 'edit_posts' );
 					},
 				)

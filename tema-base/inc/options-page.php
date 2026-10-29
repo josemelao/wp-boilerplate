@@ -319,6 +319,7 @@ function tb_render_options_page() {
 	?>
 	<div class="wrap">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+		<?php settings_errors(); ?>
 		<p class="description">
 			<?php esc_html_e( 'Ajustes de texto e links usados no site. O layout não muda por aqui.', 'tema-base' ); ?>
 		</p>

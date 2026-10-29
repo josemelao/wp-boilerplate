@@ -156,6 +156,7 @@ img {
 
 .site-header__inner {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
@@ -320,18 +321,26 @@ img {
  * ---------------------------------------------------------------------- */
 
 @media (max-width: 899px) {
-	.menu-toggle {
-		display: inline-flex;
+	.site-header__inner {
+		padding-block: 0.5rem;
 	}
 
+	/* Sem JS (classe .no-js no html), o menu continua visível e empilhado. */
 	.site-nav {
-		display: none;
 		flex-basis: 100%;
 		border-top: 1px solid var(--tb-color-line);
 		padding-block: 0.5rem;
 	}
 
-	.site-nav.is-open {
+	.js .menu-toggle {
+		display: inline-flex;
+	}
+
+	.js .site-nav {
+		display: none;
+	}
+
+	.js .site-nav.is-open {
 		display: block;
 	}
 

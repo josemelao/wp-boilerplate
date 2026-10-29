@@ -20,6 +20,7 @@ function tb_image_size_tips() {
 		'destaque' => array( 1280, 640 ),
 		'historia' => array( 1600, 900 ),
 		'socio'    => array( 640, 800 ),
+		'post'     => array( 720, 480 ),
 	);
 }
 
@@ -111,6 +112,11 @@ function tb_admin_default_order( $query ) {
 		return;
 	}
 
+	// Respeita a ordenação escolhida pelo usuário (colunas clicáveis).
+	if ( '' !== (string) $query->get( 'orderby' ) ) {
+		return;
+	}
+
 	$post_type = $query->get( 'post_type' );
 
 	if ( is_string( $post_type ) && in_array( $post_type, tb_content_types(), true ) ) {
@@ -163,9 +169,14 @@ function tb_thumbnail_tip( $content ) {
  */
 function tb_reading_notice_needed() {
 	$show_on_front = get_option( 'show_on_front' );
+	$page_on_front = (int) get_option( 'page_on_front' );
 	$posts_page    = (int) get_option( 'page_for_posts' );
 
-	return ( 'page' !== $show_on_front || 0 === $posts_page );
+	if ( 'page' !== $show_on_front ) {
+		return true;
+	}
+
+	return ( 0 === $page_on_front || 0 === $posts_page );
 }
 
 /**
