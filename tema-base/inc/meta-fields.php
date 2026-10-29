@@ -89,7 +89,7 @@ function tb_meta_fields() {
 				'_tb_link'    => array(
 					'label'       => 'URL de destino',
 					'type'        => 'url',
-					'description' => 'Post, categoria ou página. Em branco: o item só troca o conteúdo exibido.',
+					'description' => 'Link relacionado opcional exibido na página individual da história.',
 				),
 			),
 		),

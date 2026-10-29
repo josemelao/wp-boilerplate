@@ -80,7 +80,7 @@ $tb_cpts = array(
 	'banner'     => array( 'public' => false, 'thumbnail' => true, 'archive' => false ),
 	'destaque'   => array( 'public' => false, 'thumbnail' => true, 'archive' => false ),
 	'depoimento' => array( 'public' => false, 'thumbnail' => false, 'archive' => false ),
-	'historia'   => array( 'public' => false, 'thumbnail' => true, 'archive' => false ),
+	'historia'   => array( 'public' => true, 'thumbnail' => true, 'archive' => false ),
 	'socio'      => array( 'public' => true, 'thumbnail' => true, 'archive' => true ),
 );
 

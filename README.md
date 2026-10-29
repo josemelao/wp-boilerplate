@@ -6,7 +6,8 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 
 - **F0 (Preparação) concluída**: ambiente local reproduzível, WordPress instalado e tema ativo.
 - **F1 (Fundação) concluída**: 5 tipos de conteúdo, meta boxes, “Opções do Site”, experiência do cliente no painel, header/footer e menus.
-- A home (6 seções), o blog e as páginas de sócio entram na **F2/F3**.
+- **F2 (Home) em implementação**: as seções, estilos, interações, seed local e página individual de História estão no tema; os ajustes do último teste manual aguardam nova conferência no navegador.
+- Blog e páginas de sócio entram na **F3**.
 
 ## Requisitos
 
@@ -79,6 +80,9 @@ powershell -ExecutionPolicy Bypass -File tools\wp.ps1 media regenerate --yes
 
 # verificações do tema (F1)
 powershell -ExecutionPolicy Bypass -File tools\test.ps1
+
+# conteúdo de demonstração da home (F2)
+powershell -ExecutionPolicy Bypass -File tools\seed-demo.ps1
 ```
 
 Depois de reiniciar a máquina, basta rodar `dev.ps1 start`.
@@ -138,12 +142,18 @@ LWclone/
 │   ├── dev.ps1             ← start / stop / status
 │   ├── wp.ps1              ← atalho do WP-CLI
 │   ├── test.ps1            ← roda tests/f1-checks.php
-│   └── router.php          ← rewrite do servidor embutido
+│   ├── router.php          ← rewrite do servidor embutido
+│   ├── seed-demo.ps1       ← gera imagens e popula conteúdo da home
+│   ├── seed-demo.php       ← cria/atualiza conteúdo via WP-CLI
+│   ├── make-demo-images.php ← gera JPEGs placeholder usando GD
+│   └── demo-images/        ← imagens geradas pelo seed
 └── tema-base/
     ├── style.css           ← só o cabeçalho do tema (versão)
     ├── functions.php       ← carrega os módulos de inc/
     ├── header.php          ← skip link, marca, menu principal
     ├── footer.php          ← menu, redes, escritórios, copyright
+    ├── front-page.php      ← home com as seções de conteúdo
+    ├── single-historia.php ← página editorial própria de cada história
     ├── index.php           ← fallback (blog/categorias/busca)
     ├── inc/
     │   ├── setup.php       ← supports, menus, tamanhos, enqueue
@@ -152,12 +162,19 @@ LWclone/
     │   ├── options-page.php← "Opções do Site"
     │   ├── helpers.php     ← tb_opt(), tb_query(), tb_featured_posts()
     │   └── admin-ux.php    ← colunas, ordem, dicas, aviso de Leitura
+    ├── template-parts/     ← hero, destaques, depoimentos, histórias e artigos
     └── assets/
-        ├── css/main.css    ← tokens + header/footer
-        └── js/main.js      ← menu mobile
+        ├── css/main.css    ← tokens, componentes e responsivo
+        └── js/main.js      ← menu, faders, carrossel e histórias
 ```
 
 O `router.php` é versionado de propósito: sem ele, um clone não reproduz os permalinks no `php -S`.
+
+## Home e conteúdo de demonstração (F2)
+
+`front-page.php` monta Hero, Destaques, Depoimentos, Histórias e Artigos em destaque. O rodapé é compartilhado pelo tema. Cada seção não imprime markup quando não há conteúdo publicado.
+
+Para popular o WordPress local com conteúdo de demonstração, rode `tools\seed-demo.ps1`. O comando gera JPEGs de gradiente em `tools\demo-images\`, importa a mídia e cria/atualiza posts com slugs reservados para demonstração. Também configura as páginas locais **Início** e **Artigos** em Configurações → Leitura. O seed não apaga posts ou páginas existentes.
 
 ## O que foi testado (F0)
 
@@ -192,6 +209,16 @@ Não testado ainda: telas do tema, navegação completa, acessibilidade e respon
 - Nenhum `Warning`/`Notice`/`Fatal` nos requests reais; `php -l` limpo em todos os arquivos PHP.
 
 Não testado na F1: as 6 seções da home (F2), templates de post/página/sócio (F3), acessibilidade completa e responsivo em dispositivos (F4).
+
+## Estado da F2
+
+Implementados: template inicial, cinco seções de conteúdo (com rodapé compartilhado), controles de hero e depoimentos, scroll-snap e arrasto do carrossel, lista circular de histórias com seleção fixa na última posição, single editorial das histórias, cards de artigos, CSS responsivo e seed de demonstração.
+
+Correções registradas após o teste manual de 29/10/2026: retomada do autoplay após o foco sair do componente, arrasto por mouse, setas laterais nos depoimentos, lista de histórias circular vertical com link para single própria e imagens demo de histórias com cores mais distintas. A nova revisão visual dessas correções ainda está pendente.
+
+Verificado após os ajustes: seed executado com sucesso; `/` responde **200**; `/historias/historia-01/` responde **200** e usa `single-historia.php`; a lista da home aponta para essa URL.
+
+**Pendente de nova conferência após os ajustes:** autoplay do hero e dos depoimentos, arrasto do carrossel com mouse, setas laterais dos depoimentos, rotação vertical das histórias e navegação para a single. Revalidar também seções sem conteúdo, console, teclado/toque e tamanhos responsivos antes de concluir a F2.
 
 ## Limitações conhecidas
 

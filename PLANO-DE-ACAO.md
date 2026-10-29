@@ -23,7 +23,7 @@
 
 | # | Decisão | Motivo |
 |---|---|---|
-| D1 | **Tema clássico customizado (PHP)**, layout travado em código. **Não** migrar para blocos/Gutenberg. | Migrar tudo para blocos custa mais e dá ao cliente liberdade para quebrar o design. O editor de blocos fica só no **corpo de posts, páginas e biografia dos sócios**. |
+| D1 | **Tema clássico customizado (PHP)**, layout travado em código. **Não** migrar para blocos/Gutenberg. | Migrar tudo para blocos custa mais e dá ao cliente liberdade para quebrar o design. O editor de blocos fica só no **corpo de posts, páginas, histórias e biografias dos sócios**. |
 | D2 | **Ir direto para o WordPress**, sem montar antes um site estático completo. | Esse layout é feito de listas de conteúdo; o difícil é modelar o conteúdo, não o HTML. Fazer estático antes é fazer duas vezes. Protótipo estático só se o cliente precisar aprovar o visual (Figma ou uma página única). |
 | D3 | Conteúdo = **Custom Post Types + imagem destacada + campos nativos** (meta boxes em código). **Sem ACF.** | Zero dependência e zero plugin pago (repeater/options page do ACF são Pro). Se surgir necessidade de campos repetidores, reavaliar ACF Pro, Meta Box ou Carbon Fields. |
 | D4 | **JS vanilla**, sem Swiper, 1 arquivo (`assets/js/main.js`). | Sem dependência para vendorizar, pouco código, controle total. Swiper é alternativa aceitável se a complexidade crescer. |
@@ -32,7 +32,7 @@
 | D7 | CPTs ficam **no tema** nesta fase. | Simplicidade. **Antes de produção**, avaliar mover para plugin/mu-plugin (se trocar o tema, os tipos de conteúdo somem do painel; os dados não são apagados, mas ficam inacessíveis). |
 | D8 | CPTs e metas com **`show_in_rest`** habilitado. | Permite popular e manter o conteúdo via WP-CLI, REST API ou MCP de WordPress. |
 | D9 | O print de referência é **só referência estrutural**. | Identidade visual, textos, imagens e marca precisam ser próprios do cliente. Não copiar logo, fotos, textos ou CSS de site de terceiros. |
-| D10 | Interpretação da seção "Histórias": a **lista à direita mostra todos os títulos** (o ativo em destaque) e o **painel inferior mostra título e resumo do item ativo**, com setas. | O print não deixa claro se a lista mostra todos ou só os próximos. Fácil de ajustar. |
+| D10 | A seção "Histórias" mostra todos os títulos em uma lista vertical. O item ativo fica sempre no fim da lista; as setas verticais giram a lista circularmente. O título ativo abre sua própria single em `/historias/{slug}/`; os outros títulos selecionam um item. O painel mostra título e resumo do ativo e o fundo faz crossfade. | A interação foi esclarecida pelo usuário durante a implementação da F2. |
 | D11 | **Ambiente local padronizado = runtime portátil versionado** (`tools/setup-local.ps1`: PHP 8.3.36, MariaDB 11.4.13, WordPress 7.1.4, WP-CLI 2.12.0), Windows x64. LocalWP e `@wordpress/env` não são o caminho oficial. | Todos os colegas, mesmo sem nada instalado, chegam ao mesmo ambiente com um comando — sem GUI, Docker ou admin. LocalWP não é reproduzível (cada um escolhe versões/servidor na interface). |
 
 ## 3. Escopo
@@ -77,8 +77,9 @@ projeto-wp/
 │   ├── wp.ps1                ← atalho do WP-CLI
 │   ├── test.ps1              ← roda tests/f1-checks.php no WordPress
 │   ├── router.php            ← rewrite dos permalinks no servidor embutido
-│   ├── seed-demo.ps1         ← popula um WP local com conteúdo de demonstração (WP-CLI)
-│   ├── make-demo-images.py   ← gera as imagens placeholder
+│   ├── seed-demo.ps1         ← gera imagens e popula um WP local com conteúdo de demonstração
+│   ├── seed-demo.php         ← cria/atualiza o conteúdo via WP-CLI
+│   ├── make-demo-images.php  ← gera imagens JPEG placeholder via GD
 │   ├── build-zip.ps1         ← gera dist/tema-base.zip
 │   └── demo-images/*.jpg
 ├── tests/
@@ -89,7 +90,7 @@ projeto-wp/
     ├── header.php  footer.php
     ├── front-page.php        ← home (monta as 6 seções com template-parts)
     ├── index.php             ← lista de posts (blog, categorias, busca)
-    ├── single.php  page.php  404.php
+    ├── single.php  single-historia.php  page.php  404.php
     ├── archive-socio.php  single-socio.php
     ├── inc/
     │   ├── setup.php         ← supports, menus, tamanhos de imagem, enqueue
@@ -103,7 +104,7 @@ projeto-wp/
     │   └── card-post.php  card-socio.php
     └── assets/
         ├── css/main.css      ← tokens em :root + BEM
-        └── js/main.js        ← 5 componentes: header, fader (hero e depoimentos), carrossel, histórias
+        └── js/main.js        ← componentes: menu, faders, carrossel e histórias
 ```
 
 **Convenções:** prefixo `tb_` em funções PHP; `tb-` em handles, tamanhos de imagem e classes de utilidade; CSS em BEM (`.hero__slide`); JS ativado por `data-component="..."`; **PHP compatível com 7.4+** (sem `match`, `?->`, argumentos nomeados).
@@ -117,7 +118,7 @@ Imagens usam a **imagem destacada** (thumbnail) do próprio WordPress. Título =
 | `banner` | Banners do topo | não (sem página própria) | imagem do hero (`tb-hero`, 1920×800) | `_tb_label` rótulo pequeno · `_tb_text` texto curto · `_tb_link` URL · `_tb_link_label` texto do botão (padrão "Leia mais") |
 | `destaque` | Destaques | não | imagem do card (`tb-slide`, 1280×640) | `_tb_label` · `_tb_link` · `_tb_link_label` |
 | `depoimento` | Depoimentos | não | — | título = manchete · `_tb_quote` texto · `_tb_source` fonte/autor |
-| `historia` | Histórias | não | imagem de fundo (`tb-story`, 1600×900) | `_tb_summary` resumo · `_tb_link` URL de destino (post, categoria, página) |
+| `historia` | Histórias | sim, página em `/historias/{slug}/` | imagem de fundo (`tb-story`, 1600×900) | editor = corpo da história · `_tb_summary` resumo · `_tb_link` link relacionado opcional |
 | `socio` | Sócios | **sim**, arquivo em `/socios/` | retrato (`tb-socio`, 640×800) | título = nome · editor = biografia · `_tb_role` cargo · `_tb_email` · `_tb_phone` · `_tb_linkedin` |
 | `post` (nativo) | Posts | sim | imagem do card (`tb-card`, 720×480) | categoria + resumo (excerpt). **Posts fixados** viram os "artigos em destaque" da home (se houver menos de 3, completa com os mais recentes). |
 
@@ -133,13 +134,13 @@ Imagens usam a **imagem destacada** (thumbnail) do próprio WordPress. Título =
    - A **primeira imagem** usa `loading="eager"` e `fetchpriority="high"` (é o LCP); as demais, `lazy`.
    - Se houver 1 só banner, esconde bullets/play.
 2. **Carrossel arrastável** (`carousel-featured.php`, `data-component="carousel"`)
-   - `overflow-x: auto` + `scroll-snap` (centralizado). Arrastar com o mouse via pointer events; toque usa o scroll nativo.
+   - `overflow-x: auto` + `scroll-snap` (centralizado). Arrastar com o mouse por eventos de mouse; toque usa o scroll nativo.
    - Setas anterior/próximo. Clique em link é cancelado se houve arrasto.
    - O card inteiro é clicável (link "esticado") quando há `_tb_link`.
 3. **Depoimentos** (`testimonials.php`, `data-component="testimonials"`)
    - Itens sobrepostos na mesma célula de grid (altura = maior item), fade, bullets, autoplay ~8 s.
 4. **Histórias** (`stories.php`, `data-component="stories"`)
-   - Camadas de imagem de fundo empilhadas (crossfade); lista de títulos (link se houver `_tb_link`, senão botão que ativa o item); painel com título/resumo do ativo; setas e teclado (←/→).
+   - Camadas de imagem de fundo empilhadas (crossfade); lista vertical circular com o ativo sempre no fim; setas e teclado (↑/↓) giram a lista e atualizam o fundo/painel; somente o título ativo é link para sua própria página `single-historia.php`.
 5. **Artigos em destaque** (`insights.php`): `tb_featured_posts(3)` + botão para `tb_blog_url()`.
 6. **Rodapé** (`footer.php`): menu `footer`, redes (só as preenchidas), escritórios, copyright + `footer_note`.
 
@@ -201,7 +202,7 @@ powershell -ExecutionPolicy Bypass -File tools\wp.ps1 media regenerate --yes   #
 powershell -ExecutionPolicy Bypass -File tools\test.ps1                        # verificações do tema
 ```
 
-O seed de demonstração (`tools/seed-demo.ps1`) será criado na F2.
+O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com conteúdo de exemplo para a F2.
 
 **Fluxo recomendado:** git no projeto → mudar o tema → testar com o conteúdo demo → testar logado como Editor → rodar `tools\test.ps1` → registrar no README o que foi testado.
 
@@ -215,7 +216,7 @@ O seed de demonstração (`tools/seed-demo.ps1`) será criado na F2.
 |---|---|---|
 | **F0 Preparação** | Ambiente local padronizado, git, ler este plano | Em um clone limpo, `tools\setup-local.ps1` roda sem intervenção; WP local abre, tema aparece em Aparência; login no painel funciona |
 | **F1 Fundação** | `setup`, CPTs, metas, opções, admin-ux, header/footer, menus | Painel mostra os 5 tipos; salvar um campo e ver no banco; Editor consegue abrir "Opções do Site" |
-| **F2 Home** | 6 seções + CSS/JS | Cada seção funciona com conteúdo demo e **some** sem conteúdo; sem erro no console; teclado e toque funcionam |
+| **F2 Home** | 6 seções + CSS/JS + single de história + seed demo | Cada seção funciona com conteúdo demo e **some** sem conteúdo; histórias têm páginas próprias; sem erro no console; teclado e toque funcionam |
 | **F3 Blog/Páginas/Sócios** | index, single, page, archive/single de sócio, 404 | Navegar blog → post → voltar; `/socios/` e página de sócio; categoria funciona |
 | **F4 QA** | Teste como Editor, a11y, responsivo, desempenho | Testado em 360/768/1280 px; Lighthouse sem erros graves de acessibilidade; nenhum aviso PHP (`WP_DEBUG` ligado) |
 | **F5 Identidade** | Tokens, fontes locais, logo, ajustes visuais finos | Visual do cliente aprovado |

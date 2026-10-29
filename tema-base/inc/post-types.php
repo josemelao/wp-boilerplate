@@ -114,6 +114,16 @@ function tb_register_post_types() {
 				'description'   => 'Itens da seção "Histórias". Imagem de fundo recomendada: 1600 × 900 px.',
 				'menu_icon'     => 'dashicons-book-alt',
 				'menu_position' => 23,
+				'public'        => true,
+				'publicly_queryable' => true,
+				'exclude_from_search' => true,
+				'has_archive'   => false,
+				'query_var'     => 'historia',
+				'rewrite'       => array(
+					'slug'       => 'historias',
+					'with_front' => false,
+				),
+				'supports'      => array( 'title', 'editor', 'thumbnail', 'page-attributes' ),
 			)
 		)
 	);
