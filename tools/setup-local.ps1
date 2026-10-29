@@ -32,6 +32,11 @@
 .PARAMETER Start
   Sobe o site ao final da instalação.
 
+.PARAMETER Reset
+  Apaga o runtime local (PHP, MariaDB, WordPress, banco, logs e credenciais) e
+  reinstala do zero. ATENÇÃO: o conteúdo local (posts, mídia e banco) é perdido.
+  Use quando as versões pinadas mudarem ou quando o ambiente estiver corrompido.
+
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1
 
@@ -44,7 +49,8 @@ param(
 	[string]$AdminPassword = 'admin_local_2026',
 	[string]$AdminEmail = 'admin@example.com',
 	[string]$DbPassword = 'wp_local_2026',
-	[switch]$Start
+	[switch]$Start,
+	[switch]$Reset
 )
 
 $ErrorActionPreference = 'Continue'
@@ -68,6 +74,17 @@ $themeDir  = Join-Path $root 'tema-base'
 $sitePort = 8080
 $dbPort   = 3307
 $siteUrl  = "http://127.0.0.1:$sitePort"
+$envFile  = Join-Path $local 'env.json'
+
+$expectedEnv = [ordered]@{
+	schema    = 1
+	php       = '8.3.36'
+	wordpress = '7.1.4'
+	mariadb   = '11.4.13'
+	wpCli     = '2.12.0'
+	sitePort  = $sitePort
+	dbPort    = $dbPort
+}
 
 # --- Versões pinadas ----------------------------------------------------------
 # NÃO use "latest": o time inteiro precisa do mesmo ambiente.
@@ -206,6 +223,46 @@ if (-not (Test-Path $themeDir)) {
 }
 
 New-Item -ItemType Directory -Force -Path $local, $downloads, $logs | Out-Null
+
+# --- Manifesto de versões e -Reset --------------------------------------------
+
+$installedEnv = $null
+if (Test-Path $envFile) {
+	try {
+		$installedEnv = Get-Content $envFile -Raw | ConvertFrom-Json
+	} catch {
+		$installedEnv = $null
+	}
+}
+
+$mismatches = @()
+if ($installedEnv) {
+	foreach ($key in $expectedEnv.Keys) {
+		if ("$($installedEnv.$key)" -ne "$($expectedEnv[$key])") {
+			$mismatches += "$key instalado=$($installedEnv.$key) esperado=$($expectedEnv[$key])"
+		}
+	}
+}
+
+if ($Reset) {
+	Write-Step 'Recriando o ambiente (-Reset)'
+	& (Join-Path $root 'tools\dev.ps1') stop
+	Start-Sleep -Seconds 2
+	foreach ($item in @('php', 'mariadb', 'wp', 'db', 'logs', 'wp-cli.phar', 'env.json', 'CREDENCIAIS.txt')) {
+		$target = Join-Path $local $item
+		if (Test-Path $target) {
+			Remove-Item $target -Recurse -Force -ErrorAction SilentlyContinue
+			if (Test-Path $target) {
+				throw "Nao foi possivel remover $target. Pare os servicos e tente novamente."
+			}
+		}
+	}
+	Get-ChildItem $local -Filter 'run-*.cmd' -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+	New-Item -ItemType Directory -Force -Path $downloads, $logs | Out-Null
+	Write-Host '  [ok] runtime removido (downloads preservados)'
+} elseif ($mismatches.Count -gt 0) {
+	throw ("O ambiente instalado nao corresponde as versoes deste script:`n  " + ($mismatches -join "`n  ") + "`n`nRode com -Reset para recriar do zero. ATENCAO: isso apaga o conteudo local (posts, midia e banco).")
+}
 
 # --- Downloads ----------------------------------------------------------------
 
@@ -380,6 +437,9 @@ $credentials = @(
 	"- Host: 127.0.0.1:$dbPort"
 ) -join "`r`n"
 Set-Content -Path (Join-Path $local 'CREDENCIAIS.txt') -Value $credentials -Encoding UTF8
+
+$expectedEnv | ConvertTo-Json | Set-Content -Path $envFile -Encoding UTF8
+Write-Host '  [ok] manifesto .local/env.json'
 
 # --- Resumo -------------------------------------------------------------------
 

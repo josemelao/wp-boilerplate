@@ -20,7 +20,7 @@ Não é necessário ter PHP, MySQL, Docker, LocalWP, Composer ou privilégios de
 ## Rodar do zero (primeira vez)
 
 ```powershell
-git clone <URL-do-repositorio> LWclone
+git clone https://github.com/josemelao/wp-boilerplate.git LWclone
 cd LWclone
 powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1 -Start
 ```
@@ -34,7 +34,7 @@ O `setup-local.ps1` é **idempotente** e faz, nesta ordem:
 5. Cria o `wp-config.php`, instala o WordPress e ativa `pt_BR`.
 6. Cria a **junction** `wp-content/themes/tema-base` → `tema-base/`.
 7. Ativa o tema e configura permalinks `/%postname%/`.
-8. Gera `.local/CREDENCIAIS.txt`.
+8. Gera `.local/CREDENCIAIS.txt` e o manifesto `.local/env.json`.
 
 Ao final: <http://127.0.0.1:8080/>.
 
@@ -44,6 +44,24 @@ Para definir outras senhas locais:
 powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1 `
   -AdminPassword "sua-senha" -DbPassword "senha-do-banco" -Start
 ```
+
+## Depois de um pull
+
+- **Mudou só o tema ou a documentação?** Nada a fazer. A junction reflete `tema-base/` na hora; se o site estiver parado, rode `tools\dev.ps1 start`.
+- **Mudou `tools/setup-local.ps1` ou alguma versão pinada?** Rode o setup de novo:
+
+  ```powershell
+  powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1 -Start
+  ```
+
+  O script compara o manifesto `.local/env.json` com as versões dele. Se bater, apenas reaplica a configuração. Se não bater, ele **para** e pede `-Reset`.
+- **`-Reset`** recria o runtime do zero e **apaga o conteúdo local** (posts, mídia e banco):
+
+  ```powershell
+  powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1 -Reset -Start
+  ```
+
+- **Nunca copie `.local/` entre máquinas** e nunca commite `.local/` nem `.local/CREDENCIAIS.txt`. Cada pessoa gera o seu.
 
 ## Uso diário
 
@@ -79,7 +97,7 @@ Login verificado de ponta a ponta: `POST /wp-login.php` → **302** para `/wp-ad
 | WordPress | 7.1.4 (pt_BR) | `.local/wp/` |
 | WP-CLI | 2.12.0 | `.local/wp-cli.phar` |
 
-Ficam iguais para todo o time: versões, portas (8080/3307), URL, `php.ini`, permalinks, idioma, tema ativo e WP-CLI. As versões são **pinadas de propósito** — não troque por `latest`.
+Ficam iguais para todo o time: versões, portas (8080/3307), URL, `php.ini`, permalinks, idioma, tema ativo e WP-CLI. As versões são **pinadas de propósito** — não troque por `latest`. O manifesto `.local/env.json` registra o que está instalado; é ele que permite ao script detectar divergência depois de um pull.
 
 ## Estrutura
 
@@ -89,7 +107,7 @@ LWclone/
 ├── README.md
 ├── assets-full-page.png
 ├── .gitignore
-├── .local/                 ← runtime gerado (fora do Git)
+├── .local/                 ← runtime gerado (fora do Git; inclui env.json)
 ├── tools/
 │   ├── setup-local.ps1     ← instala o ambiente do zero
 │   ├── dev.ps1             ← start / stop / status
@@ -107,7 +125,9 @@ O `router.php` é versionado de propósito: sem ele, um clone não reproduz os p
 
 Verificado de verdade:
 
-- `setup-local.ps1` executado do zero em um clone limpo.
+- `setup-local.ps1` executado do zero em um clone limpo: **87,6 s**, exit 0.
+- `-Reset` executado na máquina principal (com downloads em cache): **32,5 s**, exit 0.
+- Manifesto `.local/env.json` gravado; com versão divergente, o script **aborta** e pede `-Reset`.
 - `php -v` → 8.3.36; extensões `mysqli`, `openssl`, `curl`, `mbstring`, `gd`, `exif`, `zip`, `fileinfo`, `intl` carregadas.
 - `mysqld` em `127.0.0.1:3307`; usuário `wp` conecta no banco `wordpress`.
 - `wp core version` → 7.1.4; `wp option get siteurl` → `http://127.0.0.1:8080`.
@@ -159,10 +179,10 @@ Apague o arquivo correspondente em `.local/downloads/` e rode o setup de novo. S
 **Recomeçar do zero**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File tools\dev.ps1 stop
-Remove-Item .local -Recurse -Force
-powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1 -Start
+powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1 -Reset -Start
 ```
+
+O `-Reset` para os serviços, apaga o runtime e reinstala. O conteúdo local (posts, mídia e banco) é perdido.
 
 ## Próximos passos
 
