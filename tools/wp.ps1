@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Atalho para o WP-CLI do runtime local.
 
@@ -11,7 +11,7 @@ param(
 	[string[]]$WpArgs
 )
 
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = 'Continue'
 
 $root = Split-Path -Parent $PSScriptRoot
 $php  = Join-Path $root '.local\php\php.exe'

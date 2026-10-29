@@ -33,6 +33,7 @@
 | D8 | CPTs e metas com **`show_in_rest`** habilitado. | Permite popular e manter o conteúdo via WP-CLI, REST API ou MCP de WordPress. |
 | D9 | O print de referência é **só referência estrutural**. | Identidade visual, textos, imagens e marca precisam ser próprios do cliente. Não copiar logo, fotos, textos ou CSS de site de terceiros. |
 | D10 | Interpretação da seção "Histórias": a **lista à direita mostra todos os títulos** (o ativo em destaque) e o **painel inferior mostra título e resumo do item ativo**, com setas. | O print não deixa claro se a lista mostra todos ou só os próximos. Fácil de ajustar. |
+| D11 | **Ambiente local padronizado = runtime portátil versionado** (`tools/setup-local.ps1`: PHP 8.3.36, MariaDB 11.4.13, WordPress 7.1.4, WP-CLI 2.12.0), Windows x64. LocalWP e `@wordpress/env` não são o caminho oficial. | Todos os colegas, mesmo sem nada instalado, chegam ao mesmo ambiente com um comando — sem GUI, Docker ou admin. LocalWP não é reproduzível (cada um escolhe versões/servidor na interface). |
 
 ## 3. Escopo
 
@@ -69,10 +70,15 @@
 projeto-wp/
 ├── PLANO-DE-ACAO.md          ← este documento
 ├── README.md                 ← como rodar, estado atual, testes feitos
+├── .local/                   ← runtime portátil gerado (fora do Git)
 ├── tools/
-│   ├── seed-demo.sh          ← popula um WP local com conteúdo de demonstração (WP-CLI)
+│   ├── setup-local.ps1       ← instala o ambiente do zero (Windows)
+│   ├── dev.ps1               ← start/stop/status do site local
+│   ├── wp.ps1                ← atalho do WP-CLI
+│   ├── router.php            ← rewrite dos permalinks no servidor embutido
+│   ├── seed-demo.ps1         ← popula um WP local com conteúdo de demonstração (WP-CLI)
 │   ├── make-demo-images.py   ← gera as imagens placeholder
-│   ├── build-zip.sh          ← gera dist/tema-base.zip
+│   ├── build-zip.ps1         ← gera dist/tema-base.zip
 │   └── demo-images/*.jpg
 └── tema-base/                ← o tema (é esta pasta que vira zip e vai para wp-content/themes)
     ├── style.css             ← só o cabeçalho do tema
@@ -174,15 +180,24 @@ Toda seção **retorna sem imprimir nada** se não houver itens.
 
 ## 11. Ambiente, comandos e fluxo de trabalho
 
-**Ambiente local:** LocalWP (mais simples), ou `@wordpress/env` (precisa de Docker). Copiar `tema-base/` para `wp-content/themes/`.
+**Ambiente local (padrão — D11):** Windows x64 + runtime portátil versionado. Na primeira vez, dentro do projeto:
 
-```bash
-# dentro da pasta do WordPress local
-wp theme activate tema-base
-bash /caminho/projeto-wp/tools/seed-demo.sh        # conteúdo de demonstração
-wp rewrite structure '/%postname%/' --hard && wp rewrite flush --hard
-wp media regenerate --yes                          # se mudar tamanhos de imagem
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1 -Start
 ```
+
+O script instala PHP 8.3.36, MariaDB 11.4.13, WordPress 7.1.4 e WP-CLI 2.12.0 em `.local/` (fora do Git), cria o banco, instala o WordPress, mapeia `tema-base/` por junction, ativa o tema e configura permalinks/idioma. É idempotente. Detalhes e pré-requisitos no `README.md`. LocalWP e `@wordpress/env` não são o caminho oficial.
+
+```powershell
+# dentro do projeto
+powershell -ExecutionPolicy Bypass -File tools\dev.ps1 start
+powershell -ExecutionPolicy Bypass -File tools\wp.ps1 theme activate tema-base
+powershell -ExecutionPolicy Bypass -File tools\wp.ps1 rewrite structure '/%postname%/' --hard
+powershell -ExecutionPolicy Bypass -File tools\wp.ps1 rewrite flush --hard
+powershell -ExecutionPolicy Bypass -File tools\wp.ps1 media regenerate --yes   # se mudar tamanhos de imagem
+```
+
+O seed de demonstração (`tools/seed-demo.ps1`) será criado na F2.
 
 **Fluxo recomendado:** git no projeto → mudar o tema → testar com o conteúdo demo → testar logado como Editor → registrar no README o que foi testado.
 
@@ -194,7 +209,7 @@ wp media regenerate --yes                          # se mudar tamanhos de imagem
 
 | Fase | Entregas | Critério de aceite |
 |---|---|---|
-| **F0 Preparação** | Ambiente local, git, ler este plano | WP local abre, tema aparece em Aparência |
+| **F0 Preparação** | Ambiente local padronizado, git, ler este plano | Em um clone limpo, `tools\setup-local.ps1` roda sem intervenção; WP local abre, tema aparece em Aparência; login no painel funciona |
 | **F1 Fundação** | `setup`, CPTs, metas, opções, admin-ux, header/footer, menus | Painel mostra os 5 tipos; salvar um campo e ver no banco; Editor consegue abrir "Opções do Site" |
 | **F2 Home** | 6 seções + CSS/JS | Cada seção funciona com conteúdo demo e **some** sem conteúdo; sem erro no console; teclado e toque funcionam |
 | **F3 Blog/Páginas/Sócios** | index, single, page, archive/single de sócio, 404 | Navegar blog → post → voltar; `/socios/` e página de sócio; categoria funciona |

@@ -4,26 +4,48 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 
 ## Estado atual
 
-- **F0 (Preparação) concluída**: runtime local portátil funcionando, WordPress instalado e tema mínimo ativo.
+- **F0 (Preparação) concluída**: ambiente local reproduzível, WordPress instalado e tema mínimo ativo.
 - O tema ainda é um **esqueleto** (`style.css`, `functions.php`, `index.php`). A fundação real (CPTs, metas, opções, header/footer) é a F1.
 
-## Ambiente local
+## Requisitos
 
-Não há PHP, MySQL nem LocalWP instalados globalmente. O projeto usa um runtime **portátil dentro de `.local/`** (fora do Git):
+- **Windows 10/11 x64** (o runtime é Windows-only).
+- **PowerShell 5.1+** (já vem no Windows).
+- **Internet** na primeira execução (~170 MB de download; ~500 MB em disco).
+- **Portas 8080 e 3307 livres.**
+- **Visual C++ Redistributable 2015–2022** — o script avisa se estiver faltando; download em <https://aka.ms/vs/17/release/vc_redist.x64.exe>.
 
-| Peça | Versão | Caminho |
-|---|---|---|
-| PHP | 8.3.36 (NTS x64) | `.local/php/` |
-| MariaDB | 11.4.13 | `.local/mariadb/` + dados em `.local/db/` |
-| WordPress | 7.1.4 (pt_BR) | `.local/wp/` |
-| WP-CLI | phar | `.local/wp-cli.phar` |
+Não é necessário ter PHP, MySQL, Docker, LocalWP, Composer ou privilégios de administrador.
 
-- Site: <http://127.0.0.1:8080/>
-- Painel: <http://127.0.0.1:8080/wp-admin/>
-- Credenciais locais: `.local/CREDENCIAIS.txt` (não versionado)
-- O tema `tema-base/` é mapeado ao vivo por uma **junction** em `.local/wp/wp-content/themes/tema-base`.
+## Rodar do zero (primeira vez)
 
-### Comandos
+```powershell
+git clone <URL-do-repositorio> LWclone
+cd LWclone
+powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1 -Start
+```
+
+O `setup-local.ps1` é **idempotente** e faz, nesta ordem:
+
+1. Baixa versões **pinadas** e confere o SHA-256 de cada arquivo.
+2. Extrai PHP, MariaDB, WordPress e WP-CLI em `.local/` (fora do Git).
+3. Escreve o `php.ini` com as extensões e limites do projeto.
+4. Inicializa o MariaDB e cria o banco `wordpress` + usuário `wp`.
+5. Cria o `wp-config.php`, instala o WordPress e ativa `pt_BR`.
+6. Cria a **junction** `wp-content/themes/tema-base` → `tema-base/`.
+7. Ativa o tema e configura permalinks `/%postname%/`.
+8. Gera `.local/CREDENCIAIS.txt`.
+
+Ao final: <http://127.0.0.1:8080/>.
+
+Para definir outras senhas locais:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1 `
+  -AdminPassword "sua-senha" -DbPassword "senha-do-banco" -Start
+```
+
+## Uso diário
 
 ```powershell
 # subir / derrubar / status
@@ -34,31 +56,117 @@ powershell -ExecutionPolicy Bypass -File tools\dev.ps1 status
 # WP-CLI
 powershell -ExecutionPolicy Bypass -File tools\wp.ps1 post list
 powershell -ExecutionPolicy Bypass -File tools\wp.ps1 theme list
+powershell -ExecutionPolicy Bypass -File tools\wp.ps1 media regenerate --yes
 ```
 
-O servidor é o embutido do PHP (`php -S`) com `router.php`, que reproduz os permalinks (`/%postname%/`). Logs em `.local/logs/`.
+Depois de reiniciar a máquina, basta rodar `dev.ps1 start`.
 
-### Recriar o runtime
+## Acessar o painel
 
-`.local/` é descartável. Para recriar, baixe PHP 8.3 NTS x64, WordPress, WP-CLI e MariaDB 11.4 (winx64), repita a configuração do `php.ini` (extensões `mysqli`, `openssl`, `curl`, `mbstring`, `gd`, `exif`, `zip`, `fileinfo`) e rode `mariadb-install-db`. Um script de bootstrap automatizado ainda não existe.
+- Site: <http://127.0.0.1:8080/>
+- Painel: <http://127.0.0.1:8080/wp-admin/>
+- Credenciais: `.local/CREDENCIAIS.txt` (não versionado)
+- Padrão: usuário `admin`, senha `admin_local_2026` (ou a informada no setup)
+
+Login verificado de ponta a ponta: `POST /wp-login.php` → **302** para `/wp-admin/` → **200** com o painel.
+
+## Ambiente padronizado
+
+| Peça | Versão | Caminho |
+|---|---|---|
+| PHP | 8.3.36 (NTS x64) | `.local/php/` |
+| MariaDB | 11.4.13 | `.local/mariadb/` + dados em `.local/db/` |
+| WordPress | 7.1.4 (pt_BR) | `.local/wp/` |
+| WP-CLI | 2.12.0 | `.local/wp-cli.phar` |
+
+Ficam iguais para todo o time: versões, portas (8080/3307), URL, `php.ini`, permalinks, idioma, tema ativo e WP-CLI. As versões são **pinadas de propósito** — não troque por `latest`.
+
+## Estrutura
+
+```
+LWclone/
+├── PLANO-DE-ACAO.md
+├── README.md
+├── assets-full-page.png
+├── .gitignore
+├── .local/                 ← runtime gerado (fora do Git)
+├── tools/
+│   ├── setup-local.ps1     ← instala o ambiente do zero
+│   ├── dev.ps1             ← start / stop / status
+│   ├── wp.ps1              ← atalho do WP-CLI
+│   └── router.php          ← rewrite do servidor embutido
+└── tema-base/
+    ├── style.css
+    ├── functions.php
+    └── index.php
+```
+
+O `router.php` é versionado de propósito: sem ele, um clone não reproduz os permalinks no `php -S`.
 
 ## O que foi testado (F0)
 
 Verificado de verdade:
 
-- `php -v` → 8.3.36; extensões necessárias carregadas.
-- `mysqld` sobe em `127.0.0.1:3307`; `wp` conecta no banco `wordpress`.
+- `setup-local.ps1` executado do zero em um clone limpo.
+- `php -v` → 8.3.36; extensões `mysqli`, `openssl`, `curl`, `mbstring`, `gd`, `exif`, `zip`, `fileinfo`, `intl` carregadas.
+- `mysqld` em `127.0.0.1:3307`; usuário `wp` conecta no banco `wordpress`.
 - `wp core version` → 7.1.4; `wp option get siteurl` → `http://127.0.0.1:8080`.
 - `wp theme activate tema-base` → tema ativo.
-- `GET /` → **200**, título `LW Clone`.
-- `GET /wp-admin/` → **302** para o login (comportamento esperado).
-- Permalinks configurados em `/%postname%/`.
+- `GET /` → **200**; `GET /hello-world/` → **200**; CSS do core → **200**.
+- `GET /wp-admin/` sem login → **302**; login → **302** para o painel → **200**.
+- Nenhum `Warning`/`Notice`/`Fatal` no log do PHP.
 
-Não testado ainda: login no painel pelo navegador, navegação de posts/permalinks, telas do tema, acessibilidade e responsivo. Serão cobertos nas próximas fases.
+Não testado ainda: telas do tema, navegação completa, acessibilidade e responsivo — entram no QA (F4).
+
+## Limitações conhecidas
+
+- **Windows-only.** Mac/Linux precisam de outro caminho (Docker ou LocalWP), ainda não suportado.
+- **MariaDB ≠ MySQL 8** de produção. Para este tema o risco é baixo, mas o banco local não é idêntico ao da hospedagem.
+- **`php -S` ≠ nginx/Apache**: não reproduz cache, headers, HTTPS nem `.htaccess`.
+- **Sem HTTPS e sem captura de e-mail** (MailHog). Não são necessários para este escopo.
+- **LocalWP não é o caminho oficial** (decisão D11 do plano); quem usar fica por conta própria e pode divergir.
+
+## Solução de problemas
+
+**Porta ocupada**
+
+```powershell
+Get-NetTCPConnection -LocalPort 8080 -State Listen
+Get-NetTCPConnection -LocalPort 3307 -State Listen
+```
+
+Encerre o processo dono da porta ou rode `tools\dev.ps1 stop`.
+
+**PowerShell bloqueia o script**
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1
+```
+
+**PHP não inicia / falta DLL**
+
+Instale o Visual C++ Redistributable 2015–2022 (link acima).
+
+**Ver logs**
+
+- `.local/logs/php.err.log`
+- `.local/logs/mariadb.err.log`
+
+**Checksum divergente**
+
+Apague o arquivo correspondente em `.local/downloads/` e rode o setup de novo. Se persistir, a URL pinada mudou — não continue com versões diferentes.
+
+**Recomeçar do zero**
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\dev.ps1 stop
+Remove-Item .local -Recurse -Force
+powershell -ExecutionPolicy Bypass -File tools\setup-local.ps1 -Start
+```
 
 ## Próximos passos
 
 1. **F1 — Fundação**: `setup.php`, CPTs, meta boxes, “Opções do Site”, admin UX, header/footer, menus.
-2. **F2 — Home**: as 6 seções com CSS/JS.
+2. **F2 — Home**: as 6 seções com CSS/JS + seed de conteúdo demo.
 3. **F3 — Blog/Sócios/Páginas**.
 4. **F4 — QA** (Editor, a11y, responsivo, `WP_DEBUG`).

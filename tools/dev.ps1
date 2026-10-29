@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Sobe, derruba ou consulta o WordPress local do projeto.
 
@@ -59,7 +59,7 @@ function Start-Site {
 		return
 	}
 	Start-Process -FilePath $php `
-		-ArgumentList '-S', "127.0.0.1:$httpPort", '-t', $wp, (Join-Path $local 'router.php') `
+		-ArgumentList '-S', "127.0.0.1:$httpPort", '-t', $wp, (Join-Path $root 'tools\router.php') `
 		-RedirectStandardOutput (Join-Path $logs 'php.out.log') `
 		-RedirectStandardError (Join-Path $logs 'php.err.log') `
 		-WindowStyle Hidden
