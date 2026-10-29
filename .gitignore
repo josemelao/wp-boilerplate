@@ -1,0 +1,21 @@
+# Runtime local e artefatos gerados
+.local/
+dist/
+
+# WordPress/uploads ficam dentro de .local, mas por seguranca:
+wp-content/uploads/
+
+# Dependencias
+node_modules/
+vendor/
+
+# Logs e temporarios
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
