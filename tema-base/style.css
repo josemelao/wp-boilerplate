@@ -3,8 +3,8 @@ Theme Name: Tema Base
 Theme URI:
 Author: LWclone
 Author URI:
-Description: Tema institucional neutro, com layout travado em código e conteúdo editável pelo cliente. Esqueleto inicial do projeto.
-Version: 0.1.0
+Description: Tema institucional neutro, com layout travado em código e conteúdo editável pelo cliente. O cliente edita textos, imagens e listas; o desenho fica no PHP/CSS.
+Version: 0.2.0
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -13,3 +13,5 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: tema-base
 Tags: custom-menu, featured-images, translation-ready
 */
+
+/* Os estilos do tema ficam em assets/css/main.css. */

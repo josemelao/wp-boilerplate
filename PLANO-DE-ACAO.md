@@ -75,11 +75,14 @@ projeto-wp/
 │   ├── setup-local.ps1       ← instala o ambiente do zero (Windows)
 │   ├── dev.ps1               ← start/stop/status do site local
 │   ├── wp.ps1                ← atalho do WP-CLI
+│   ├── test.ps1              ← roda tests/f1-checks.php no WordPress
 │   ├── router.php            ← rewrite dos permalinks no servidor embutido
 │   ├── seed-demo.ps1         ← popula um WP local com conteúdo de demonstração (WP-CLI)
 │   ├── make-demo-images.py   ← gera as imagens placeholder
 │   ├── build-zip.ps1         ← gera dist/tema-base.zip
 │   └── demo-images/*.jpg
+├── tests/
+│   └── f1-checks.php         ← verificações da fundação (CPTs, metas, opções, header/footer)
 └── tema-base/                ← o tema (é esta pasta que vira zip e vai para wp-content/themes)
     ├── style.css             ← só o cabeçalho do tema
     ├── functions.php         ← carrega os módulos de inc/
@@ -195,11 +198,12 @@ powershell -ExecutionPolicy Bypass -File tools\wp.ps1 theme activate tema-base
 powershell -ExecutionPolicy Bypass -File tools\wp.ps1 rewrite structure '/%postname%/' --hard
 powershell -ExecutionPolicy Bypass -File tools\wp.ps1 rewrite flush --hard
 powershell -ExecutionPolicy Bypass -File tools\wp.ps1 media regenerate --yes   # se mudar tamanhos de imagem
+powershell -ExecutionPolicy Bypass -File tools\test.ps1                        # verificações do tema
 ```
 
 O seed de demonstração (`tools/seed-demo.ps1`) será criado na F2.
 
-**Fluxo recomendado:** git no projeto → mudar o tema → testar com o conteúdo demo → testar logado como Editor → registrar no README o que foi testado.
+**Fluxo recomendado:** git no projeto → mudar o tema → testar com o conteúdo demo → testar logado como Editor → rodar `tools\test.ps1` → registrar no README o que foi testado.
 
 **Automação por agente:** agentes com acesso a arquivos (ex.: Claude Code) editam o tema. Um **MCP/REST do WordPress** serve para operar conteúdo (criar posts, subir mídia, cadastrar sócios); ele **não constrói o tema**. Verificar o estado atual do MCP oficial/Automattic antes de adotar. Para conferir fidelidade visual, usar screenshots (ex.: Playwright) comparando com a referência aprovada.
 

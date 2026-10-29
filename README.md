@@ -4,8 +4,9 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 
 ## Estado atual
 
-- **F0 (Preparação) concluída**: ambiente local reproduzível, WordPress instalado e tema mínimo ativo.
-- O tema ainda é um **esqueleto** (`style.css`, `functions.php`, `index.php`). A fundação real (CPTs, metas, opções, header/footer) é a F1.
+- **F0 (Preparação) concluída**: ambiente local reproduzível, WordPress instalado e tema ativo.
+- **F1 (Fundação) concluída**: 5 tipos de conteúdo, meta boxes, “Opções do Site”, experiência do cliente no painel, header/footer e menus.
+- A home (6 seções), o blog e as páginas de sócio entram na **F2/F3**.
 
 ## Requisitos
 
@@ -75,6 +76,9 @@ powershell -ExecutionPolicy Bypass -File tools\dev.ps1 status
 powershell -ExecutionPolicy Bypass -File tools\wp.ps1 post list
 powershell -ExecutionPolicy Bypass -File tools\wp.ps1 theme list
 powershell -ExecutionPolicy Bypass -File tools\wp.ps1 media regenerate --yes
+
+# verificações do tema (F1)
+powershell -ExecutionPolicy Bypass -File tools\test.ps1
 ```
 
 Depois de reiniciar a máquina, basta rodar `dev.ps1 start`.
@@ -87,6 +91,25 @@ Depois de reiniciar a máquina, basta rodar `dev.ps1 start`.
 - Padrão: usuário `admin`, senha `admin_local_2026` (ou a informada no setup)
 
 Login verificado de ponta a ponta: `POST /wp-login.php` → **302** para `/wp-admin/` → **200** com o painel.
+
+Para testar como **Editor** (o papel que o cliente vai usar):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\wp.ps1 user create editor editor@example.com `
+  --role=editor --user_pass=editor_local_2026 --display_name="Editor Teste"
+```
+
+O Editor vê os 5 tipos de conteúdo, edita páginas/posts e acessa **Opções do Site** — mas não acessa plugins, temas nem usuários.
+
+## Testes do tema
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\test.ps1
+```
+
+Executa `tests\f1-checks.php` dentro do WordPress (`wp eval-file`). Só precisa do MariaDB rodando. Sai com código 1 se algo falhar.
+
+Cobre: CPTs registrados (público, arquivo, supports, REST), metas registradas na REST com `auth_callback`, tamanhos de imagem, menus, opções e sanitização, salvamento de meta (nonce, capability, sanitização), colunas e ordem do admin, helpers (`tb_opt`, `tb_query`, `tb_featured_posts`, `tb_blog_url`) e renderização de header/footer.
 
 ## Ambiente padronizado
 
@@ -108,15 +131,30 @@ LWclone/
 ├── assets-full-page.png
 ├── .gitignore
 ├── .local/                 ← runtime gerado (fora do Git; inclui env.json)
+├── tests/
+│   └── f1-checks.php       ← verificações da fundação (wp eval-file)
 ├── tools/
 │   ├── setup-local.ps1     ← instala o ambiente do zero
 │   ├── dev.ps1             ← start / stop / status
 │   ├── wp.ps1              ← atalho do WP-CLI
+│   ├── test.ps1            ← roda tests/f1-checks.php
 │   └── router.php          ← rewrite do servidor embutido
 └── tema-base/
-    ├── style.css
-    ├── functions.php
-    └── index.php
+    ├── style.css           ← só o cabeçalho do tema (versão)
+    ├── functions.php       ← carrega os módulos de inc/
+    ├── header.php          ← skip link, marca, menu principal
+    ├── footer.php          ← menu, redes, escritórios, copyright
+    ├── index.php           ← fallback (blog/categorias/busca)
+    ├── inc/
+    │   ├── setup.php       ← supports, menus, tamanhos, enqueue
+    │   ├── post-types.php  ← os 5 CPTs
+    │   ├── meta-fields.php ← meta boxes, salvamento, REST
+    │   ├── options-page.php← "Opções do Site"
+    │   ├── helpers.php     ← tb_opt(), tb_query(), tb_featured_posts()
+    │   └── admin-ux.php    ← colunas, ordem, dicas, aviso de Leitura
+    └── assets/
+        ├── css/main.css    ← tokens + header/footer
+        └── js/main.js      ← menu mobile
 ```
 
 O `router.php` é versionado de propósito: sem ele, um clone não reproduz os permalinks no `php -S`.
@@ -137,6 +175,23 @@ Verificado de verdade:
 - Nenhum `Warning`/`Notice`/`Fatal` no log do PHP.
 
 Não testado ainda: telas do tema, navegação completa, acessibilidade e responsivo — entram no QA (F4).
+
+## O que foi testado (F1)
+
+- `tools\test.ps1` → **135 verificações, 0 falhas**.
+- Painel: os 5 tipos aparecem no menu (`Banners do topo`, `Destaques`, `Depoimentos`, `Histórias`, `Sócios`), com ícones diferentes.
+- `post-new.php?post_type=banner` → **200**, com os 4 campos, nonce e a dica de tamanho de imagem; “Ordem” (Atributos) presente.
+- Listagens: colunas **Imagem** e **Ordem**; dois banners com ordens 1 e 2 apareceram na ordem certa (1 antes de 2).
+- Salvamento real de meta pelo formulário do `wp-admin`: `POST /wp-admin/post.php` → **302**, e no banco `_tb_label`, `_tb_link` e `_tb_link_label` corretos; `<script>` removido do texto.
+- Nonce inválido e usuário sem permissão **não** gravam meta.
+- “Opções do Site”: admin e **Editor** abrem a página (**200**); o Editor **salva** (`POST options.php` → **302**) e o valor muda no banco.
+- Aviso de Leitura aparece para administrador quando não há página inicial estática/página de posts.
+- Editor recebe **403** em `users.php`, `plugins.php` e `themes.php`.
+- Front: `/` → **200**, `/socios/` → **200** (arquivo existe; template próprio na F3), `/hello-world/` → **200**, CSS e JS do tema → **200**.
+- Header/footer reais: skip link, `main#conteudo`, menu principal, rodapé com redes só preenchidas e escritórios.
+- Nenhum `Warning`/`Notice`/`Fatal` nos requests reais; `php -l` limpo em todos os arquivos PHP.
+
+Não testado na F1: as 6 seções da home (F2), templates de post/página/sócio (F3), acessibilidade completa e responsivo em dispositivos (F4).
 
 ## Limitações conhecidas
 
@@ -186,7 +241,6 @@ O `-Reset` para os serviços, apaga o runtime e reinstala. O conteúdo local (po
 
 ## Próximos passos
 
-1. **F1 — Fundação**: `setup.php`, CPTs, meta boxes, “Opções do Site”, admin UX, header/footer, menus.
-2. **F2 — Home**: as 6 seções com CSS/JS + seed de conteúdo demo.
-3. **F3 — Blog/Sócios/Páginas**.
-4. **F4 — QA** (Editor, a11y, responsivo, `WP_DEBUG`).
+1. **F2 — Home**: as 6 seções com CSS/JS + seed de conteúdo demo.
+2. **F3 — Blog/Sócios/Páginas**.
+3. **F4 — QA** (Editor, a11y, responsivo, `WP_DEBUG`).
