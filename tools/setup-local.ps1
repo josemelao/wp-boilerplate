@@ -78,7 +78,7 @@ $mariaUrl = 'https://downloads.mariadb.org/rest-api/mariadb/11.4.13/mariadb-11.4
 $cliUrl   = 'https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar'
 
 $sha = @{
-	'php.zip'       = '1a097d52b7a68622cdc723073b61cc70caf79c941218ff65b2d8441dbc6b10d4'
+	'php.zip'       = '3c9242622c7402b47c38d2ec2ed779cef3a290fd6f2bde6c35f9c482699e7900'
 	'wordpress.zip' = 'a147146c159362778ecbbbfb07bb20ddf4e85b130f971c824e656a8f938c5f87'
 	'mariadb.zip'   = 'd62986d433eeebfde218560b276103831604a61e929e87f1a17f5aebd80257e2'
 	'wp-cli.phar'   = 'ce34ddd838f7351d6759068d09793f26755463b4a4610a5a5c0a97b68220d85c'
