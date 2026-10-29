@@ -97,6 +97,32 @@ function Test-Port {
 	return [bool](Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
 }
 
+function Start-DetachedProcess {
+	param(
+		[string]$Exe,
+		[string[]]$ExeArgs,
+		[string]$OutLog,
+		[string]$ErrLog
+	)
+
+	$argLine = ($ExeArgs | ForEach-Object {
+		if ($_ -match '[\s"]') { '"' + ($_ -replace '"', '\"') + '"' } else { $_ }
+	}) -join ' '
+
+	$cmdFile = Join-Path $logs ('run-' + [IO.Path]::GetFileNameWithoutExtension($Exe) + '.cmd')
+	Set-Content -Path $cmdFile -Value @(
+		'@echo off',
+		"`"$Exe`" $argLine > `"$OutLog`" 2> `"$ErrLog`""
+	) -Encoding ASCII
+
+	$result = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{
+		CommandLine = "cmd.exe /c `"$cmdFile`""
+	}
+	if ($result.ReturnValue -ne 0) {
+		throw "Falha ao iniciar $Exe (Win32_Process retornou $($result.ReturnValue))"
+	}
+}
+
 function Get-PinnedFile {
 	param(
 		[string]$Name,
@@ -143,11 +169,10 @@ function Start-Database {
 		return
 	}
 
-	Start-Process -FilePath (Join-Path $mariaDir 'bin\mysqld.exe') `
-		-ArgumentList "--datadir=$dbDir", "--port=$dbPort", '--bind-address=127.0.0.1', '--console' `
-		-RedirectStandardOutput (Join-Path $logs 'mariadb.out.log') `
-		-RedirectStandardError (Join-Path $logs 'mariadb.err.log') `
-		-WindowStyle Hidden
+	Start-DetachedProcess -Exe (Join-Path $mariaDir 'bin\mysqld.exe') `
+		-ExeArgs @("--datadir=$dbDir", "--port=$dbPort", '--bind-address=127.0.0.1', '--console') `
+		-OutLog (Join-Path $logs 'mariadb.out.log') `
+		-ErrLog (Join-Path $logs 'mariadb.err.log')
 
 	for ($i = 0; $i -lt 40; $i++) {
 		Start-Sleep -Milliseconds 500

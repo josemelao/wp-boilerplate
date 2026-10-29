@@ -24,6 +24,7 @@ $local    = Join-Path $root '.local'
 $php      = Join-Path $local 'php\php.exe'
 $wp       = Join-Path $local 'wp'
 $maria    = Join-Path $local 'mariadb'
+$dbDir    = Join-Path $local 'db'
 $logs     = Join-Path $local 'logs'
 $dbPort   = 3307
 $httpPort = 8080
@@ -33,16 +34,41 @@ function Test-Port {
 	return [bool](Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
 }
 
+function Start-DetachedProcess {
+	param(
+		[string]$Exe,
+		[string[]]$ExeArgs,
+		[string]$OutLog,
+		[string]$ErrLog
+	)
+
+	$argLine = ($ExeArgs | ForEach-Object {
+		if ($_ -match '[\s"]') { '"' + ($_ -replace '"', '\"') + '"' } else { $_ }
+	}) -join ' '
+
+	$cmdFile = Join-Path $logs ('run-' + [IO.Path]::GetFileNameWithoutExtension($Exe) + '.cmd')
+	Set-Content -Path $cmdFile -Value @(
+		'@echo off',
+		"`"$Exe`" $argLine > `"$OutLog`" 2> `"$ErrLog`""
+	) -Encoding ASCII
+
+	$result = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{
+		CommandLine = "cmd.exe /c `"$cmdFile`""
+	}
+	if ($result.ReturnValue -ne 0) {
+		throw "Falha ao iniciar $Exe (Win32_Process retornou $($result.ReturnValue))"
+	}
+}
+
 function Start-Db {
 	if (Test-Port $dbPort) {
 		Write-Host "MariaDB ja esta rodando na porta $dbPort."
 		return
 	}
-	Start-Process -FilePath (Join-Path $maria 'bin\mysqld.exe') `
-		-ArgumentList "--datadir=$(Join-Path $local 'db')", "--port=$dbPort", '--bind-address=127.0.0.1', '--console' `
-		-RedirectStandardOutput (Join-Path $logs 'mariadb.out.log') `
-		-RedirectStandardError (Join-Path $logs 'mariadb.err.log') `
-		-WindowStyle Hidden
+	Start-DetachedProcess -Exe (Join-Path $maria 'bin\mysqld.exe') `
+		-ExeArgs @("--datadir=$dbDir", "--port=$dbPort", '--bind-address=127.0.0.1', '--console') `
+		-OutLog (Join-Path $logs 'mariadb.out.log') `
+		-ErrLog (Join-Path $logs 'mariadb.err.log')
 	for ($i = 0; $i -lt 40; $i++) {
 		Start-Sleep -Milliseconds 500
 		if (Test-Port $dbPort) {
@@ -58,11 +84,10 @@ function Start-Site {
 		Write-Host "Servidor PHP ja esta rodando em http://127.0.0.1:$httpPort/"
 		return
 	}
-	Start-Process -FilePath $php `
-		-ArgumentList '-S', "127.0.0.1:$httpPort", '-t', $wp, (Join-Path $root 'tools\router.php') `
-		-RedirectStandardOutput (Join-Path $logs 'php.out.log') `
-		-RedirectStandardError (Join-Path $logs 'php.err.log') `
-		-WindowStyle Hidden
+	Start-DetachedProcess -Exe $php `
+		-ExeArgs @('-S', "127.0.0.1:$httpPort", '-t', $wp, (Join-Path $root 'tools\router.php')) `
+		-OutLog (Join-Path $logs 'php.out.log') `
+		-ErrLog (Join-Path $logs 'php.err.log')
 	for ($i = 0; $i -lt 20; $i++) {
 		Start-Sleep -Milliseconds 500
 		if (Test-Port $httpPort) {
