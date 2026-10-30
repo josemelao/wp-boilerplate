@@ -8,7 +8,7 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **F1 (Fundação) concluída**: 5 tipos de conteúdo, meta boxes, “Opções do Site”, experiência do cliente no painel, header/footer e menus.
 - **F2 (Home) implementada e validada pelo usuário**: as seções, estilos, interações, seed local e página individual de História estão no tema. A validação manual confirmou autoplay, carrosséis, Histórias, navegação, console e larguras de 360/768/1280 px.
 - **F3 (Blog/Páginas/Sócios) implementada e validada**: listagens, singles, página, arquivo/perfil de sócio e 404 têm templates próprios; rotas e conteúdo passaram nas verificações locais e no passo a passo do usuário.
-- **F4 (QA) validada pelo usuário**: Editor, toque, teclado/foco, Histórias com 3/4/5 itens e seções vazias conferidos. Lighthouse/performance ainda pendente.
+- **F4 (QA) concluída**: validação do usuário e Lighthouse mobile/desktop concluídos; desempenho, acessibilidade e boas práticas marcaram 100 nas duas medições.
 
 ## Requisitos
 
@@ -249,10 +249,11 @@ Verificações locais feitas em 29/10/2026:
 - Com `WP_DEBUG` e `WP_DEBUG_LOG` temporariamente ativos, as rotas da home, artigos, página, sócios, categoria e história responderam com 200 e uma URL inexistente com 404. Não foi criado `wp-content/debug.log`; `wp-config.php` foi restaurado para `WP_DEBUG=false`. O log do servidor contém acessos HTTP, sem linhas de warning/notice/fatal do PHP.
 - `php -l` nos 23 arquivos PHP do tema → sem erros; `node --check assets/js/main.js` → sem erro; `tools\test.ps1` → **153 verificações da F1 passaram**. As sete rotas de conteúdo verificadas retornaram exatamente um `<h1>` no HTML inicial.
 - Ajustes de acessibilidade feitos durante o QA: um `<h1>` ativo por vez no Hero (os outros títulos são `<h2>` e o nível acompanha a rotação), autoplay desligado por padrão quando `prefers-reduced-motion: reduce`, pausa dos faders em foco/hover e grupos de bullets com nome acessível.
+- Lighthouse na home local: mobile — desempenho 100, acessibilidade 100, boas práticas 100, SEO 92; desktop — 100 nas quatro categorias. Mobile: FCP 1,2 s, LCP 1,5 s, Speed Index 1,2 s, TBT 0 ms e CLS 0. As pontuações são medições sintéticas do ambiente local e podem variar entre execuções.
+- Para zerar os apontamentos de acessibilidade do primeiro Lighthouse, removi o `aria-label` redundante dos links dos cards e aumentei a área clicável dos bullets e controles de Histórias para pelo menos 24 × 24 px; as novas medições não apontaram falhas de acessibilidade.
+- SEO marcou 92 porque a home local não tem meta description. O plano recomenda configurar SEO/Open Graph com um plugin na fase de entrega/backlog, em vez de adicionar metadados incompletos no tema. Relatórios HTML/JSON (ignorados pelo Git) estão em `.local/lighthouse/`.
 
 Validação manual confirmada pelo usuário: login e permissões do Editor; controles por teclado/foco; toque no carrossel; página inicial completa sem conteúdo; Histórias com 3 e 4 itens, além da configuração com 5; e comportamento visual em 360/768/1280 px. O usuário também já havia validado os fluxos F2/F3 descritos acima.
-
-Ainda pendente: executar Lighthouse/performance. A CLI Lighthouse não está instalada neste ambiente.
 
 ## Limitações conhecidas
 
@@ -302,4 +303,4 @@ O `-Reset` para os serviços, apaga o runtime e reinstala. O conteúdo local (po
 
 ## Próximos passos
 
-1. Executar Lighthouse/performance para fechar a **F4 — QA**.
+1. Seguir para a **F5 — Identidade visual**: definir logo, paleta e tipografia finais.

@@ -258,10 +258,9 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 
 #### Pendências para retomar
 
-- F4: executar Lighthouse/performance; os demais itens de QA foram validados pelo usuário e estão registrados abaixo.
 - Identidade visual (F5), hospedagem/entrega (F6) e itens de backlog (F7) seguem dependendo dos dados e decisões do cliente.
 
-#### F4 — QA validada pelo usuário; Lighthouse pendente — 29/10/2026
+#### F4 — QA concluída — 29/10/2026
 
 - Capacidades WordPress do papel Editor verificadas por WP-CLI: pode editar posts/páginas e posts de outros autores; não pode gerenciar opções, plugins ou temas. O usuário confirmou o login real e a validação do acesso como Editor.
 - Renderizadas diretamente com `items=[]` as partes `hero`, `carousel-featured`, `testimonials`, `stories` e `insights`; nenhuma imprimiu conteúdo. O usuário confirmou também a home completa sem seções com conteúdo.
@@ -270,7 +269,9 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - Checagem automática: 23 arquivos PHP sem erros de sintaxe; `node --check` sem erro; 153 verificações da F1 passaram; sete rotas verificadas expõem um `<h1>` no HTML inicial.
 - Correções de semântica/acessibilidade introduzidas: Hero alterna um único `<h1>` ativo e títulos `<h2>` nos slides inativos; autoplay não inicia se `prefers-reduced-motion: reduce` estiver ativo; faders pausam em foco/hover e retomam ao sair; controles de bullets estão em grupos nomeados; história selecionada anuncia `aria-current="true"`.
 - O usuário confirmou como validados: acesso/permissões do Editor; controles por teclado/foco; toque no carrossel; Histórias com 3/4/5 itens; home completa com seções vazias; e os tamanhos 360/768/1280 px, Console e interações F2/F3. A rotação para cima/baixo das Histórias foi validada após corrigir a direção da entrada.
-- Única pendência de F4: executar Lighthouse/performance. A CLI Lighthouse não está instalada neste ambiente.
+- Lighthouse executado na home local, com perfil mobile padrão e desktop: desempenho/acessibilidade/boas práticas — **100/100/100** nos dois perfis; SEO — **92**. Métricas mobile: FCP 1,2 s; LCP 1,5 s; Speed Index 1,2 s; TBT 0 ms; CLS 0. Medições sintéticas locais, sujeitas a variação.
+- Os primeiros resultados apontaram nomes acessíveis divergentes nos links dos cards e área insuficiente nos bullets/setas. O `aria-label` redundante foi removido; bullets e controles de Histórias passaram a ter alvo de pelo menos 24 × 24 px. A medição final ficou com 100 em acessibilidade e sem auditorias de acessibilidade reprovadas.
+- SEO 92 decorre da falta de meta description na home local; configurar SEO/Open Graph fica para a fase de entrega/backlog e plugin definido pelo cliente. Relatórios HTML/JSON estão em `.local/lighthouse/` (pasta ignorada pelo Git).
 
 ## 13. Cuidados, armadilhas e precauções
 

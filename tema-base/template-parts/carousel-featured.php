@@ -31,7 +31,7 @@ if ( empty( $tb_items ) ) {
 				<li class="featured__item">
 					<article class="featured-card">
 						<?php if ( $tb_link ) : ?>
-							<a class="featured-card__link" href="<?php echo esc_url( $tb_link ); ?>" aria-label="<?php echo esc_attr( get_the_title( $tb_item ) ); ?>">
+							<a class="featured-card__link" href="<?php echo esc_url( $tb_link ); ?>">
 						<?php else : ?>
 							<div class="featured-card__link">
 						<?php endif; ?>
