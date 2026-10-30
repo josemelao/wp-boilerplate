@@ -763,8 +763,63 @@
 		sync(false, false);
 	}
 
+	/**
+	 * Copia o link de um artigo/história.
+	 */
+	function initShare() {
+		var buttons = document.querySelectorAll('[data-share-copy]');
+
+		if (!buttons.length) {
+			return;
+		}
+
+		Array.prototype.forEach.call(buttons, function (button) {
+			button.addEventListener('click', function () {
+				var url = button.getAttribute('data-url') || window.location.href;
+				var share = button.closest('.share');
+				var status = share ? share.querySelector('[data-share-status]') : null;
+
+				function announce(message) {
+					if (status) {
+						status.textContent = message;
+					}
+				}
+
+				function fallback() {
+					var field = document.createElement('textarea');
+					var copied = false;
+
+					field.value = url;
+					field.setAttribute('readonly', '');
+					field.style.position = 'fixed';
+					field.style.opacity = '0';
+					document.body.appendChild(field);
+					field.select();
+
+					try {
+						copied = document.execCommand('copy');
+					} catch (error) {
+						copied = false;
+					}
+
+					document.body.removeChild(field);
+					announce(copied ? 'Link copiado.' : 'Não foi possível copiar. Use o endereço do navegador.');
+				}
+
+				if (navigator.clipboard && window.isSecureContext) {
+					navigator.clipboard.writeText(url).then(function () {
+						announce('Link copiado.');
+					}).catch(fallback);
+				} else {
+					fallback();
+				}
+			});
+		});
+	}
+
 	initMenuToggle();
 	document.querySelectorAll('[data-component="hero"], [data-component="testimonials"]').forEach(initFader);
 	document.querySelectorAll('[data-component="carousel"]').forEach(initCarousel);
 	document.querySelectorAll('[data-component="stories"]').forEach(initStories);
+	initShare();
 })();

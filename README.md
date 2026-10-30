@@ -9,7 +9,8 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **F2 (Home) implementada e validada pelo usuário**: as seções, estilos, interações, seed local e página individual de História estão no tema. A validação manual confirmou autoplay, carrosséis, Histórias, navegação, console e larguras de 360/768/1280 px.
 - **F3 (Blog/Páginas/Sócios) implementada e validada**: listagens, singles, página, arquivo/perfil de sócio e 404 têm templates próprios; rotas e conteúdo passaram nas verificações locais e no passo a passo do usuário.
 - **F4 (QA) concluída**: validação do usuário e Lighthouse mobile/desktop concluídos; desempenho, acessibilidade e boas práticas marcaram 100 nas duas medições.
-- **F5 (Identidade visual) — primeira passada**: wordmark temporário **JT**, tokens, fontes self-hosted, imagens institucionais demo e ajustes visuais na home e páginas internas. Aguarda aprovação e materiais definitivos do cliente.
+- **F5 (Identidade visual) — primeira passada**: wordmark temporário **JT**, tokens, fontes self-hosted, imagens institucionais demo e ajustes visuais na home e páginas internas. Home aprovada.
+- **F5.1 (Páginas internas) implementada**: blog, artigo, página, sócios, história e 404 revisados com leitura minimalista; compartilhamento nativo no artigo e na história, sem plugin.
 
 ## Requisitos
 
@@ -141,9 +142,10 @@ npm run test:e2e:smoke
 - `tests\e2e\featured.spec.js` cobre arrasto, flick, setas, teclado, clique após arrasto e ausência de classes presas.
 - `tests\e2e\stories.spec.js` cobre o fade simétrico de título e subtexto, a navegação pelas setas, a ausência de clique nos itens inativos e o alinhamento das setas.
 - `tests\e2e\testimonials.spec.js` cobre a seção aberta e as setas laterais dos Depoimentos.
+- `tests\e2e\inner-pages.spec.js` cobre o compartilhamento do artigo, cópia do link e largura de leitura.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **15/15**; `tools\test.ps1` → **153/153**; `php -l` em 27 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **17/17**; `tools\test.ps1` → **153/153**; `php -l` em 28 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -205,7 +207,7 @@ LWclone/
     │   ├── options-page.php← "Opções do Site"
     │   ├── helpers.php     ← tb_opt(), tb_query(), tb_featured_posts()
     │   └── admin-ux.php    ← colunas, ordem, dicas, aviso de Leitura
-    ├── template-parts/     ← hero, destaques, depoimentos, histórias e artigos
+    ├── template-parts/     ← hero, destaques, depoimentos, histórias, artigos e compartilhamento
     └── assets/
         ├── css/main.css    ← tokens, componentes e responsivo
         ├── fonts/          ← Libre Franklin, Source Sans 3 e Source Serif 4
@@ -301,8 +303,8 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
 - **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
-- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (4), `tests/e2e/smoke.spec.js` (2) e `tests/e2e/testimonials.spec.js` (1). Total E2E: **15**.
-- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 15/15; `tools\test.ps1` → 153/153; `php -l` em 27 arquivos e `node --check` nos dois JS sem erros.
+- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (4), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (1) e `tests/e2e/inner-pages.spec.js` (2). Total E2E: **17**.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 17/17; `tools\test.ps1` → 153/153; `php -l` em 28 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
 ## Primeira passada de identidade visual — F5 (30/10/2026)
@@ -317,8 +319,23 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - **Depoimentos:** seção aberta em `paper-soft`, sem painel/borda; setas posicionadas nas laterais da página.
 - Imagens demo institucionais temporárias substituídas em `tools/demo-images/`; créditos em `tools/demo-images/CREDITS.md`. O gerador de placeholders agora não sobrescreve imagens existentes.
 - Seed atualizado para criar menus principal/rodapé, opções de redes/escritórios/inscrição e conteúdo de artigos.
-- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 15/15; `tools\test.ps1` → 153/153; `php -l` em 27 arquivos e `node --check` nos dois JS sem erros.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 17/17; `tools\test.ps1` → 153/153; `php -l` em 28 arquivos e `node --check` nos dois JS sem erros.
 - **Pendente:** aprovação visual do cliente, logo/fotografias definitivas e eventuais ajustes de contraste/espaçamento após revisão.
+
+## F5.1 — Páginas internas e compartilhamento (30/10/2026)
+
+- Home permanece como aprovada.
+- **Blog/arquivo/busca:** cabeçalho simples, grade 3/2/1, cards sem borda e imagem opcional; estado vazio com busca.
+- **Artigo individual:** coluna de leitura de até 48 rem, metadados em caixa alta, navegação discreta e bloco de compartilhamento após o conteúdo.
+- **Página institucional:** mesmo ritmo de leitura, sem data/categoria.
+- **Sócios:** cards sem borda; perfil em duas colunas no desktop e empilhado no mobile.
+- **História individual:** hero full-bleed mantido, corpo em coluna de leitura e compartilhamento após o texto.
+- **404/busca vazia:** layout curto, centrado e funcional.
+- **Compartilhamento sem plugin:** WhatsApp, X, LinkedIn, Facebook, e-mail e “copiar link”; links externos com `noopener noreferrer`, botão de cópia com `navigator.clipboard` e fallback. Instagram não tem URL oficial de compartilhamento web; o fallback é copiar o link/Web Share API.
+- **Web Share API — avaliar no futuro:** antes de implementar, testar em dispositivos móveis reais se há necessidade/ganho concreto sobre o botão “copiar link”. Não adicionar complexidade sem essa validação.
+- **Arquivos novos:** `tema-base/template-parts/share.php`, `tb_share_links()` em `inc/helpers.php` e `tests/e2e/inner-pages.spec.js`.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 17/17; `tools\test.ps1` → 153/153; `php -l` em 28 arquivos e `node --check` sem erros.
+- **Pendente:** aprovação visual das telas internas e revisão do cliente.
 
 ## Limitações conhecidas
 

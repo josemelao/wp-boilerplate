@@ -28,6 +28,7 @@ if ( have_posts() ) :
 					<?php the_content(); ?>
 					<?php wp_link_pages( array( 'before' => '<nav class="post-single__pages" aria-label="' . esc_attr__( 'Páginas do artigo', 'tema-base' ) . '">', 'after' => '</nav>' ) ); ?>
 				</div>
+				<?php get_template_part( 'template-parts/share', null, array( 'post_id' => get_the_ID() ) ); ?>
 				<div class="post-single__footer">
 					<a class="tb-button" href="<?php echo esc_url( tb_blog_url() ); ?>">← <?php esc_html_e( 'Voltar aos artigos', 'tema-base' ); ?></a>
 					<?php the_post_navigation( array( 'prev_text' => '<span class="nav-subtitle">' . esc_html__( 'Anterior', 'tema-base' ) . '</span><span class="nav-title">%title</span>', 'next_text' => '<span class="nav-subtitle">' . esc_html__( 'Próximo', 'tema-base' ) . '</span><span class="nav-title">%title</span>' ) ); ?>

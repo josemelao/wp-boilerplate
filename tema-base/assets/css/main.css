@@ -441,7 +441,10 @@ img {
 	display: block;
 	margin-top: 1.25rem;
 	color: var(--tb-color-ink-soft);
-	font-size: 0.9rem;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
 }
 
 .post-single__figure,
@@ -580,8 +583,8 @@ img {
 }
 
 .socio-card__body {
-	padding-block: 1rem;
-	border-bottom: 1px solid var(--tb-color-line);
+	padding-block: 1rem 0;
+	border-bottom: 0;
 }
 
 .socio-card__role {
@@ -597,7 +600,10 @@ img {
 .socio-card__more {
 	display: inline-block;
 	margin-top: 0.85rem;
-	font-size: 0.9rem;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
 }
 
 .socio-card__link:hover .socio-card__more,
@@ -638,7 +644,10 @@ img {
 .socio-profile__role {
 	margin: 0.85rem 0 0;
 	color: var(--tb-color-ink-soft);
-	font-size: 1.1rem;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
 }
 
 .socio-profile__contact {
@@ -1453,6 +1462,66 @@ img {
 	display: inline-block;
 	margin-top: 3rem;
 	font-size: 0.9375rem;
+}
+
+/* -------------------------------------------------------------------------
+ * Compartilhamento
+ * ---------------------------------------------------------------------- */
+
+.share {
+	max-width: 48rem;
+	margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--tb-color-line);
+}
+
+.share__label {
+	margin: 0 0 0.75rem;
+	color: var(--tb-color-ink-soft);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.share__list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 1.5rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.share__link {
+	display: inline-flex;
+	min-height: 44px;
+	align-items: center;
+	padding: 0.25rem 0;
+	border: 0;
+	border-bottom: 1px solid transparent;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-decoration: none;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+.share__link:hover,
+.share__link:focus-visible {
+	border-bottom-color: currentColor;
+	text-decoration: none;
+}
+
+.share__status {
+	min-height: 1.2em;
+	margin: 0.75rem 0 0;
+	color: var(--tb-color-ink-soft);
+	font-size: 0.75rem;
 }
 
 /* -------------------------------------------------------------------------

@@ -29,6 +29,7 @@ if ( have_posts() ) :
 						<p class="story-single__related"><a class="tb-button" href="<?php echo esc_url( $tb_related ); ?>"><?php esc_html_e( 'Leia também', 'tema-base' ); ?> <span aria-hidden="true">→</span></a></p>
 					<?php endif; ?>
 				</div>
+				<?php get_template_part( 'template-parts/share', null, array( 'post_id' => get_the_ID() ) ); ?>
 				<a class="story-single__back" href="<?php echo esc_url( home_url( '/#historias' ) ); ?>">← <?php esc_html_e( 'Voltar às histórias', 'tema-base' ); ?></a>
 			</div>
 		</article>

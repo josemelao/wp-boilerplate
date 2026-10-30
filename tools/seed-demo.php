@@ -264,6 +264,7 @@ if ( is_wp_error( $home_id ) || is_wp_error( $blog_id ) ) {
 update_option( 'show_on_front', 'page' );
 update_option( 'page_on_front', (int) $home_id );
 update_option( 'page_for_posts', (int) $blog_id );
+update_option( 'date_format', 'j \d\e F \d\e Y' );
 
 $demo_options = array_merge(
 	tb_options_defaults(),

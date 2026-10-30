@@ -228,6 +228,52 @@ function tb_featured_posts( $count = 3 ) {
 }
 
 /**
+ * Links de compartilhamento para um post.
+ *
+ * O Instagram não entra porque não possui URL oficial de compartilhamento
+ * web; nesse caso o fallback é copiar o link ou usar a Web Share API.
+ *
+ * @param int $post_id ID do post.
+ * @return array<string,array{label:string,url:string}>
+ */
+function tb_share_links( $post_id = 0 ) {
+	$post_id = $post_id ? (int) $post_id : (int) get_the_ID();
+	$url     = $post_id ? get_permalink( $post_id ) : '';
+	$title   = $post_id ? get_the_title( $post_id ) : '';
+
+	if ( ! $url ) {
+		return array();
+	}
+
+	$encoded_url   = rawurlencode( $url );
+	$encoded_title = rawurlencode( $title );
+	$encoded_text  = rawurlencode( $title . ' — ' . $url );
+
+	return array(
+		'whatsapp' => array(
+			'label' => __( 'WhatsApp', 'tema-base' ),
+			'url'   => 'https://wa.me/?text=' . $encoded_text,
+		),
+		'x'        => array(
+			'label' => __( 'X', 'tema-base' ),
+			'url'   => 'https://twitter.com/intent/tweet?url=' . $encoded_url . '&text=' . $encoded_title,
+		),
+		'linkedin' => array(
+			'label' => __( 'LinkedIn', 'tema-base' ),
+			'url'   => 'https://www.linkedin.com/sharing/share-offsite/?url=' . $encoded_url,
+		),
+		'facebook' => array(
+			'label' => __( 'Facebook', 'tema-base' ),
+			'url'   => 'https://www.facebook.com/sharer/sharer.php?u=' . $encoded_url,
+		),
+		'email'    => array(
+			'label' => __( 'E-mail', 'tema-base' ),
+			'url'   => 'mailto:?subject=' . $encoded_title . '&body=' . $encoded_text,
+		),
+	);
+}
+
+/**
  * Fallback do menu principal: lista as páginas de topo.
  *
  * @return void
