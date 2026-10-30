@@ -280,8 +280,8 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - **Histórias:** fade simétrico de 320 ms para título e subtexto; entrada branco → vermelho, saída vermelho → branco, com a mesma curva. O subtexto passou de `hidden` para opacidade e o `aria-hidden` é sincronizado no JS.
 - Itens inativos deixaram de ser botões e não aceitam clique; a navegação entre histórias é feita somente pelas setas (e pelas teclas ↑/↓). O título ativo continua sendo link para a single.
 - As setas usam SVG para alinhamento consistente: 52 × 40 px no desktop e 44 × 36 px no mobile. No mobile, os controles foram posicionados na linha inferior do cartão para preservar o espaço do texto.
-- **Testes adicionados:** `tests/unit/carousel-target.test.js` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (4), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (1) e `tests/e2e/inner-pages.spec.js` (2). Total E2E: **17**.
-- **Verificação em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 17/17; `tools/test.ps1` → 153/153; `php -l` em 28 arquivos e `node --check` nos dois JS sem erros.
+- **Testes adicionados:** `tests/unit/carousel-target.test.js` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (4), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (1), `tests/e2e/inner-pages.spec.js` (3) e `tests/e2e/search.spec.js` (2). Total E2E: **20**.
+- **Verificação em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 20/20; `tools/test.ps1` → 153/153; `php -l` em 29 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 - **Pendências:** F5 (identidade visual), F6 (entrega/hospedagem, incluindo `build-zip.ps1` ainda ausente) e F7 (backlog). CI de E2E ainda não foi configurado.
 
@@ -296,18 +296,19 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - **Depoimentos:** seção aberta em `paper-soft`, sem painel/borda, com setas nas laterais da página.
 - Imagens demo institucionais temporárias em `tools/demo-images/`, com créditos em `tools/demo-images/CREDITS.md`; o gerador de placeholders não sobrescreve imagens existentes.
 - Seed atualizado para criar menus principal/rodapé, opções de redes/escritórios/inscrição e conteúdo dos artigos.
-- **Verificação:** 12 testes unitários, 17 E2E e 153 verificações da F1 passando; 28 arquivos PHP sem erro de sintaxe.
+- **Verificação:** 12 testes unitários, 20 E2E e 153 verificações da F1 passando; 29 arquivos PHP sem erro de sintaxe.
 - **Pendente:** aprovação visual do cliente, logo/fotografias definitivas e ajustes finos de contraste/espaçamento.
 
 #### F5.1 — Páginas internas e compartilhamento — 30/10/2026
 
 - Home mantida como aprovada; a subfase cobre blog, artigo, página, sócios, história e 404.
 - Direção minimalista/conteúdo primeiro: cards sem borda, imagem opcional, coluna de leitura de até 48 rem, metadados em caixa alta e navegação discreta.
-- Blog/arquivo/busca com grade 3/2/1 e estado vazio; perfil de sócio em duas colunas no desktop; história mantém o hero full-bleed.
+- Blog/arquivo/busca com grade 3/2/1 e estado vazio; busca restrita a artigos (`post`), formulário próprio em `searchform.php`, campo discreto no rodapé e contagem de resultados; perfil de sócio em duas colunas no desktop; história mantém o hero full-bleed.
+- Artigo individual com coluna de leitura de 54 rem e imagem panorâmica em 21/9, alinhadas na mesma largura.
 - Compartilhamento sem plugin em artigo e história: WhatsApp, X, LinkedIn, Facebook, e-mail e “copiar link”, com `noopener noreferrer`, `aria-label`, área de 44 px e fallback de clipboard. Instagram fica como copiar link/Web Share API por não ter URL oficial de compartilhamento web.
 - **Web Share API:** não implementada. Avaliar no futuro, em dispositivo móvel real, se há necessidade concreta e ganho sobre “copiar link”; só adicionar depois dessa validação.
 - Arquivos novos: `template-parts/share.php`, `tb_share_links()` em `inc/helpers.php` e `tests/e2e/inner-pages.spec.js`.
-- **Verificação:** 12 testes unitários, 17 E2E e 153 verificações da F1 passando; 28 arquivos PHP sem erro de sintaxe.
+- **Verificação:** 12 testes unitários, 20 E2E e 153 verificações da F1 passando; 29 arquivos PHP sem erro de sintaxe.
 - **Pendente:** aprovação visual das telas internas e revisão do cliente.
 
 ## 13. Cuidados, armadilhas e precauções

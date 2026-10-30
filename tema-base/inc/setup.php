@@ -86,3 +86,16 @@ function tb_enqueue_assets() {
 	wp_script_add_data( 'tb-main', 'strategy', 'defer' );
 }
 add_action( 'wp_enqueue_scripts', 'tb_enqueue_assets' );
+
+/**
+ * Restringe a busca pública a artigos.
+ *
+ * @param WP_Query $query Consulta.
+ * @return void
+ */
+function tb_search_only_posts( $query ) {
+	if ( ! is_admin() && $query->is_main_query() && $query->is_search() ) {
+		$query->set( 'post_type', 'post' );
+	}
+}
+add_action( 'pre_get_posts', 'tb_search_only_posts' );

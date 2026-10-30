@@ -325,6 +325,15 @@ img {
 	color: var(--tb-color-ink-soft);
 }
 
+.content-archive__count {
+	margin: 0.75rem 0 0;
+	color: var(--tb-color-ink-soft);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
 .content-archive__grid {
 	row-gap: clamp(2rem, 4vw, 3.5rem);
 }
@@ -419,6 +428,11 @@ img {
 	padding-block: clamp(3rem, 7vw, 6rem) clamp(2rem, 4vw, 3.5rem);
 }
 
+.post-single__header {
+	max-width: calc(54rem + (2 * var(--tb-gutter)));
+	margin-inline: auto;
+}
+
 .post-single__header > *,
 .content-page__header > * {
 	max-width: 54rem;
@@ -447,18 +461,31 @@ img {
 	text-transform: uppercase;
 }
 
-.post-single__figure,
+.post-single__figure {
+	max-width: calc(54rem + (2 * var(--tb-gutter)));
+	margin-block: 0;
+	margin-inline: auto;
+}
+
 .content-page__figure {
 	max-width: 75rem;
 	margin-block: 0;
 }
 
-.post-single__image,
+.post-single__image {
+	display: block;
+	width: 100%;
+	max-height: 30rem;
+	aspect-ratio: 21 / 9;
+	background: var(--tb-color-paper-soft);
+	object-fit: cover;
+}
+
 .content-page__image {
 	display: block;
 	width: 100%;
 	max-height: 42rem;
-	 aspect-ratio: 16 / 9;
+	aspect-ratio: 16 / 9;
 	background: var(--tb-color-paper-soft);
 	object-fit: cover;
 }
@@ -474,6 +501,16 @@ img {
 	font-size: 1.0625rem;
 	line-height: 1.8;
 	overflow-wrap: anywhere;
+}
+
+.post-single__content {
+	max-width: 54rem;
+	margin-inline: auto;
+}
+
+.post-single .entry-content {
+	max-width: 54rem;
+	margin-inline: auto;
 }
 
 .entry-content > * + * {
@@ -522,7 +559,7 @@ img {
 }
 
 .post-single__footer {
-	max-width: 48rem;
+	max-width: 54rem;
 	margin: 3rem auto 0;
 }
 
@@ -1524,6 +1561,10 @@ img {
 	font-size: 0.75rem;
 }
 
+.post-single .share {
+	max-width: 54rem;
+}
+
 /* -------------------------------------------------------------------------
  * Início: artigos
  * ---------------------------------------------------------------------- */
@@ -1632,6 +1673,35 @@ img {
 	display: grid;
 	gap: 1.75rem;
 	padding-block: clamp(2.5rem, 5vw, 4rem);
+}
+
+.site-footer__search {
+	max-width: 30rem;
+}
+
+.site-footer__search .search-form {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: end;
+	margin: 0;
+	gap: 0.5rem;
+}
+
+.site-footer__search .search-form label {
+	min-width: 0;
+}
+
+.site-footer__search .search-field {
+	min-height: 44px;
+	padding: 0.55rem 0;
+	border: 0;
+	border-bottom: 1px solid var(--tb-color-line);
+	background: transparent;
+}
+
+.site-footer__search .search-submit {
+	min-height: 44px;
+	padding: 0.65rem 1rem;
 }
 
 .site-footer__list {
@@ -1753,6 +1823,11 @@ img {
 }
 
 @media (max-width: 700px) {
+	.post-single__image {
+		aspect-ratio: 16 / 9;
+		max-height: none;
+	}
+
 	.testimonials__stage {
 		padding-inline: 4rem;
 	}

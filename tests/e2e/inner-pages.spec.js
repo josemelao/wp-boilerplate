@@ -33,5 +33,22 @@ test('@inner artigo mantém coluna de leitura confortável', async ({ page }) =>
 	const box = await content.boundingBox();
 
 	expect(box).not.toBeNull();
-	expect(box.width).toBeLessThanOrEqual(800);
+	expect(box.width).toBeLessThanOrEqual(900);
+});
+
+test('@inner imagem do artigo é panorâmica e alinhada ao texto', async ({ page }) => {
+	await page.goto('/artigo-01/');
+
+	const image = page.locator('.post-single__image');
+	const content = page.locator('.post-single .entry-content');
+
+	await expect(image).toBeVisible();
+
+	const imageBox = await image.boundingBox();
+	const contentBox = await content.boundingBox();
+
+	expect(imageBox).not.toBeNull();
+	expect(contentBox).not.toBeNull();
+	expect(Math.abs(imageBox.width - contentBox.width)).toBeLessThan(2);
+	expect(imageBox.width / imageBox.height).toBeGreaterThan(2);
 });

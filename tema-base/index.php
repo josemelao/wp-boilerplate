@@ -35,6 +35,17 @@ if ( is_search() ) {
 			?>
 		</p>
 		<h1 class="tb-section__title" id="archive-title"><?php echo wp_kses_post( $tb_heading ); ?></h1>
+		<?php if ( is_search() ) : ?>
+			<?php
+			$tb_found = (int) $GLOBALS['wp_query']->found_posts;
+			$tb_count = sprintf(
+				/* translators: %s: número de resultados */
+				_n( '%s resultado', '%s resultados', $tb_found, 'tema-base' ),
+				number_format_i18n( $tb_found )
+			);
+			?>
+			<p class="content-archive__count"><?php echo esc_html( $tb_count ); ?></p>
+		<?php endif; ?>
 		<?php if ( is_category() || is_tag() || is_tax() ) : ?>
 			<?php if ( get_the_archive_description() ) : ?>
 				<div class="content-archive__description"><?php echo wp_kses_post( get_the_archive_description() ); ?></div>

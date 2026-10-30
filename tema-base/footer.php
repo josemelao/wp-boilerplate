@@ -30,6 +30,10 @@ $tb_footer_note  = tb_opt( 'footer_note' );
 			</nav>
 		<?php endif; ?>
 
+		<div class="site-footer__search">
+			<?php get_search_form(); ?>
+		</div>
+
 		<?php if ( $tb_social_links ) : ?>
 			<ul class="site-footer__social">
 				<?php foreach ( $tb_social_links as $tb_slug => $tb_link ) : ?>
