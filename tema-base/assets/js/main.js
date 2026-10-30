@@ -8,6 +8,14 @@
 	'use strict';
 
 	var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	var lastInputWasKeyboard = false;
+
+	document.addEventListener('keydown', function () {
+		lastInputWasKeyboard = true;
+	});
+	document.addEventListener('pointerdown', function () {
+		lastInputWasKeyboard = false;
+	}, true);
 
 	/**
 	 * Menu principal no mobile.
@@ -59,8 +67,7 @@
 		var current = 0;
 		var interval = parseInt(root.getAttribute('data-interval'), 10) || 6000;
 		var timer = null;
-		var playing = !reducedMotion;
-		var hovered = false;
+		var playing = true;
 		var focusLocked = false;
 		var hidden = document.hidden;
 
@@ -104,7 +111,7 @@
 
 		function schedule() {
 			stopTimer();
-			if (!playing || hovered || focusLocked || hidden) {
+			if (!playing || focusLocked || hidden) {
 				return;
 			}
 
@@ -147,17 +154,10 @@
 			setPlaying(!playing);
 		});
 
-		root.addEventListener('pointerenter', function () {
-			hovered = true;
-			stopTimer();
-		});
-
-		root.addEventListener('pointerleave', function () {
-			hovered = false;
-			schedule();
-		});
-
 		root.addEventListener('focusin', function () {
+			if (!lastInputWasKeyboard) {
+				return;
+			}
 			focusLocked = true;
 			stopTimer();
 		});
@@ -181,7 +181,7 @@
 	}
 
 	/**
-	 * Carrossel com scroll nativo, snap e arrasto por mouse.
+	 * Carrossel com scroll nativo, snap e arrasto por ponteiro.
 	 *
 	 * @param {Element} root Área do componente.
 	 */
@@ -195,21 +195,25 @@
 
 		var previous = root.querySelector('[data-carousel-prev]');
 		var next = root.querySelector('[data-carousel-next]');
-		var mouseDrag = null;
+		var pointerDrag = null;
 		var suppressClick = false;
+		var suppressClickTimer = null;
+		var settleTimer = null;
+		var settleListener = null;
 
 		function behavior() {
 			return reducedMotion ? 'auto' : 'smooth';
 		}
 
-		function centeredIndex() {
+		function centeredIndex(scrollPosition) {
 			var viewportLeft = viewport.getBoundingClientRect().left;
-			var center = viewport.clientWidth / 2;
+			var scrollLeft = 'number' === typeof scrollPosition ? scrollPosition : viewport.scrollLeft;
+			var center = scrollLeft + viewport.clientWidth / 2;
 			var nearest = 0;
 			var distance = Infinity;
 
 			items.forEach(function (item, index) {
-				var itemCenter = item.getBoundingClientRect().left - viewportLeft + item.offsetWidth / 2;
+				var itemCenter = item.getBoundingClientRect().left - viewportLeft + viewport.scrollLeft + item.offsetWidth / 2;
 				var delta = Math.abs(center - itemCenter);
 
 				if (delta < distance) {
@@ -221,16 +225,43 @@
 			return nearest;
 		}
 
-		function goTo(index) {
+		function scrollLeftFor(index) {
 			var item = items[Math.max(0, Math.min(items.length - 1, index))];
 			if (!item) {
-				return;
+				return viewport.scrollLeft;
 			}
 			var itemLeft = item.getBoundingClientRect().left - viewport.getBoundingClientRect().left + viewport.scrollLeft;
-			viewport.scrollTo({
-				left: itemLeft - (viewport.clientWidth - item.offsetWidth) / 2,
-				behavior: behavior()
-			});
+			return Math.max(0, Math.min(viewport.scrollWidth - viewport.clientWidth, itemLeft - (viewport.clientWidth - item.offsetWidth) / 2));
+		}
+
+		function goTo(index) {
+			viewport.scrollTo({ left: scrollLeftFor(index), behavior: behavior() });
+		}
+
+		function finishSettling() {
+			window.clearTimeout(settleTimer);
+			if (settleListener) {
+				viewport.removeEventListener('scrollend', settleListener);
+				settleListener = null;
+			}
+			viewport.classList.remove('is-settling');
+		}
+
+		function settleAfterDrag(projectedScrollLeft) {
+			var targetLeft = scrollLeftFor(centeredIndex(projectedScrollLeft));
+			var needsAnimation = !reducedMotion && Math.abs(viewport.scrollLeft - targetLeft) > 1;
+
+			if (!needsAnimation) {
+				viewport.classList.remove('is-dragging', 'is-settling');
+				return;
+			}
+
+			viewport.classList.add('is-settling');
+			viewport.classList.remove('is-dragging');
+			settleListener = finishSettling;
+			viewport.addEventListener('scrollend', finishSettling);
+			viewport.scrollTo({ left: targetLeft, behavior: 'smooth' });
+			settleTimer = window.setTimeout(finishSettling, 1200);
 		}
 
 		if (previous) {
@@ -251,44 +282,91 @@
 			}
 		});
 
-		viewport.addEventListener('mousedown', function (event) {
-			if (0 !== event.button) {
+		viewport.addEventListener('pointerdown', function (event) {
+			if (!event.isPrimary || ('mouse' === event.pointerType && 0 !== event.button)) {
 				return;
 			}
-			mouseDrag = { x: event.clientX, scrollLeft: viewport.scrollLeft, moved: false };
+			if (settleListener) {
+				finishSettling();
+				viewport.scrollTo({ left: viewport.scrollLeft, behavior: 'auto' });
+			}
+			pointerDrag = {
+				id: event.pointerId,
+				x: event.clientX,
+				lastX: event.clientX,
+				lastTime: event.timeStamp,
+				velocity: 0,
+				scrollLeft: viewport.scrollLeft,
+				moved: false
+			};
 		});
 
-		document.addEventListener('mousemove', function (event) {
-			if (!mouseDrag) {
+		document.addEventListener('pointermove', function (event) {
+			if (!pointerDrag || event.pointerId !== pointerDrag.id) {
 				return;
 			}
-			var distance = event.clientX - mouseDrag.x;
-			if (!mouseDrag.moved && Math.abs(distance) > 5) {
-				mouseDrag.moved = true;
+			var distance = event.clientX - pointerDrag.x;
+			if (!pointerDrag.moved && Math.abs(distance) > 6) {
+				pointerDrag.moved = true;
 				viewport.classList.add('is-dragging');
 			}
-			if (mouseDrag.moved) {
+			if (pointerDrag.moved) {
 				event.preventDefault();
-				viewport.scrollLeft = mouseDrag.scrollLeft - distance;
+				viewport.scrollLeft = pointerDrag.scrollLeft - distance;
+				var elapsed = Math.max(1, event.timeStamp - pointerDrag.lastTime);
+				var delta = event.clientX - pointerDrag.lastX;
+				var instantVelocity = -delta / elapsed;
+				pointerDrag.velocity = elapsed > 120 ? instantVelocity : (pointerDrag.velocity * 0.55) + (instantVelocity * 0.45);
 			}
-		});
+			pointerDrag.lastX = event.clientX;
+			pointerDrag.lastTime = event.timeStamp;
+		}, { passive: false });
 
-		document.addEventListener('mouseup', function () {
-			if (!mouseDrag) {
+		function finishPointerDrag(event) {
+			if (!pointerDrag || (event && event.pointerId !== pointerDrag.id)) {
 				return;
 			}
-			if (mouseDrag.moved) {
-				suppressClick = true;
-				window.setTimeout(function () { suppressClick = false; }, 0);
+			var drag = pointerDrag;
+			var didMove = drag.moved;
+			var projectedScrollLeft = viewport.scrollLeft;
+			if (didMove && event && 'pointerup' === event.type) {
+				var releaseAge = Math.max(0, event.timeStamp - drag.lastTime);
+				var momentum = drag.velocity * 210 * Math.exp(-releaseAge / 100);
+				var slideStep = Math.abs(items[1].getBoundingClientRect().left - items[0].getBoundingClientRect().left);
+				var momentumLimit = Math.min(320, slideStep * 0.35);
+				momentum = Math.max(-momentumLimit, Math.min(momentumLimit, momentum));
+				projectedScrollLeft = Math.max(0, Math.min(viewport.scrollWidth - viewport.clientWidth, viewport.scrollLeft + momentum));
 			}
-			mouseDrag = null;
-			viewport.classList.remove('is-dragging');
+			if (didMove) {
+				suppressClick = true;
+				window.clearTimeout(suppressClickTimer);
+				suppressClickTimer = window.setTimeout(function () {
+					suppressClick = false;
+				}, 400);
+			}
+			pointerDrag = null;
+			if (didMove) {
+				settleAfterDrag(projectedScrollLeft);
+			} else {
+				viewport.classList.remove('is-dragging');
+			}
+		}
+
+		document.addEventListener('pointerup', finishPointerDrag);
+		document.addEventListener('pointercancel', finishPointerDrag);
+
+		viewport.addEventListener('dragstart', function (event) {
+			if (pointerDrag) {
+				event.preventDefault();
+			}
 		});
 
 		viewport.addEventListener('click', function (event) {
 			if (suppressClick) {
 				event.preventDefault();
-				event.stopPropagation();
+				event.stopImmediatePropagation();
+				suppressClick = false;
+				window.clearTimeout(suppressClickTimer);
 			}
 		}, true);
 	}
@@ -301,139 +379,230 @@
 	function initStories(root) {
 		var list = root.querySelector('.stories__list');
 		var backdrops = Array.prototype.slice.call(root.querySelectorAll('[data-story-backdrop]'));
-		var heading = root.querySelector('[data-story-heading]');
-		var summary = root.querySelector('[data-story-summary]');
 		var announcement = root.querySelector('[data-story-announcement]');
+		var animating = false;
+		var duration = 700;
 
-		if (!list || !list.children.length || !heading || !summary) {
+		if (!list || !list.children.length) {
 			return;
 		}
 
 		function entries() {
-			return Array.prototype.slice.call(list.children);
-		}
-
-		function capturePositions() {
-			return entries().map(function (entry) {
-				return { entry: entry, top: entry.getBoundingClientRect().top };
+			return Array.prototype.filter.call(list.children, function (entry) {
+				return entry.hasAttribute('data-story-entry');
 			});
 		}
 
-		function animateOrder(previousPositions) {
-			if (reducedMotion || !Element.prototype.animate) {
-				return;
+		function setEntryState(entry, active, visible) {
+			var link = entry.querySelector('[data-story-link]');
+			var button = entry.querySelector('[data-story-select]');
+			var teaser = entry.querySelector('[data-story-summary]');
+
+			entry.classList.toggle('is-active', active);
+			entry.classList.toggle('is-visible', visible);
+			entry.setAttribute('aria-hidden', visible ? 'false' : 'true');
+			if (visible) {
+				entry.removeAttribute('inert');
+			} else {
+				entry.setAttribute('inert', '');
 			}
-			entries().forEach(function (entry) {
-				var previous = previousPositions.filter(function (position) { return position.entry === entry; })[0];
-				if (!previous) {
-					return;
+			if (link) {
+				link.hidden = !active;
+				if (active) {
+					link.setAttribute('aria-current', 'page');
+				} else {
+					link.removeAttribute('aria-current');
 				}
-				var distance = previous.top - entry.getBoundingClientRect().top;
-				if (distance) {
-					entry.animate(
-						[
-							{ transform: 'translateY(' + distance + 'px)' },
-							{ transform: 'translateY(0)' }
-						],
-						{ duration: 420, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)' }
-					);
-				}
-			});
+			}
+			if (button) {
+				button.hidden = active;
+				button.setAttribute('aria-pressed', active ? 'true' : 'false');
+			}
+			if (teaser) {
+				teaser.hidden = !active;
+			}
+		}
+
+		function setEntryGeometry(entry, top, active) {
+			entry.style.setProperty('--story-top', top + '%');
+			entry.style.setProperty('--story-height', (active ? 34 : 22) + '%');
+			entry.style.setProperty('--story-left', (active ? 50 : 53.2) + '%');
+			entry.style.setProperty('--story-width', (active ? 50 : 26) + '%');
 		}
 
 		function sync(announce, moveFocus) {
 			var currentEntries = entries();
 			var activeEntry = currentEntries[currentEntries.length - 1];
 			var activeId = activeEntry.getAttribute('data-story-id');
+			var visibleStart = Math.max(0, currentEntries.length - 4);
+			var visibleCount = currentEntries.length - visibleStart;
+			var visibleHeight = ((visibleCount - 1) * 22) + 34;
+			var topOffset = (100 - visibleHeight) / 2;
+			list.parentElement.style.setProperty('--story-active-top', (topOffset + ((visibleCount - 1) * 22)) + '%');
 
 			currentEntries.forEach(function (entry, index) {
 				var active = index === currentEntries.length - 1;
-				var link = entry.querySelector('[data-story-link]');
-				var button = entry.querySelector('[data-story-select]');
+				var visible = index >= visibleStart;
+				var slot = index - visibleStart;
 
-				entry.classList.toggle('is-active', active);
-				if (link) {
-					link.hidden = !active;
-					if (active) {
-						link.setAttribute('aria-current', 'true');
-					} else {
-						link.removeAttribute('aria-current');
-					}
-				}
-				if (button) {
-					button.hidden = active;
-					button.setAttribute('aria-pressed', 'false');
-				}
+				setEntryState(entry, active, visible);
+				setEntryGeometry(entry, topOffset + (slot * 22), active);
 			});
 
 			backdrops.forEach(function (backdrop) {
 				backdrop.classList.toggle('is-active', backdrop.getAttribute('data-story-backdrop') === activeId);
 			});
 
-			heading.textContent = activeEntry.getAttribute('data-story-title') || '';
-			summary.textContent = activeEntry.getAttribute('data-story-summary') || '';
 			if (announce && announcement) {
-				announcement.textContent = 'História selecionada: ' + heading.textContent;
+				announcement.textContent = 'História selecionada: ' + (activeEntry.getAttribute('data-story-title') || '');
 			}
 			if (moveFocus) {
-				var activeLink = activeEntry.querySelector('[data-story-link]');
-				if (activeLink) {
-					activeLink.focus();
+				var activeListLink = activeEntry.querySelector('[data-story-link]');
+				if (activeListLink) {
+					activeListLink.focus();
 				}
 			}
 		}
 
-		function moveDown(announce, moveFocus) {
+		function rotate(direction, announce, moveFocus, targetEntry) {
 			var currentEntries = entries();
-			if (currentEntries.length > 1) {
-				var previousPositions = capturePositions();
-				list.insertBefore(currentEntries[currentEntries.length - 1], currentEntries[0]);
-				sync(announce, moveFocus);
-				animateOrder(previousPositions);
-			} else {
-				sync(announce, moveFocus);
-			}
-		}
+			var count = currentEntries.length;
+			var oldStart = Math.max(0, count - 4);
+			var nextEntries = 'down' === direction
+				? [currentEntries[count - 1]].concat(currentEntries.slice(0, count - 1))
+				: currentEntries.slice(1).concat(currentEntries[0]);
+			var nextStart = Math.max(0, count - 4);
+			var nextVisibleCount = count - nextStart;
+			var nextOffset = (100 - (((nextVisibleCount - 1) * 22) + 34)) / 2;
+			var outgoing = 'down' === direction ? currentEntries[count - 1] : currentEntries[oldStart];
+			var wrapEntry = count <= 4 ? outgoing : null;
+			var ghost = null;
+			var moving = [];
 
-		function moveUp(announce, moveFocus) {
-			var first = list.firstElementChild;
-			if (first && list.children.length > 1) {
-				var previousPositions = capturePositions();
-				list.appendChild(first);
-				sync(announce, moveFocus);
-				animateOrder(previousPositions);
-			} else {
-				sync(announce, moveFocus);
+			if (animating || count < 2) {
+				return;
 			}
+			animating = true;
+
+			if (wrapEntry) {
+				ghost = wrapEntry.cloneNode(true);
+				ghost.removeAttribute('data-story-entry');
+				ghost.setAttribute('data-story-ghost', '');
+				ghost.setAttribute('aria-hidden', 'true');
+				ghost.setAttribute('inert', '');
+				ghost.style.pointerEvents = 'none';
+				setEntryState(ghost, 'up' === direction, true);
+				ghost.setAttribute('aria-hidden', 'true');
+				ghost.setAttribute('inert', '');
+				list.appendChild(ghost);
+			}
+
+			currentEntries.forEach(function (entry, index) {
+				var nextIndex = nextEntries.indexOf(entry);
+				var visibleBefore = index >= oldStart;
+				var visibleAfter = nextIndex >= nextStart;
+				var active = nextIndex === count - 1;
+				var visible = visibleBefore || visibleAfter || entry === outgoing;
+				var incomingFromBottom = 'up' === direction && entry === currentEntries[0];
+
+				if (incomingFromBottom) {
+					entry.style.transition = 'none';
+				}
+				setEntryState(entry, active, visible);
+				if (visible) {
+					moving.push(entry);
+				} else if (!incomingFromBottom) {
+					entry.style.transition = 'none';
+				}
+
+				if (incomingFromBottom) {
+					setEntryGeometry(entry, 100, active);
+					entry.offsetHeight;
+					entry.style.transition = '';
+				}
+			});
+
+			if (ghost) {
+				var ghostTop = 'down' === direction ? nextOffset - 22 : 100;
+				ghost.style.transition = 'none';
+				setEntryGeometry(ghost, ghostTop, 'up' === direction);
+				ghost.offsetHeight;
+				ghost.style.transition = '';
+				moving.push(ghost);
+			}
+
+			list.parentElement.style.setProperty('--story-active-top', (nextOffset + ((nextVisibleCount - 1) * 22)) + '%');
+			list.offsetHeight;
+
+			currentEntries.forEach(function (entry, index) {
+				var nextIndex = nextEntries.indexOf(entry);
+				var active = nextIndex === count - 1;
+				var targetTop = nextOffset + ((nextIndex - nextStart) * 22);
+
+				if ('down' === direction && entry === outgoing) {
+					targetTop = 100;
+				} else if ('up' === direction && entry === currentEntries[oldStart]) {
+					targetTop = nextOffset - 22;
+				}
+				if (moving.indexOf(entry) !== -1) {
+					setEntryGeometry(entry, targetTop, active);
+				} else {
+					setEntryGeometry(entry, targetTop, active);
+					entry.style.transition = '';
+				}
+			});
+
+			if (ghost) {
+				var ghostTargetTop = 'down' === direction ? nextOffset : nextOffset + ((nextVisibleCount - 1) * 22);
+				setEntryGeometry(ghost, ghostTargetTop, 'up' === direction);
+			}
+
+			window.setTimeout(function () {
+				if (ghost) {
+					ghost.remove();
+				}
+				nextEntries.forEach(function (entry) {
+					list.appendChild(entry);
+				});
+				animating = false;
+				sync(announce, moveFocus && (!targetEntry || nextEntries[nextEntries.length - 1] === targetEntry));
+
+				if (targetEntry && entries()[entries().length - 1] !== targetEntry) {
+					var targetIndex = entries().indexOf(targetEntry);
+					var downSteps = entries().length - 1 - targetIndex;
+					var upSteps = targetIndex + 1;
+					rotate(downSteps <= upSteps ? 'down' : 'up', announce, moveFocus, targetEntry);
+				}
+			}, duration);
 		}
 
 		list.addEventListener('click', function (event) {
 			var button = event.target.closest('[data-story-select]');
-			if (!button) {
-				return;
+			if (button) {
+				event.preventDefault();
+				var targetEntry = button.closest('[data-story-entry]');
+				var targetIndex = entries().indexOf(targetEntry);
+				var downSteps = entries().length - 1 - targetIndex;
+				var upSteps = targetIndex + 1;
+				rotate(downSteps <= upSteps ? 'down' : 'up', true, true, targetEntry);
 			}
-			var previousPositions = capturePositions();
-			list.appendChild(button.closest('[data-story-entry]'));
-			sync(true, true);
-			animateOrder(previousPositions);
 		});
 
-		var up = root.querySelector('[data-story-up]');
-		var down = root.querySelector('[data-story-down]');
-		if (up) {
-			up.addEventListener('click', function () { moveUp(true, false); });
-		}
-		if (down) {
-			down.addEventListener('click', function () { moveDown(true, false); });
-		}
+		root.addEventListener('click', function (event) {
+			if (event.target.closest('[data-story-up]')) {
+				rotate('up', true, false);
+			} else if (event.target.closest('[data-story-down]')) {
+				rotate('down', true, false);
+			}
+		});
 
 		root.addEventListener('keydown', function (event) {
 			if ('ArrowUp' === event.key) {
 				event.preventDefault();
-				moveUp(true, true);
+				rotate('up', true, true);
 			} else if ('ArrowDown' === event.key) {
 				event.preventDefault();
-				moveDown(true, true);
+				rotate('down', true, true);
 			}
 		});
 

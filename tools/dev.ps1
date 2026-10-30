@@ -46,18 +46,9 @@ function Start-DetachedProcess {
 		if ($_ -match '[\s"]') { '"' + ($_ -replace '"', '\"') + '"' } else { $_ }
 	}) -join ' '
 
-	$cmdFile = Join-Path $logs ('run-' + [IO.Path]::GetFileNameWithoutExtension($Exe) + '.cmd')
-	Set-Content -Path $cmdFile -Value @(
-		'@echo off',
-		"`"$Exe`" $argLine > `"$OutLog`" 2> `"$ErrLog`""
-	) -Encoding ASCII
-
-	$result = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{
-		CommandLine = "cmd.exe /c `"$cmdFile`""
-	}
-	if ($result.ReturnValue -ne 0) {
-		throw "Falha ao iniciar $Exe (Win32_Process retornou $($result.ReturnValue))"
-	}
+	$null = Start-Process -FilePath $Exe -ArgumentList $argLine `
+		-WorkingDirectory $root -WindowStyle Hidden `
+		-RedirectStandardOutput $OutLog -RedirectStandardError $ErrLog -PassThru
 }
 
 function Start-Db {
