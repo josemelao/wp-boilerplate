@@ -15,6 +15,8 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **F6.1 (Performance de mídia) implementada**: derivados WebP automáticos para uploads JPEG/PNG, qualidade 80, regeneração das 18 imagens e preload do hero na home.
 - **F6.2 (SEO) implementada em modo híbrido**: descrição, Open Graph/Twitter, schema, trilha de navegação e `noindex` no tema; o tema se desliga quando um plugin de SEO está ativo. Plugin segue recomendado em produção (ver `docs/seo.md`).
 - **F6.3 (Acessibilidade) implementada**: Lighthouse/axe em 100 nas páginas auditadas, ordem de títulos corrigida nos arquivos, alvo do compartilhamento ampliado e testes de teclado, foco, skip link, menu mobile e reflow de 320 a 1280 px.
+- **F6.4 (Produção) iniciada**: pacote instalável em `dist/tema-base.zip` (tema 0.4.0) e documentação de produção/manual do cliente. Hospedagem, staging, SSL, backup, cache/CDN, formulário, LGPD e monitoramento dependem do cliente.
+- **Ajuste visual da home (30/10/2026)**: faixas de superfície, depoimentos em azul de ponta a ponta, ícones de play/pause, barra de progresso no hero e correções nas Histórias.
 
 ## Requisitos
 
@@ -145,7 +147,7 @@ npm run test:e2e:smoke
 - `tests\e2e\smoke.spec.js` cobre a home sem erros de console e as rotas principais (200/404).
 - `tests\e2e\featured.spec.js` cobre arrasto, flick, setas, teclado, clique após arrasto e ausência de classes presas.
 - `tests\e2e\stories.spec.js` cobre o fade simétrico de título e subtexto, a navegação pelas setas, a ausência de clique nos itens inativos e o alinhamento das setas.
-- `tests\e2e\testimonials.spec.js` cobre a seção aberta e as setas laterais dos Depoimentos.
+- `tests\e2e\testimonials.spec.js` cobre a seção aberta, as setas laterais, o slide direcional, o autoplay após clique e a ausência de sobreposição em 320 px.
 - `tests\e2e\inner-pages.spec.js` cobre o compartilhamento do artigo, cópia do link, largura de leitura e alinhamento da imagem.
 - `tests\e2e\search.spec.js` cobre a busca restrita a artigos, estado vazio e campo do rodapé.
 - `tests\e2e\content-modules.spec.js` cobre áreas, escritórios, páginas institucionais, ordem dos arquivos e perfil de sócio.
@@ -154,7 +156,7 @@ npm run test:e2e:smoke
 - `tests\e2e\a11y.spec.js` cobre estrutura, alt, ids únicos, ordem de títulos, skip link, foco visível, controles nomeados, menu mobile e reflow de 320 a 1280 px.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **38/38**; `tools\test.ps1` → **153/153**; `tools\seo-check.ps1` → **65/65**; `php -l` em 39 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **51/51**; `tools\test.ps1` → **153/153**; `tools\seo-check.ps1` → **65/65**; `php -l` em 39 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -181,7 +183,9 @@ LWclone/
 ├── .local/                 ← runtime gerado (fora do Git; inclui env.json)
 ├── docs/
 │   ├── brand-guidelines.md ← paleta, tipografia e regras da identidade JT
-│   └── seo.md             ← decisão de SEO, plugin recomendado e checklist
+│   ├── seo.md             ← decisão de SEO, plugin recomendado e checklist
+│   ├── production.md      ← instalação, segurança, cache, LGPD e go-live
+│   └── client-guide.md    ← manual do cliente (Editor)
 ├── tests/
 │   ├── f1-checks.php       ← verificações da fundação (wp eval-file)
 │   ├── unit/               ← testes Node do JS puro
@@ -192,6 +196,7 @@ LWclone/
 │   ├── wp.ps1              ← atalho do WP-CLI
 │   ├── test.ps1            ← roda tests/f1-checks.php
 │   ├── seo-check.ps1       ← confere as tags de SEO do site em execução
+│   ├── build-zip.ps1       ← gera dist/tema-base.zip para instalação
 │   ├── router.php          ← rewrite do servidor embutido
 │   ├── seed-demo.ps1       ← gera imagens e popula conteúdo da home
 │   ├── seed-demo.php       ← cria/atualiza conteúdo via WP-CLI
@@ -321,8 +326,8 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
 - **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
-- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (4), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (1), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/search.spec.js` (2), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1) e `tests/e2e/seo.spec.js` (6). Total E2E: **32**.
-- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 26/26; `tools\test.ps1` → 153/153; `php -l` em 37 arquivos e `node --check` nos dois JS sem erros.
+- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (8), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/search.spec.js` (2), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3) e `tests/e2e/design.spec.js` (3). Total E2E: **51**.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 51/51; `tools\test.ps1` → 153/153; `tools\seo-check.ps1` → 65/65; `php -l` em 39 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
 ## Primeira passada de identidade visual — F5 (30/10/2026)
@@ -409,9 +414,29 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - **Verificado em 30/10/2026:** 12/12 unitários, 38/38 E2E, 153/153 da F1, 65/65 no `seo-check`, `php -l` em 39 arquivos.
 - **Observação:** o Lighthouse local marcou desempenho 80 com LCP sintético de 5,4 s; a medição direta no navegador segue em ~0,67 s. Reavaliar em staging com cache/CDN na F6.4.
 
-### Pendente na F6
+### F6.4 — Produção (pacote e documentação prontos; infraestrutura pendente)
 
-- **F6.4 Produção:** staging com MySQL/nginx, SSL, backup, cache, CDN, monitoramento, formulário de contato, LGPD/cookies e manual do cliente.
+- `tools\build-zip.ps1` gera `dist\tema-base.zip` com `tema-base/` na raiz, valida os arquivos obrigatórios e recusa pacotes com pastas de desenvolvimento.
+- Pacote verificado em 30/10/2026: **0,19 MB**, **46 arquivos**, **35 PHP sem erro de sintaxe**, fontes, CSS/JS e `style.css` na versão **0.4.0**.
+- Tema, `TB_VERSION` e `package.json` atualizados para **0.4.0**.
+- `docs/production.md`: stack recomendada, instalação, segurança, desempenho, SEO, contato, LGPD, backup, monitoramento, go-live e pendências do cliente.
+- `docs/client-guide.md`: manual do cliente para posts, home, sócios, áreas, escritórios, páginas, opções e SEO.
+- **Não provisionado:** hospedagem, staging, SSL, backup, cache/CDN, formulário funcional, LGPD/cookies e monitoramento. Dependem de contas e decisões do cliente.
+
+### Pendente na F6.4 e F7
+
+- **F6.4:** executar o checklist de `docs/production.md` no ambiente contratado, com staging e testes de restauração.
+- **F7 Backlog:** setores, news, carreiras, eventos, busca global, newsletter e multilíngue, conforme demanda.
+
+## Ajuste visual da home e controles (30/10/2026)
+
+- **Ritmo de superfícies:** Destaques em branco; Áreas em `paper-soft` com bordas de 1 px e cards brancos; Depoimentos em **azul de ponta a ponta**; Artigos com linha superior. Hero, Histórias, rodapé e páginas internas foram preservados.
+- **Depoimentos:** citação serifada maior, aspas decorativas, título/controles à esquerda e citação à direita no desktop; setas, bullets e botão de pausa em branco; empilhado no mobile. A troca é por **slide direcional** (próximo entra pela direita, anterior pela esquerda), a cada 6 s. A rotação **não pausa com o mouse sobre a seção**; pausa apenas no botão, no foco/teclado e com a aba oculta.
+- **Play/pause:** hero e depoimentos usam ícones SVG (pause rodando, play pausado), com `aria-label`, `aria-pressed` e alvo de 44 × 44 px.
+- **Barra do hero:** 2 px na base, cor vinho, preenche no intervalo do carrossel (6 s), pausa/retoma junto com o timer e reinicia na troca manual; oculta em `prefers-reduced-motion`.
+- **Histórias:** o item “Teste” recebeu a imagem demo `historia-01`; itens sem imagem caem no primeiro banner ou em gradiente azul/ink. A seta para cima anima apenas `top`/`height` (sem deslize horizontal) e o fundo começa a trocar **no clique**, em 320 ms, acompanhando o texto.
+- **Testes:** `hero.spec.js` (3), `design.spec.js` (3), `stories.spec.js` (8) e `testimonials.spec.js` (4). Lighthouse de acessibilidade segue **100**.
+- **Observação:** a imagem do “Teste” é conteúdo local de demonstração; deve ser substituída pela definitiva antes da publicação.
 
 ## Limitações conhecidas
 

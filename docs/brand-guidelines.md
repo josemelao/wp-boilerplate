@@ -58,11 +58,14 @@ As imagens demo atuais e seus créditos estão em `tools/demo-images/CREDITS.md`
 
 - Botões: caixa alta, `0.6875rem`, tracking `0.14em`, borda de 1 px, cantos retos.
 - Navegação: caixa alta, tracking `0.14em`.
-- Seções: respiro vertical de `3–5.5rem`, títulos com `letter-spacing` negativo leve.
+- Seções: respiro vertical de `3–5.5rem`, títulos com `letter-spacing` negativo leve. Alternar superfícies: `paper`, `paper-soft` e o painel azul; separar faixas com linhas de 1 px.
 - Cards de artigo: imagem 3:2, sem borda superior, data/categoria em caixa alta.
-- Depoimentos: painel claro, citação em serifada itálica, bullets discretos.
-- Histórias: fundo escuro, títulos em caixa alta, ativo em `--tb-color-highlight`.
+- Áreas na home: faixa `paper-soft` com cards brancos e borda fina.
+- Depoimentos: faixa `--tb-color-accent` de ponta a ponta, com painel interno na mesma cor, citação em serifada itálica, aspas decorativas e controles em branco. A troca é por slide direcional, não fade.
+- Histórias: fundo escuro, títulos em caixa alta, ativo em `--tb-color-highlight`; a imagem de fundo começa a trocar no clique e faz crossfade em 320 ms.
 - Rodapé: fundo `--tb-color-paper-soft`, links em caixa alta.
+- Controles de rotação: ícone de pause enquanto roda e de play quando pausado, alvo mínimo de 44 × 44 px, `aria-label` e `aria-pressed` atualizados.
+- Barra de progresso do hero: 2 px na base, cor `--tb-color-highlight`, preenche no intervalo do carrossel e pausa/retoma junto com o timer.
 
 ## Acessibilidade
 

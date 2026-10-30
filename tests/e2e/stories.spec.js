@@ -224,3 +224,88 @@ test('@stories setas são maiores e estão alinhadas horizontalmente', async ({ 
 	expect(upIconBox.width).toBeGreaterThanOrEqual(24);
 	expect(Math.abs((downIconBox.y + downIconBox.height / 2) - (upIconBox.y + upIconBox.height / 2))).toBeLessThan(1);
 });
+
+test('@stories item que sobe mantém a posição horizontal', async ({ page }) => {
+	await page.goto('/');
+	await page.locator('[data-component="stories"]').scrollIntoViewIfNeeded();
+
+	await page.evaluate(() => {
+		window.__leftSamples = [];
+		const start = performance.now();
+
+		function frame(now) {
+			const active = document.querySelector('.stories__entry.is-active');
+			const title = active ? active.querySelector('.stories__title') : null;
+
+			if (title) {
+				window.__leftSamples.push(title.getBoundingClientRect().left);
+			}
+
+			if (now - start < 800) {
+				requestAnimationFrame(frame);
+			}
+		}
+
+		requestAnimationFrame(frame);
+	});
+
+	await page.locator('[data-story-up]').click();
+	await page.waitForTimeout(900);
+
+	const samples = await page.evaluate(() => window.__leftSamples);
+
+	expect(samples.length).toBeGreaterThan(3);
+
+	const spread = Math.max(...samples) - Math.min(...samples);
+	expect(spread).toBeLessThanOrEqual(1);
+});
+
+test('@stories fundo acompanha o fade do texto', async ({ page }) => {
+	await page.goto('/');
+
+	const backdrop = page.locator('.stories__backdrop').first();
+	const duration = await backdrop.evaluate((element) => getComputedStyle(element).transitionDuration);
+
+	expect(duration).toContain('0.32s');
+});
+
+test('@stories todo fundo tem imagem', async ({ page }) => {
+	await page.goto('/');
+
+	const missing = await page.locator('.stories__backdrop').evaluateAll((elements) =>
+		elements.filter((element) => !element.querySelector('img')).length,
+	);
+
+	expect(missing).toBe(0);
+});
+
+test('@stories fundo começa a trocar no clique e texto mantém o tempo', async ({ page }) => {
+	await page.goto('/');
+	await page.locator('[data-component="stories"]').scrollIntoViewIfNeeded();
+
+	const before = await page.locator('.stories__entry.is-active').getAttribute('data-story-id');
+	await page.locator('[data-story-up]').click();
+	await page.waitForTimeout(60);
+
+	const state = await page.evaluate(() => {
+		const entry = document.querySelector('.stories__entry.is-active');
+		const backdrop = document.querySelector('.stories__backdrop.is-active');
+		const entryStyle = getComputedStyle(document.querySelector('.stories__entry'));
+		const summaryStyle = getComputedStyle(document.querySelector('.stories__summary'));
+		const backdropStyle = getComputedStyle(document.querySelector('.stories__backdrop'));
+
+		return {
+			entryId: entry ? entry.getAttribute('data-story-id') : '',
+			backdropId: backdrop ? backdrop.getAttribute('data-story-backdrop') : '',
+			entryDuration: entryStyle.transitionDuration,
+			summaryDuration: summaryStyle.transitionDuration,
+			backdropDuration: backdropStyle.transitionDuration,
+		};
+	});
+
+	expect(state.backdropId).not.toBe(before);
+	expect(state.backdropId).toBe(state.entryId);
+	expect(state.entryDuration).toContain('0.32s');
+	expect(state.summaryDuration).toBe('0.32s');
+	expect(state.backdropDuration).toBe('0.32s');
+});

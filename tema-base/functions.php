@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TB_VERSION', '0.3.0' );
+define( 'TB_VERSION', '0.4.0' );
 define( 'TB_DIR', get_template_directory() );
 define( 'TB_URI', get_template_directory_uri() );
 

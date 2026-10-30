@@ -56,8 +56,17 @@ $tb_count = count( $tb_items );
 				<?php endforeach; ?>
 			</div>
 			<button class="hero__toggle" type="button" data-rotation-toggle aria-label="<?php esc_attr_e( 'Pausar apresentação', 'tema-base' ); ?>" aria-pressed="false">
-				<span data-toggle-label><?php esc_html_e( 'Pausar', 'tema-base' ); ?></span>
+				<svg class="hero__toggle-icon hero__toggle-icon--pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+					<rect x="6" y="5" width="4" height="14" rx="1"></rect>
+					<rect x="14" y="5" width="4" height="14" rx="1"></rect>
+				</svg>
+				<svg class="hero__toggle-icon hero__toggle-icon--play" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+					<path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.3-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2z"></path>
+				</svg>
 			</button>
+		</div>
+		<div class="hero__progress" aria-hidden="true">
+			<span class="hero__progress-bar" data-rotation-progress></span>
 		</div>
 	<?php endif; ?>
 </section>

@@ -27,8 +27,8 @@ $tb_story_teaser = static function ( $tb_item ) {
 <section class="stories" id="historias" aria-labelledby="stories-title" data-component="stories">
 	<div class="stories__backdrops" aria-hidden="true">
 		<?php foreach ( $tb_items as $tb_index => $tb_item ) : ?>
-			<?php $tb_image_id = get_post_thumbnail_id( $tb_item ); ?>
-			<div class="stories__backdrop<?php echo $tb_index === $tb_active_index ? ' is-active' : ''; ?>" data-story-backdrop="<?php echo esc_attr( $tb_item->ID ); ?>">
+			<?php $tb_image_id = tb_story_image_id( $tb_item->ID ); ?>
+			<div class="stories__backdrop<?php echo $tb_index === $tb_active_index ? ' is-active' : ''; ?><?php echo $tb_image_id ? '' : ' stories__backdrop--fallback'; ?>" data-story-backdrop="<?php echo esc_attr( $tb_item->ID ); ?>">
 				<?php if ( $tb_image_id ) : ?>
 					<?php echo wp_get_attachment_image( $tb_image_id, 'tb-story', false, array( 'class' => 'stories__image', 'alt' => '', 'loading' => 'lazy', 'sizes' => '100vw' ) ); ?>
 				<?php endif; ?>

@@ -171,6 +171,38 @@ function tb_get_office_links() {
 }
 
 /**
+ * Imagem de fundo de uma história, com fallback para o primeiro banner.
+ *
+ * @param int $post_id ID da história.
+ * @return int
+ */
+function tb_story_image_id( $post_id = 0 ) {
+	$post_id  = $post_id ? (int) $post_id : (int) get_the_ID();
+	$image_id = $post_id ? (int) get_post_thumbnail_id( $post_id ) : 0;
+
+	if ( $image_id ) {
+		return $image_id;
+	}
+
+	static $fallback = null;
+
+	if ( null === $fallback ) {
+		$banners  = get_posts(
+			array(
+				'post_type'      => 'banner',
+				'post_status'    => 'publish',
+				'posts_per_page' => 1,
+				'orderby'        => 'menu_order',
+				'order'          => 'ASC',
+			)
+		);
+		$fallback = $banners ? (int) get_post_thumbnail_id( $banners[0] ) : 0;
+	}
+
+	return $fallback;
+}
+
+/**
  * URL do blog (página definida em Configurações → Leitura).
  *
  * @return string
