@@ -18,6 +18,7 @@ define( 'TB_URI', get_template_directory_uri() );
 
 require_once TB_DIR . '/inc/helpers.php';
 require_once TB_DIR . '/inc/setup.php';
+require_once TB_DIR . '/inc/media.php';
 require_once TB_DIR . '/inc/post-types.php';
 require_once TB_DIR . '/inc/meta-fields.php';
 require_once TB_DIR . '/inc/options-page.php';

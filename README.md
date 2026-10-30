@@ -12,6 +12,7 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **F5 (Identidade visual) — primeira passada**: wordmark temporário **JT**, tokens, fontes self-hosted, imagens institucionais demo e ajustes visuais na home e páginas internas. Home aprovada.
 - **F5.1 (Páginas internas) implementada**: blog, artigo, página, sócios, história e 404 revisados com leitura minimalista; compartilhamento nativo no artigo e na história, sem plugin.
 - **F5.2 (Protótipo de conteúdo P0) implementada e validada**: áreas de atuação, escritórios, perfis de sócios demo, páginas Sobre/Contato/Reconhecimentos/Privacidade, menus, seção de áreas na home e footer reorganizado com escritórios linkados e CTA de contato.
+- **F6.1 (Performance de mídia) implementada**: derivados WebP automáticos para uploads JPEG/PNG, qualidade 80, regeneração das 18 imagens e preload do hero na home.
 
 ## Requisitos
 
@@ -149,7 +150,7 @@ npm run test:e2e:smoke
 - `tests\e2e\footer.spec.js` cobre a organização do rodapé, escritórios linkados e CTA de contato.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **25/25**; `tools\test.ps1` → **153/153**; `php -l` em 36 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **26/26**; `tools\test.ps1` → **153/153**; `php -l` em 37 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -312,8 +313,8 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
 - **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
-- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (4), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (1), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/search.spec.js` (2) e `tests/e2e/content-modules.spec.js` (4). Total E2E: **24**.
-- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 25/25; `tools\test.ps1` → 153/153; `php -l` em 36 arquivos e `node --check` nos dois JS sem erros.
+- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (4), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (1), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/search.spec.js` (2), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1) e `tests/e2e/media.spec.js` (1). Total E2E: **26**.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 26/26; `tools\test.ps1` → 153/153; `php -l` em 37 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
 ## Primeira passada de identidade visual — F5 (30/10/2026)
@@ -328,7 +329,7 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - **Depoimentos:** seção aberta em `paper-soft`, sem painel/borda; setas posicionadas nas laterais da página.
 - Imagens demo institucionais temporárias substituídas em `tools/demo-images/`; créditos em `tools/demo-images/CREDITS.md`. O gerador de placeholders agora não sobrescreve imagens existentes.
 - Seed atualizado para criar menus principal/rodapé, opções de redes/escritórios/inscrição e conteúdo de artigos.
-- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 25/25; `tools\test.ps1` → 153/153; `php -l` em 36 arquivos e `node --check` nos dois JS sem erros.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 26/26; `tools\test.ps1` → 153/153; `php -l` em 37 arquivos e `node --check` nos dois JS sem erros.
 - **Pendente:** aprovação visual do cliente, logo/fotografias definitivas e eventuais ajustes de contraste/espaçamento após revisão.
 
 ## F5.1 — Páginas internas e compartilhamento (30/10/2026)
@@ -356,16 +357,27 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - Seed demo agora cria 4 áreas, 2 escritórios, 4 sócios com retratos, páginas **Sobre**, **Contato**, **Reconhecimentos** e **Privacidade**, além dos menus principal/rodapé.
 - Arquivos públicos ordenados por `menu_order`; busca continua restrita a artigos.
 - Footer reorganizado em topo (marca + busca), três colunas (navegação, escritórios, redes/inscrição) e base de copyright; escritórios linkados e CTA “Fale conosco”.
-- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 25/25; `tools\test.ps1` → 153/153; `php -l` em 36 arquivos e `node --check` sem erros.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 26/26; `tools\test.ps1` → 153/153; `php -l` em 37 arquivos e `node --check` sem erros.
 - **Validado pelo usuário em 30/10/2026:** áreas, escritórios, perfis de sócios, páginas institucionais e novo footer.
 - **Pendente:** P1/P2 (setores, news, carreiras, eventos, busca global) ficam para depois da reação ao protótipo.
 
-## F6 — Profissionalização técnica (planejado)
+## F6 — Profissionalização técnica
 
-Baseline local da home em 30/10/2026: **~2,5 MB** no total, **~2,39 MB** em imagens, LCP **~2,0 s** e CLS praticamente zero. O Lighthouse da F4 não representa mais o peso atual.
+### F6.1 — Performance de mídia (implementada em 30/10/2026)
 
-- **F6.1 Performance:** converter imagens para WebP/AVIF, revisar `srcset`/`sizes`, reduzir imagens de histórias, pré-carregar só o LCP e definir orçamento de página.
-- **F6.2 SEO:** um plugin de SEO, meta description, Open Graph/Twitter, schema (`Organization`, `LegalService`, `Person`, `Article`, `BreadcrumbList`), breadcrumbs e `noindex` em busca.
+Baseline antes: **~2,5 MB** no total, **~2,39 MB** em imagens, LCP local **~2,0 s** e CLS praticamente zero. O Lighthouse da F4 não representa mais o peso atual.
+
+- `inc/media.php` usa `image_editor_output_format` para gerar derivados **WebP** de uploads JPEG/PNG quando o editor suporta; o original é preservado e há fallback para o formato original.
+- Qualidade WebP definida em **80**.
+- `wp media regenerate --yes` regenerou **18 imagens**.
+- Preload do primeiro hero apenas na home, com `fetchpriority="high"`.
+- Upload futuro verificado com importação temporária de JPEG: os tamanhos `tb-*` foram gerados em `.webp`; o anexo de teste foi removido.
+- Depois: **~1,97 MB** no total, **~1,80 MB** em imagens, LCP local **~0,67 s** (medição sintética local).
+- Cobertura em `tests/e2e/media.spec.js`.
+
+### Pendente na F6
+
+- **F6.2 SEO:** plugin de SEO, meta description, Open Graph/Twitter, schema (`Organization`, `LegalService`, `Person`, `Article`, `BreadcrumbList`), breadcrumbs e `noindex` em busca.
 - **F6.3 Acessibilidade:** revalidar teclado, foco, contraste, share e busca do footer; Lighthouse/axe.
 - **F6.4 Produção:** staging com MySQL/nginx, SSL, backup, cache, CDN, monitoramento, formulário de contato, LGPD/cookies e manual do cliente.
 

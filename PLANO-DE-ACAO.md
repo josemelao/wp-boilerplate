@@ -318,17 +318,18 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - Seed demo cria 4 áreas, 2 escritórios, 4 sócios com retratos, páginas **Sobre**, **Contato**, **Reconhecimentos** e **Privacidade**, além dos menus principal/rodapé.
 - Arquivos públicos ordenados por `menu_order`; busca continua restrita a artigos.
 - Footer reorganizado em topo (marca + busca), três colunas (navegação, escritórios, redes/inscrição) e base de copyright; escritórios linkados e CTA “Fale conosco”.
-- **Verificação:** 12 testes unitários, 25 E2E e 153 verificações da F1 passando; 36 arquivos PHP sem erro de sintaxe.
+- **Verificação:** 12 testes unitários, 26 E2E e 153 verificações da F1 passando; 37 arquivos PHP sem erro de sintaxe.
 - **Validado pelo usuário em 30/10/2026:** áreas, escritórios, perfis de sócios, páginas institucionais e footer.
 - **Pendente:** módulos P1/P2 (setores, news, carreiras, eventos, busca global).
 
-#### F6 — Profissionalização técnica — planejado
+#### F6 — Profissionalização técnica — F6.1 implementada — 30/10/2026
 
-- Baseline local da home: ~2,5 MB no total, ~2,39 MB em imagens, LCP ~2,0 s e CLS praticamente zero.
-- **F6.1 Performance:** WebP/AVIF, `srcset`/`sizes`, imagens de histórias menores, preload do LCP e orçamento de página.
-- **F6.2 SEO:** plugin de SEO, meta description, Open Graph/Twitter, schema, breadcrumbs e `noindex` na busca.
-- **F6.3 Acessibilidade:** revalidar teclado, foco, contraste, share e busca do footer.
-- **F6.4 Produção:** staging MySQL/nginx, SSL, backup, cache, CDN, monitoramento, contato, LGPD e manual do cliente.
+- **F6.1 Performance:** filtro `image_editor_output_format` em `inc/media.php` gera derivados WebP para uploads JPEG/PNG quando o editor suporta; qualidade WebP 80; original preservado; fallback para o formato original. `wp media regenerate --yes` regenerou 18 imagens. Preload do primeiro hero apenas na home, com `fetchpriority="high"`.
+- Baseline antes: ~2,5 MB, ~2,39 MB em imagens, LCP local ~2,0 s. Depois: ~1,97 MB, ~1,80 MB em imagens, LCP local ~0,67 s (medida sintética local).
+- Upload futuro verificado por importação temporária de JPEG: derivados `tb-*` gerados em `.webp`; anexo removido depois.
+- **F6.2 SEO:** plugin de SEO, meta description, Open Graph/Twitter, schema, breadcrumbs e `noindex` na busca — pendente.
+- **F6.3 Acessibilidade:** revalidar teclado, foco, contraste, share e busca do footer — pendente.
+- **F6.4 Produção:** staging MySQL/nginx, SSL, backup, cache, CDN, monitoramento, contato, LGPD e manual do cliente — pendente.
 
 ## 13. Cuidados, armadilhas e precauções
 
