@@ -134,10 +134,10 @@ $testimonials = array(
 );
 
 $articles = array(
-	array( 'Tendências que estão transformando o setor', 'Uma leitura das mudanças recentes e dos pontos que merecem atenção nos próximos meses.', 'artigo-01.jpg', 'artigo-01', 'Perspectivas' ),
-	array( 'Como preparar decisões para o longo prazo', 'Planejamento, governança e análise de cenários ajudam a construir decisões mais sólidas.', 'artigo-02.jpg', 'artigo-02', 'Institucional' ),
-	array( 'O valor de uma análise feita sob medida', 'Cada contexto pede perguntas próprias. Entenda por que a análise individual importa.', 'artigo-03.jpg', 'artigo-03', 'Perspectivas' ),
-	array( 'Mudanças regulatórias: o que acompanhar', 'Um resumo dos temas regulatórios que estão no radar das organizações.', 'artigo-04.jpg', 'artigo-04', 'Mercado' ),
+	array( 'Tendências que estão transformando o setor', 'Uma leitura das mudanças recentes e dos pontos que merecem atenção nos próximos meses.', 'artigo-01.jpg', 'artigo-01', 'Perspectivas', "As transformações do setor combinam tecnologia, novas exigências regulatórias e mudanças no comportamento dos clientes. O resultado é um ambiente que pede leitura atenta e decisões bem documentadas.\n\nNeste cenário, acompanhar sinais fracos e revisar premissas com regularidade ajuda a evitar respostas tardias. A análise deve considerar não apenas o que mudou, mas também o que ainda pode mudar." ),
+	array( 'Como preparar decisões para o longo prazo', 'Planejamento, governança e análise de cenários ajudam a construir decisões mais sólidas.', 'artigo-02.jpg', 'artigo-02', 'Institucional', "Decisões de longo prazo dependem de informação confiável, critérios claros e governança bem definida. Quanto maior o horizonte, maior a importância de separar o que é fato do que é hipótese.\n\nUma boa preparação inclui cenários alternativos, revisão periódica e registro das premissas adotadas. Assim, a organização consegue ajustar o curso sem perder a coerência da estratégia." ),
+	array( 'O valor de uma análise feita sob medida', 'Cada contexto pede perguntas próprias. Entenda por que a análise individual importa.', 'artigo-03.jpg', 'artigo-03', 'Perspectivas', "Soluções genéricas podem funcionar como ponto de partida, mas raramente capturam o contexto completo de uma organização. A análise sob medida começa pela escuta e pela identificação das perguntas que realmente importam.\n\nEsse processo exige proximidade, rigor e disposição para revisar conclusões. O objetivo não é produzir mais informação, e sim informação útil para a decisão." ),
+	array( 'Mudanças regulatórias: o que acompanhar', 'Um resumo dos temas regulatórios que estão no radar das organizações.', 'artigo-04.jpg', 'artigo-04', 'Mercado', "Mudanças regulatórias costumam chegar acompanhadas de novas obrigações de documentação, governança e reporte. Antecipar esses movimentos reduz o custo de adaptação e melhora a qualidade das decisões.\n\nO acompanhamento deve ser contínuo, com fontes confiáveis e critérios claros para priorizar o que exige ação imediata e o que pode ser monitorado." ),
 );
 
 foreach ( $banners as $index => $item ) {
@@ -219,6 +219,7 @@ foreach ( $articles as $index => $item ) {
 			'post_name'    => $item[3],
 			'post_title'   => $item[0],
 			'post_excerpt' => $item[1],
+			'post_content' => $item[5],
 			'menu_order'   => $index + 1,
 		)
 	);
@@ -264,4 +265,58 @@ update_option( 'show_on_front', 'page' );
 update_option( 'page_on_front', (int) $home_id );
 update_option( 'page_for_posts', (int) $blog_id );
 
-WP_CLI::success( 'Conteúdo de demonstração criado/atualizado: 2 banners, 4 destaques, 3 depoimentos, 4 histórias, 4 artigos e páginas Início/Artigos.' );
+$demo_options = array_merge(
+	tb_options_defaults(),
+	(array) get_option( 'tb_options', array() ),
+	array(
+		'offices'            => "São Paulo\nRio de Janeiro",
+		'social_linkedin'    => 'https://www.linkedin.com/',
+		'social_instagram'   => 'https://www.instagram.com/',
+		'subscribe_label'    => 'Inscreva-se',
+		'subscribe_url'      => 'https://example.com/inscricao',
+		'footer_note'        => 'Site de demonstração.',
+	)
+);
+update_option( 'tb_options', $demo_options );
+
+$demo_menu_items = array(
+	array( 'title' => 'Início', 'type' => 'page', 'id' => (int) $home_id ),
+	array( 'title' => 'Artigos', 'type' => 'page', 'id' => (int) $blog_id ),
+	array( 'title' => 'Sócios', 'type' => 'custom', 'url' => home_url( '/socios/' ) ),
+);
+
+$seed_menu = static function ( $name, $location, $items ) {
+	$menu = wp_get_nav_menu_object( $name );
+	$menu_id = $menu ? (int) $menu->term_id : (int) wp_create_nav_menu( $name );
+
+	foreach ( (array) wp_get_nav_menu_items( $menu_id ) as $menu_item ) {
+		wp_delete_post( $menu_item->ID, true );
+	}
+
+	foreach ( $items as $item ) {
+		$args = array(
+			'menu-item-title'  => $item['title'],
+			'menu-item-status' => 'publish',
+		);
+
+		if ( 'custom' === $item['type'] ) {
+			$args['menu-item-type'] = 'custom';
+			$args['menu-item-url']  = $item['url'];
+		} else {
+			$args['menu-item-type']      = 'post_type';
+			$args['menu-item-object']    = 'page';
+			$args['menu-item-object-id'] = $item['id'];
+		}
+
+		wp_update_nav_menu_item( $menu_id, 0, $args );
+	}
+
+	$locations             = (array) get_theme_mod( 'nav_menu_locations', array() );
+	$locations[ $location ] = $menu_id;
+	set_theme_mod( 'nav_menu_locations', $locations );
+};
+
+$seed_menu( 'Menu principal', 'primary', $demo_menu_items );
+$seed_menu( 'Menu do rodapé', 'footer', $demo_menu_items );
+
+WP_CLI::success( 'Conteúdo de demonstração criado/atualizado: 2 banners, 4 destaques, 3 depoimentos, 4 histórias, 4 artigos, páginas Início/Artigos, menus e opções do site.' );

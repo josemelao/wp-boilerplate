@@ -3,6 +3,45 @@ const assert = require('node:assert/strict');
 
 const { chooseTarget } = require('../../tema-base/assets/js/carousel-target.js');
 
+test('flick rápido que já passou do próximo card usa o card alcançado', () => {
+	assert.equal(
+		chooseTarget({
+			startIndex: 0,
+			velocity: 0.8,
+			distance: 600,
+			nearestIndex: 2,
+			length: 4,
+		}),
+		2
+	);
+});
+
+test('flick para a direita que já passou do anterior usa o card alcançado', () => {
+	assert.equal(
+		chooseTarget({
+			startIndex: 2,
+			velocity: -0.8,
+			distance: -600,
+			nearestIndex: 0,
+			length: 4,
+		}),
+		0
+	);
+});
+
+test('flick curto ainda avança exatamente um card', () => {
+	assert.equal(
+		chooseTarget({
+			startIndex: 1,
+			velocity: 0.8,
+			distance: 60,
+			nearestIndex: 1,
+			length: 4,
+		}),
+		2
+	);
+});
+
 test('arrasto lento curto volta para o card mais próximo', () => {
 	assert.equal(
 		chooseTarget({

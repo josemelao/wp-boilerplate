@@ -16,6 +16,7 @@ if ( ! extension_loaded( 'gd' ) ) {
 }
 
 $output_dir = isset( $argv[1] ) ? $argv[1] : __DIR__ . '/demo-images';
+$force      = in_array( '--force', $argv, true );
 
 if ( ! is_dir( $output_dir ) && ! mkdir( $output_dir, 0777, true ) && ! is_dir( $output_dir ) ) {
 	fwrite( STDERR, "Não foi possível criar o diretório: {$output_dir}\n" );
@@ -39,7 +40,15 @@ $images = array(
 	'artigo-04.jpg'   => array( 720, 480, array( 43, 72, 67 ), array( 126, 150, 140 ), 'ARTIGO 04' ),
 );
 
+$generated = 0;
+
 foreach ( $images as $filename => $image_data ) {
+	$target = rtrim( $output_dir, '/\\' ) . DIRECTORY_SEPARATOR . $filename;
+
+	if ( file_exists( $target ) && ! $force ) {
+		continue;
+	}
+
 	list( $width, $height, $start, $end, $label ) = $image_data;
 	$image = imagecreatetruecolor( $width, $height );
 
@@ -61,13 +70,13 @@ foreach ( $images as $filename => $image_data ) {
 	$white = imagecolorallocate( $image, 255, 255, 255 );
 	imagestring( $image, 5, 32, $height - 46, $label . ' - IMAGEM DE DEMONSTRACAO', $white );
 
-	$target = rtrim( $output_dir, '/\\' ) . DIRECTORY_SEPARATOR . $filename;
 	if ( ! imagejpeg( $image, $target, 86 ) ) {
 		imagedestroy( $image );
 		fwrite( STDERR, "Não foi possível salvar: {$target}\n" );
 		exit( 1 );
 	}
 	imagedestroy( $image );
+	$generated++;
 }
 
-fwrite( STDOUT, sprintf( "%d imagens JPEG geradas em %s\n", count( $images ), $output_dir ) );
+fwrite( STDOUT, sprintf( "%d imagens JPEG geradas em %s\n", $generated, $output_dir ) );

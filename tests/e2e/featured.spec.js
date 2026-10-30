@@ -126,6 +126,49 @@ test('@featured settle anima em frames contínuos', async ({ page }) => {
 	expect(new Set(samples.map((sample) => Math.round(sample.left))).size).toBeGreaterThan(3);
 });
 
+test('@featured settle começa da posição atual sem teleportar', async ({ page }) => {
+	const viewport = page.locator('[data-carousel-viewport]');
+
+	await page.evaluate(() => {
+		const element = document.querySelector('[data-carousel-viewport]');
+
+		window.__settleSamples = [];
+
+		document.addEventListener(
+			'pointerup',
+			() => {
+				window.__settleStart = element.scrollLeft;
+				const start = performance.now();
+
+				function frame(now) {
+					window.__settleSamples.push({
+						time: now - start,
+						left: element.scrollLeft,
+					});
+
+					if (now - start < 500) {
+						requestAnimationFrame(frame);
+					}
+				}
+
+				requestAnimationFrame(frame);
+			},
+			{ capture: true, once: true }
+		);
+	});
+
+	await dragViewport(page, viewport, -200, { steps: 1 });
+	await page.waitForTimeout(700);
+
+	const data = await page.evaluate(() => ({
+		start: window.__settleStart,
+		samples: window.__settleSamples,
+	}));
+
+	expect(data.samples.length).toBeGreaterThan(3);
+	expect(Math.abs(data.samples[0].left - data.start)).toBeLessThan(8);
+});
+
 test('@featured clique depois do arrasto não navega', async ({ page }) => {
 	const viewport = page.locator('[data-carousel-viewport]');
 	const url = page.url();

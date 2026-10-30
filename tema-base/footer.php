@@ -65,6 +65,10 @@ $tb_footer_note  = tb_opt( 'footer_note' );
 			</p>
 		<?php endif; ?>
 
+		<p class="site-footer__brand">
+			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
+		</p>
+
 		<p class="site-footer__copy">
 			<span>&copy; <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?></span>
 			<?php if ( '' !== $tb_footer_note ) : ?>

@@ -275,15 +275,29 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 
 #### Ajustes de carrossel e Histórias — 30/10/2026
 
-- **Destaques:** o drag passou a ser aplicado em `requestAnimationFrame`; o settle usa animação própria com `easeOutCubic` em 340 ms, sem `scrollTo({ behavior: 'smooth' })`. O destino é escolhido por velocidade: flick rápido avança no máximo um card; arrasto lento usa o card mais próximo. A velocidade decai se o usuário segura antes de soltar. `prefers-reduced-motion` vai direto ao card e resize recentraliza.
+- **Destaques:** o drag passou a ser aplicado em `requestAnimationFrame`; o settle usa uma mola criticamente amortecida (`SPRING_OMEGA=15`) com a velocidade real da soltura, sem `scrollTo({ behavior: 'smooth' })`. O destino é escolhido por velocidade: flick rápido avança no máximo um card; arrasto lento usa o card mais próximo; se o gesto já passou de um card, acompanha o alcançado. A velocidade decai se o usuário segura antes de soltar. `prefers-reduced-motion` vai direto ao card e resize recentraliza.
 - A lógica de destino foi extraída para `tema-base/assets/js/carousel-target.js`, com teste unitário.
 - **Histórias:** fade simétrico de 320 ms para título e subtexto; entrada branco → vermelho, saída vermelho → branco, com a mesma curva. O subtexto passou de `hidden` para opacidade e o `aria-hidden` é sincronizado no JS.
 - Itens inativos deixaram de ser botões e não aceitam clique; a navegação entre histórias é feita somente pelas setas (e pelas teclas ↑/↓). O título ativo continua sendo link para a single.
 - As setas usam SVG para alinhamento consistente: 52 × 40 px no desktop e 44 × 36 px no mobile. No mobile, os controles foram posicionados na linha inferior do cartão para preservar o espaço do texto.
-- **Testes adicionados:** `tests/unit/carousel-target.test.js` (9), `tests/e2e/featured.spec.js` (7), `tests/e2e/stories.spec.js` (4) e `tests/e2e/smoke.spec.js` (2). Total E2E: **13**.
-- **Verificação em 30/10/2026:** `npm run test:unit` → 9/9; `npm run test:e2e` → 13/13; `tools/test.ps1` → 153/153; `php -l` em 27 arquivos e `node --check` nos dois JS sem erros.
-- **Ajuste fino:** `--story-fade-duration` no CSS controla o fade; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY` e `SETTLE_DURATION` controlam o carrossel.
+- **Testes adicionados:** `tests/unit/carousel-target.test.js` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (4), `tests/e2e/smoke.spec.js` (2) e `tests/e2e/testimonials.spec.js` (1). Total E2E: **15**.
+- **Verificação em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 15/15; `tools/test.ps1` → 153/153; `php -l` em 27 arquivos e `node --check` nos dois JS sem erros.
+- **Ajuste fino:** `--story-fade-duration` no CSS controla o fade; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 - **Pendências:** F5 (identidade visual), F6 (entrega/hospedagem, incluindo `build-zip.ps1` ainda ausente) e F7 (backlog). CI de E2E ainda não foi configurado.
+
+#### F5 — primeira passada de identidade visual — 30/10/2026
+
+- Wordmark temporário **JT** no header (título do site), à espera do logo definitivo.
+- Direção sans-led: Libre Franklin para títulos/navegação, Source Sans 3 para corpo/UI e Source Serif 4 para citações. Fontes self-hosted em `tema-base/assets/fonts/`, com licenças OFL na mesma pasta.
+- Paleta aplicada em tokens: ink `#121417`, paper `#ffffff`, paper-soft `#f3f1ec`, azul institucional `#16324a` e destaque vinho `#a51c30`.
+- Diretrizes em `docs/brand-guidelines.md`.
+- Ajustes visuais em header, hero, botões, Destaques, Depoimentos, Histórias, Artigos, rodapé e páginas internas.
+- **Destaques:** destino do drag monotônico, mais peso no gesto (`FLICK_VELOCITY=0.32`, `MIN_DRAG=16`, resistência `0.9`) e mola criticamente amortecida (`SPRING_OMEGA=15`) que parte da velocidade da soltura.
+- **Depoimentos:** seção aberta em `paper-soft`, sem painel/borda, com setas nas laterais da página.
+- Imagens demo institucionais temporárias em `tools/demo-images/`, com créditos em `tools/demo-images/CREDITS.md`; o gerador de placeholders não sobrescreve imagens existentes.
+- Seed atualizado para criar menus principal/rodapé, opções de redes/escritórios/inscrição e conteúdo dos artigos.
+- **Verificação:** 12 testes unitários, 14 E2E e 153 verificações da F1 passando; 27 arquivos PHP sem erro de sintaxe.
+- **Pendente:** aprovação visual do cliente, logo/fotografias definitivas e ajustes finos de contraste/espaçamento.
 
 ## 13. Cuidados, armadilhas e precauções
 

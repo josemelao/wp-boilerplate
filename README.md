@@ -9,6 +9,7 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **F2 (Home) implementada e validada pelo usuário**: as seções, estilos, interações, seed local e página individual de História estão no tema. A validação manual confirmou autoplay, carrosséis, Histórias, navegação, console e larguras de 360/768/1280 px.
 - **F3 (Blog/Páginas/Sócios) implementada e validada**: listagens, singles, página, arquivo/perfil de sócio e 404 têm templates próprios; rotas e conteúdo passaram nas verificações locais e no passo a passo do usuário.
 - **F4 (QA) concluída**: validação do usuário e Lighthouse mobile/desktop concluídos; desempenho, acessibilidade e boas práticas marcaram 100 nas duas medições.
+- **F5 (Identidade visual) — primeira passada**: wordmark temporário **JT**, tokens, fontes self-hosted, imagens institucionais demo e ajustes visuais na home e páginas internas. Aguarda aprovação e materiais definitivos do cliente.
 
 ## Requisitos
 
@@ -139,9 +140,10 @@ npm run test:e2e:smoke
 - `tests\e2e\smoke.spec.js` cobre a home sem erros de console e as rotas principais (200/404).
 - `tests\e2e\featured.spec.js` cobre arrasto, flick, setas, teclado, clique após arrasto e ausência de classes presas.
 - `tests\e2e\stories.spec.js` cobre o fade simétrico de título e subtexto, a navegação pelas setas, a ausência de clique nos itens inativos e o alinhamento das setas.
+- `tests\e2e\testimonials.spec.js` cobre a seção aberta e as setas laterais dos Depoimentos.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 30/10/2026: `npm run test:unit` → **9/9**; `npm run test:e2e` → **13/13**; `tools\test.ps1` → **153/153**; `php -l` em 27 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **15/15**; `tools\test.ps1` → **153/153**; `php -l` em 27 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -166,6 +168,8 @@ LWclone/
 ├── playwright.config.js
 ├── .gitignore
 ├── .local/                 ← runtime gerado (fora do Git; inclui env.json)
+├── docs/
+│   └── brand-guidelines.md ← paleta, tipografia e regras da identidade JT
 ├── tests/
 │   ├── f1-checks.php       ← verificações da fundação (wp eval-file)
 │   ├── unit/               ← testes Node do JS puro
@@ -178,8 +182,9 @@ LWclone/
 │   ├── router.php          ← rewrite do servidor embutido
 │   ├── seed-demo.ps1       ← gera imagens e popula conteúdo da home
 │   ├── seed-demo.php       ← cria/atualiza conteúdo via WP-CLI
-│   ├── make-demo-images.php ← gera JPEGs placeholder usando GD
-│   └── demo-images/        ← imagens geradas pelo seed
+│   ├── make-demo-images.php ← gera placeholders só quando a imagem não existe
+│   ├── demo-images/        ← imagens demo temporárias
+│   └── demo-images/CREDITS.md ← origem e licença das imagens
 └── tema-base/
     ├── style.css           ← só o cabeçalho do tema (versão)
     ├── functions.php       ← carrega os módulos de inc/
@@ -203,6 +208,7 @@ LWclone/
     ├── template-parts/     ← hero, destaques, depoimentos, histórias e artigos
     └── assets/
         ├── css/main.css    ← tokens, componentes e responsivo
+        ├── fonts/          ← Libre Franklin, Source Sans 3 e Source Serif 4
         └── js/
             ├── main.js     ← menu, faders, carrossel e histórias
             └── carousel-target.js ← decisão pura do destino do carrossel
@@ -214,7 +220,7 @@ O `router.php` é versionado de propósito: sem ele, um clone não reproduz os p
 
 `front-page.php` monta Hero, Destaques, Depoimentos, Histórias e Artigos em destaque. O rodapé é compartilhado pelo tema. Cada seção não imprime markup quando não há conteúdo publicado.
 
-Para popular o WordPress local com conteúdo de demonstração, rode `tools\seed-demo.ps1`. O comando gera JPEGs de gradiente em `tools\demo-images\`, importa a mídia e cria/atualiza posts com slugs reservados para demonstração. Também configura as páginas locais **Início** e **Artigos** em Configurações → Leitura. O seed não apaga posts ou páginas existentes.
+Para popular o WordPress local com conteúdo de demonstração, rode `tools\seed-demo.ps1`. O comando usa as imagens institucionais temporárias de `tools\demo-images\` (se alguma estiver faltando, gera um placeholder de gradiente; imagens existentes não são sobrescritas), importa a mídia e cria/atualiza posts com slugs reservados para demonstração. Também configura as páginas locais **Início** e **Artigos**, os menus principal/rodapé e as opções de redes, escritórios e inscrição. O seed não apaga posts ou páginas existentes. Créditos das imagens em `tools\demo-images\CREDITS.md`.
 
 ## O que foi testado (F0)
 
@@ -291,13 +297,28 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 
 ## Ajustes de carrossel e Histórias (30/10/2026)
 
-- **Destaques:** drag aplicado via `requestAnimationFrame`; settle próprio com `easeOutCubic` em 340 ms, sem `scrollTo({ behavior: 'smooth' })`; flick rápido avança no máximo um card; arrasto lento usa o card mais próximo; pausa antes de soltar reduz a velocidade; `prefers-reduced-motion` vai direto ao card; resize recentraliza.
+- **Destaques:** drag aplicado via `requestAnimationFrame`; settle com mola criticamente amortecida (`SPRING_OMEGA=15`), usando a velocidade real da soltura e sem `scrollTo({ behavior: 'smooth' })`; flick rápido avança no máximo um card; arrasto lento usa o card mais próximo; pausa antes de soltar reduz a velocidade; `prefers-reduced-motion` vai direto ao card; resize recentraliza.
 - A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
 - **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
-- **Testes:** `tests/unit/` (9), `tests/e2e/featured.spec.js` (7), `tests/e2e/stories.spec.js` (4) e `tests/e2e/smoke.spec.js` (2). Total E2E: **13**.
-- **Verificado em 30/10/2026:** `npm run test:unit` → 9/9; `npm run test:e2e` → 13/13; `tools\test.ps1` → 153/153; `php -l` em 27 arquivos e `node --check` nos dois JS sem erros.
-- **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY` e `SETTLE_DURATION` controlam o carrossel.
+- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (4), `tests/e2e/smoke.spec.js` (2) e `tests/e2e/testimonials.spec.js` (1). Total E2E: **15**.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 15/15; `tools\test.ps1` → 153/153; `php -l` em 27 arquivos e `node --check` nos dois JS sem erros.
+- **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
+
+## Primeira passada de identidade visual — F5 (30/10/2026)
+
+- Wordmark temporário **JT** no header, usando o título do site; trocar pelo logo definitivo no Customizer quando estiver disponível.
+- Direção sans-led: Libre Franklin para títulos/navegação, Source Sans 3 para corpo/UI e Source Serif 4 para citações.
+- Fontes self-hosted em `tema-base/assets/fonts/`, com licenças OFL na mesma pasta.
+- Paleta: ink `#121417`, paper `#ffffff`, paper-soft `#f3f1ec`, azul institucional `#16324a` e destaque vinho `#a51c30`.
+- Tokens e diretrizes em `docs/brand-guidelines.md`.
+- Ajustes aplicados em header, hero, botões, Destaques, Depoimentos, Histórias, Artigos, rodapé e páginas internas.
+- **Destaques:** destino do drag ficou monotônico (não volta depois de passar de um card), com mais peso: `FLICK_VELOCITY=0.32`, `MIN_DRAG=16`, resistência `0.9` e mola criticamente amortecida (`SPRING_OMEGA=15`) que parte da velocidade da soltura.
+- **Depoimentos:** seção aberta em `paper-soft`, sem painel/borda; setas posicionadas nas laterais da página.
+- Imagens demo institucionais temporárias substituídas em `tools/demo-images/`; créditos em `tools/demo-images/CREDITS.md`. O gerador de placeholders agora não sobrescreve imagens existentes.
+- Seed atualizado para criar menus principal/rodapé, opções de redes/escritórios/inscrição e conteúdo de artigos.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 15/15; `tools\test.ps1` → 153/153; `php -l` em 27 arquivos e `node --check` nos dois JS sem erros.
+- **Pendente:** aprovação visual do cliente, logo/fotografias definitivas e eventuais ajustes de contraste/espaçamento após revisão.
 
 ## Limitações conhecidas
 
@@ -347,4 +368,6 @@ O `-Reset` para os serviços, apaga o runtime e reinstala. O conteúdo local (po
 
 ## Próximos passos
 
-1. Seguir para a **F5 — Identidade visual**: definir logo, paleta e tipografia finais.
+1. **F5 — Identidade visual:** validar a primeira passada JT, receber logo/fotografias definitivas e ajustar contraste/espaçamento.
+2. **F6 — Entrega:** criar `build-zip.ps1`, gerar o zip do tema, configurar staging, SSL, backup, SEO/Open Graph e manual do cliente.
+3. **F7 — Backlog:** busca com design próprio, contato/newsletter, LGPD e multilíngue, conforme demanda.

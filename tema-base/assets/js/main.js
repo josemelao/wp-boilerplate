@@ -200,10 +200,11 @@
 		var viewport = root.querySelector('[data-carousel-viewport]');
 		var items = viewport ? Array.prototype.slice.call(viewport.querySelectorAll('.featured__item')) : [];
 		var targetApi = window.tbCarouselTarget || {};
-		var FLICK_VELOCITY = 0.2;
-		var MIN_DRAG = 10;
-		var RELEASE_DECAY = 100;
-		var SETTLE_DURATION = 340;
+		var FLICK_VELOCITY = 0.32;
+		var MIN_DRAG = 16;
+		var RELEASE_DECAY = 90;
+		var SPRING_OMEGA = 15;
+		var DRAG_RESISTANCE = 0.9;
 
 		if (!viewport || items.length < 2) {
 			return;
@@ -292,26 +293,33 @@
 		}
 
 		/**
-		 * Anima o scroll até o card alvo.
+		 * Desliza até o card alvo com uma mola criticamente amortecida.
 		 *
-		 * @param {number} index    Índice de destino.
-		 * @param {number} duration Duração em ms.
+		 * A posição inicial e a velocidade vêm do gesto atual, para o primeiro
+		 * frame continuar o movimento em vez de dar um salto seco.
+		 *
+		 * @param {number} index           Índice de destino.
+		 * @param {number} initialVelocity Velocidade inicial em px/ms (positiva = próximo).
 		 * @return {void}
 		 */
-		function animateScrollTo(index, duration) {
+		function animateScrollTo(index, initialVelocity) {
 			var targetLeft = scrollLeftFor(index);
+			var startLeft = viewport.scrollLeft;
+			var offset = startLeft - targetLeft;
 
 			cancelScrollAnimation();
 			markCentered(index);
 
-			if (reducedMotion || duration <= 0 || Math.abs(viewport.scrollLeft - targetLeft) < 1) {
+			if (reducedMotion || Math.abs(offset) < 1) {
 				viewport.scrollLeft = targetLeft;
 				return;
 			}
 
-			var startLeft = viewport.scrollLeft;
+			var velocity = (initialVelocity || 0) * 1000;
+			var limit = SPRING_OMEGA * Math.abs(offset);
 			var startTime = null;
-			var total = duration || SETTLE_DURATION;
+
+			velocity = Math.max(-limit, Math.min(limit, velocity));
 
 			viewport.classList.add('is-settling');
 
@@ -320,17 +328,21 @@
 					startTime = now;
 				}
 
-				var progress = Math.min(1, (now - startTime) / total);
-				var eased = 1 - Math.pow(1 - progress, 3);
+				var elapsed = (now - startTime) / 1000;
+				var damping = Math.exp(-SPRING_OMEGA * elapsed);
+				var displacement = (offset + ((velocity + (SPRING_OMEGA * offset)) * elapsed)) * damping;
+				var currentVelocity = (velocity - (SPRING_OMEGA * (velocity + (SPRING_OMEGA * offset)) * elapsed)) * damping;
 
-				viewport.scrollLeft = startLeft + (targetLeft - startLeft) * eased;
+				viewport.scrollLeft = targetLeft + displacement;
 
-				if (progress < 1) {
-					scrollFrame = window.requestAnimationFrame(frame);
-				} else {
+				if (Math.abs(displacement) < 0.5 && Math.abs(currentVelocity) < 30) {
+					viewport.scrollLeft = targetLeft;
 					scrollFrame = null;
 					viewport.classList.remove('is-settling');
+					return;
 				}
+
+				scrollFrame = window.requestAnimationFrame(frame);
 			}
 
 			scrollFrame = window.requestAnimationFrame(frame);
@@ -343,7 +355,7 @@
 		 * @return {void}
 		 */
 		function goTo(index) {
-			animateScrollTo(index, SETTLE_DURATION);
+			animateScrollTo(index, 0);
 		}
 
 		/**
@@ -376,7 +388,7 @@
 				return;
 			}
 
-			viewport.scrollLeft = pointerDrag.scrollLeft - (pointerDrag.pendingX - pointerDrag.x);
+			viewport.scrollLeft = pointerDrag.scrollLeft - ((pointerDrag.pendingX - pointerDrag.x) * DRAG_RESISTANCE);
 			pointerDrag.pendingX = null;
 		}
 
@@ -407,9 +419,6 @@
 				return;
 			}
 
-			// Garante que o último movimento não se perca antes da decisão.
-			viewport.scrollLeft = drag.scrollLeft - (finalX - drag.x);
-
 			var releaseAge = Math.max(
 				0,
 				(event && 'number' === typeof event.timeStamp ? event.timeStamp : drag.lastTime) - drag.lastTime
@@ -419,7 +428,7 @@
 			var targetIndex = chooseTarget({
 				startIndex: drag.startIndex,
 				velocity: isCancel ? 0 : releaseVelocity,
-				distance: finalX - drag.x,
+				distance: drag.x - finalX,
 				nearestIndex: centeredIndex(),
 				length: items.length,
 				flickVelocity: FLICK_VELOCITY,
@@ -432,8 +441,8 @@
 				suppressClick = false;
 			}, 400);
 
+			animateScrollTo(targetIndex, isCancel ? 0 : releaseVelocity);
 			viewport.classList.remove('is-dragging');
-			animateScrollTo(targetIndex, SETTLE_DURATION);
 		}
 
 		if (previous) {

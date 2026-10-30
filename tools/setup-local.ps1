@@ -389,7 +389,7 @@ if (-not (Test-Path $configPath)) {
 
 & $php $wpCli core is-installed --path="$wpDir" 2>$null | Out-Null
 if ($LASTEXITCODE -ne 0) {
-	& $php $wpCli core install --path="$wpDir" --url="$siteUrl" --title='LW Clone' --admin_user=$AdminUser --admin_password=$AdminPassword --admin_email=$AdminEmail --skip-email | Out-Null
+	& $php $wpCli core install --path="$wpDir" --url="$siteUrl" --title='JT' --admin_user=$AdminUser --admin_password=$AdminPassword --admin_email=$AdminEmail --skip-email | Out-Null
 	if ($LASTEXITCODE -ne 0) {
 		throw 'Falha ao instalar o WordPress.'
 	}
