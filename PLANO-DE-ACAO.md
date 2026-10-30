@@ -32,7 +32,7 @@
 | D7 | CPTs ficam **no tema** nesta fase. | Simplicidade. **Antes de produção**, avaliar mover para plugin/mu-plugin (se trocar o tema, os tipos de conteúdo somem do painel; os dados não são apagados, mas ficam inacessíveis). |
 | D8 | CPTs e metas com **`show_in_rest`** habilitado. | Permite popular e manter o conteúdo via WP-CLI, REST API ou MCP de WordPress. |
 | D9 | O print de referência é **só referência estrutural**. | Identidade visual, textos, imagens e marca precisam ser próprios do cliente. Não copiar logo, fotos, textos ou CSS de site de terceiros. |
-| D10 | A seção "Histórias" mostra todos os títulos em uma lista vertical. O item ativo fica sempre no fim da lista; as setas verticais giram a lista circularmente. O título ativo abre sua própria single em `/historias/{slug}/`; os outros títulos selecionam um item. O painel mostra título e resumo do ativo e o fundo faz crossfade. | A interação foi esclarecida pelo usuário durante a implementação da F2. |
+| D10 | "Histórias" usa uma única lista circular: com 4 ou mais posts, mostra 3 títulos comuns (22% da altura cada) e o título ativo (34%); o ativo não é repetido em um painel separado. A superfície clara e as setas ficam fixas; o título e o resumo (primeiro parágrafo, com fallback para `_tb_summary`) mudam com a rotação. As setas/teclas ↑↓ percorrem os itens em loop, sem entradas instantâneas. O título ativo abre `/historias/{slug}/`; os outros selecionam. | Detalhes refinados pelo usuário a partir de screenshots e validação manual em 29/10/2026. |
 | D11 | **Ambiente local padronizado = runtime portátil versionado** (`tools/setup-local.ps1`: PHP 8.3.36, MariaDB 11.4.13, WordPress 7.1.4, WP-CLI 2.12.0), Windows x64. LocalWP e `@wordpress/env` não são o caminho oficial. | Todos os colegas, mesmo sem nada instalado, chegam ao mesmo ambiente com um comando — sem GUI, Docker ou admin. LocalWP não é reproduzível (cada um escolhe versões/servidor na interface). |
 
 ## 3. Escopo
@@ -222,6 +222,44 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 | **F5 Identidade** | Tokens, fontes locais, logo, ajustes visuais finos | Visual do cliente aprovado |
 | **F6 Entrega** | Hospedagem, permalinks, SSL, backup, manual, treinamento | Cliente publica um post e um sócio sozinho |
 | **F7 Backlog** | Busca, contato/newsletter, SEO, LGPD, multilíngue (se pedido) | Priorizar com o usuário |
+
+### Registro de execução e handoff — 29/10/2026
+
+**Checkout:** branch `codex/trabalho`, publicada em `origin/codex/trabalho`. O último push anterior a este registro continha o commit `4de2f5f` (`Improve stories carousel animation and controls`); este handoff e os templates F3 estão sendo consolidados na mesma branch.
+
+#### Solicitações do usuário e decisões incorporadas
+
+- No início, o usuário percebeu que o conteúdo de outro computador não aparecia e que o site mostrava apenas “Hello world”. Foi esclarecido e registrado que Git sincroniza tema/código, mas o banco e uploads locais ficam em `.local/` (ignorado pelo Git); o seed repõe conteúdo demonstrativo, não conteúdo editorial de outra máquina. O usuário pediu buscar a versão remota mais recente, criou/acessou a branch de trabalho e solicitou iniciar o servidor local.
+- O usuário acessou o painel e perguntou sobre plugins e tipos de conteúdo. Os CPTs/metas editáveis fazem parte da F1; Editor sem acesso a plugins, temas e usuários é uma restrição intencional do papel. As credenciais do WordPress local são específicas de cada ambiente e ficam em `.local/CREDENCIAIS.txt`, não neste documento.
+- O usuário forneceu capturas da página de referência e pediu fidelidade de layout, com foco especial na seção **Histórias**, preservando a funcionalidade e o conteúdo editável no WordPress.
+- Nos primeiros ajustes de Histórias, o usuário apontou título renderizado como parágrafo, desalinhamento e espaçamento irregular. Criou a quinta história (“Teste”) e pediu que a lista permanecesse regular com 3, 4 ou 5 itens.
+- Ao ver o item ativo duplicado, especificou uma única lista de itens; o ativo pertence à mesma lista, recebe outro layout e mostra o primeiro parágrafo como chamada. Com quatro ou mais histórias, a seção deve mostrar quatro slots: três itens de 22% e o ativo de 34%, sem margens/paddings da lista em relação à seção. Com menos histórias, os slots disponíveis são centralizados.
+- O usuário reportou setas visíveis em títulos inativos e texto passando por cima dos controles. Os controles agora são um grupo compartilhado, fora das linhas que giram, dentro da área fixa do cartão; texto reserva largura para os controles.
+- Pediu que o cartão ativo ficasse parado enquanto os títulos animam. A superfície do cartão é desenhada fixa na lista; as entradas da lista (os posts) fazem a transição para dentro e para fora dela.
+- Especificou movimento circular contínuo: nenhum item deve aparecer ou sumir no meio da seção. A seta para baixo foi validada primeiro; depois o usuário apontou que a entrada da seta para cima descia. O item que entra por baixo agora é posicionado fora da seção sem transição e, então, anima para cima. Para listas de até quatro itens, um clone visual temporário, inerte e oculto para tecnologia assistiva, fecha o loop; é removido ao fim da transição e não cria um segundo post/painel persistente.
+- Nos carrosséis, o usuário relatou que o arrasto do mouse exigia cliques extras e abria links ao soltar. Pediu drag real e depois refinou a sensação: snap suave, momentum leve após soltar, inclusive antes da metade do card. O CSS/JS usa arrasto com mouse, evita ativar o link se houve drag, desativa o snap enquanto arrasta e aplica settling/momentum ao soltar.
+- Pediu rotação automática para Hero e Depoimentos, sem depender de clique; os faders têm autoplay, controles manuais e pausa/resume por foco/interação.
+
+#### Implementação registrada
+
+- `tema-base/template-parts/stories.php`: itens únicos por post, resumo do primeiro parágrafo com fallback `_tb_summary`, um conjunto compartilhado de setas.
+- `tema-base/assets/js/main.js`: rotação circular com os itens visíveis movendo-se antes da reorganização final, sincronização de título/resumo/fundo, seleção de títulos, controles de teclado e animação de entrada/saída nas duas direções.
+- `tema-base/assets/css/main.css`: quatro slots proporcionais, cartão fixo, controles fixos, áreas de texto reservadas e responsividade; ajustes anteriores de drag, momentum e faders permanecem.
+- `tools/dev.ps1`: inicialização dos serviços com `Start-Process` oculto e redirecionamento de logs. `tools/router.php`: normaliza `/wp-admin` para `/wp-admin/`, corrigindo links relativos que levavam ao tema em vez do painel quando a barra final era omitida. O papel Editor segue sem acesso a plugins/temas/usuários, conforme o modelo de entrega do plano.
+- F3 implementada: `index.php` (blog/busca/categorias), `single.php` (artigo), `page.php`, `archive-socio.php`, `single-socio.php` e `404.php`; CSS para cards, artigo, conteúdo de página, arquivo/perfil de sócios e paginação. Os dados continuam gerenciáveis pelo WordPress e os contatos opcionais são escapados/sanitizados na saída.
+
+#### Verificações e validação
+
+- `tools/test.ps1`: **153 verificações da F1 passaram**.
+- `php -l` em todos os PHP do tema: sem erros de sintaxe.
+- Rotas locais: `/artigos/`, `/artigo-01/`, `/sample-page/`, `/socios/` e `/category/perspectivas/` retornaram 200; rota inexistente retornou 404.
+- Um perfil de sócio temporário validou a single, cargo, biografia, e-mail, telefone e LinkedIn; o post temporário foi removido. Não há sócios publicados no banco local após esse teste.
+- O usuário informou **“validado”** após o passo a passo manual que cobria autoplay do Hero/Depoimentos, drag do carrossel, setas de Depoimentos, rotação de Histórias nos dois sentidos, painel/setas fixos, títulos e single de História, cards/artigos, rotas do blog, conteúdo de sócio, 404, larguras de 360/768/1280 px e Console do navegador.
+
+#### Pendências para retomar
+
+- Completar F4: testar como Editor, foco/acessibilidade de todos os componentes, toque em dispositivo, `WP_DEBUG`, desempenho/Lighthouse e seções sem conteúdo; repetir Histórias com 3 e 4 itens (a revisão manual recente usou 5).
+- Identidade visual (F5), hospedagem/entrega (F6) e itens de backlog (F7) seguem dependendo dos dados e decisões do cliente.
 
 ## 13. Cuidados, armadilhas e precauções
 

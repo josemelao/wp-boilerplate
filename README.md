@@ -6,8 +6,8 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 
 - **F0 (Preparação) concluída**: ambiente local reproduzível, WordPress instalado e tema ativo.
 - **F1 (Fundação) concluída**: 5 tipos de conteúdo, meta boxes, “Opções do Site”, experiência do cliente no painel, header/footer e menus.
-- **F2 (Home) em implementação**: as seções, estilos, interações, seed local e página individual de História estão no tema; os ajustes do último teste manual aguardam nova conferência no navegador.
-- Blog e páginas de sócio entram na **F3**.
+- **F2 (Home) implementada e validada pelo usuário**: as seções, estilos, interações, seed local e página individual de História estão no tema. A validação manual confirmou autoplay, carrosséis, Histórias, navegação, console e larguras de 360/768/1280 px.
+- **F3 (Blog/Páginas/Sócios) implementada e validada**: listagens, singles, página, arquivo/perfil de sócio e 404 têm templates próprios; rotas e conteúdo passaram nas verificações locais e no passo a passo do usuário.
 
 ## Requisitos
 
@@ -154,7 +154,12 @@ LWclone/
     ├── footer.php          ← menu, redes, escritórios, copyright
     ├── front-page.php      ← home com as seções de conteúdo
     ├── single-historia.php ← página editorial própria de cada história
-    ├── index.php           ← fallback (blog/categorias/busca)
+    ├── single.php          ← artigo individual
+    ├── page.php            ← páginas institucionais
+    ├── archive-socio.php   ← arquivo de sócios
+    ├── single-socio.php    ← perfil individual de sócio
+    ├── 404.php             ← página de conteúdo não encontrado
+    ├── index.php           ← blog, categorias, busca e fallback
     ├── inc/
     │   ├── setup.php       ← supports, menus, tamanhos, enqueue
     │   ├── post-types.php  ← os 5 CPTs
@@ -212,13 +217,26 @@ Não testado na F1: as 6 seções da home (F2), templates de post/página/sócio
 
 ## Estado da F2
 
-Implementados: template inicial, cinco seções de conteúdo (com rodapé compartilhado), controles de hero e depoimentos, scroll-snap e arrasto do carrossel, lista circular de histórias com seleção fixa na última posição, single editorial das histórias, cards de artigos, CSS responsivo e seed de demonstração.
+Implementados: template inicial, cinco seções de conteúdo (com rodapé compartilhado), controles e autoplay de Hero/Depoimentos, scroll-snap e arrasto do carrossel com settling/momentum, lista circular de Histórias com cartão e setas fixos, single editorial das histórias, cards de artigos, CSS responsivo e seed de demonstração.
 
-Correções registradas após o teste manual de 29/10/2026: retomada do autoplay após o foco sair do componente, arrasto por mouse, setas laterais nos depoimentos, lista de histórias circular vertical com link para single própria e imagens demo de histórias com cores mais distintas. A nova revisão visual dessas correções ainda está pendente.
+Iterações solicitadas pelo usuário: corrigir drag do mouse que prendia/acionava links, suavizar o snap e acrescentar momentum leve; manter Hero e Depoimentos em rotação automática; aproximar Histórias da referência; eliminar a duplicação do item ativo; exibir até quatro slots (3 × 22% + 1 × 34%); mostrar o primeiro parágrafo como chamada; manter cartão e setas parados, reservar espaço para os controles e animar a lista circular sem itens aparecendo no meio da seção. A entrada para cima foi corrigida para começar fora da tela inferior antes de subir.
 
 Verificado após os ajustes: seed executado com sucesso; `/` responde **200**; `/historias/historia-01/` responde **200** e usa `single-historia.php`; a lista da home aponta para essa URL.
 
-**Pendente de nova conferência após os ajustes:** autoplay do hero e dos depoimentos, arrasto do carrossel com mouse, setas laterais dos depoimentos, rotação vertical das histórias e navegação para a single. Revalidar também seções sem conteúdo, console, teclado/toque e tamanhos responsivos antes de concluir a F2.
+O usuário informou **“validado”** após conferir autoplay do Hero/Depoimentos; arrasto do carrossel; setas dos Depoimentos; Histórias para cima e para baixo, sem salto, com cartão/setas fixos e link para a single; cards e rotas de artigos; e layout em 360/768/1280 px sem erros no Console. A lista usada tinha cinco histórias, incluindo “Teste”. Ainda falta validar separadamente toque, Histórias com 3/4 itens e o estado das seções sem conteúdo.
+
+## Estado da F3
+
+Implementados: listagem paginada de artigos, arquivo de busca/categorias, artigo individual com navegação anterior/próximo, páginas institucionais, arquivo e perfil de sócio, e página 404. Os templates usam os campos de contato definidos na F1 e mantêm o conteúdo editorial no editor do WordPress.
+
+Verificado no ambiente local:
+
+- PHP sem erro de sintaxe nos seis templates da F3 (`index.php`, `single.php`, `page.php`, `archive-socio.php`, `single-socio.php` e `404.php`).
+- `tools\test.ps1` → **153 verificações da F1 passaram**.
+- `/artigos/`, `/artigo-01/`, `/sample-page/`, `/socios/` e `/category/perspectivas/` responderam **200**; URL inexistente respondeu **404**.
+- Um perfil temporário de sócio confirmou a rota `/socios/{slug}/`, renderização de nome, cargo, biografia e links de e-mail, telefone e LinkedIn; o registro temporário foi removido após a verificação.
+
+O usuário informou **“validado”** após navegar por artigos, single, retorno, categoria, página, arquivo de sócios e 404. O perfil temporário usado na verificação automatizada foi removido; não há perfis de sócio publicados no conteúdo local agora.
 
 ## Limitações conhecidas
 
@@ -268,6 +286,4 @@ O `-Reset` para os serviços, apaga o runtime e reinstala. O conteúdo local (po
 
 ## Próximos passos
 
-1. **F2 — Home**: as 6 seções com CSS/JS + seed de conteúdo demo.
-2. **F3 — Blog/Sócios/Páginas**.
-3. **F4 — QA** (Editor, a11y, responsivo, `WP_DEBUG`).
+1. **F4 — QA**: testar como Editor, acessibilidade/foco de todos os componentes, toque, Histórias com 3/4 itens, seções vazias, desempenho/Lighthouse e `WP_DEBUG`.
