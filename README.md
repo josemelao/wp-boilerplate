@@ -14,6 +14,7 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **F5.2 (Protótipo de conteúdo P0) implementada e validada**: áreas de atuação, escritórios, perfis de sócios demo, páginas Sobre/Contato/Reconhecimentos/Privacidade, menus, seção de áreas na home e footer reorganizado com escritórios linkados e CTA de contato.
 - **F6.1 (Performance de mídia) implementada**: derivados WebP automáticos para uploads JPEG/PNG, qualidade 80, regeneração das 18 imagens e preload do hero na home.
 - **F6.2 (SEO) implementada em modo híbrido**: descrição, Open Graph/Twitter, schema, trilha de navegação e `noindex` no tema; o tema se desliga quando um plugin de SEO está ativo. Plugin segue recomendado em produção (ver `docs/seo.md`).
+- **F6.3 (Acessibilidade) implementada**: Lighthouse/axe em 100 nas páginas auditadas, ordem de títulos corrigida nos arquivos, alvo do compartilhamento ampliado e testes de teclado, foco, skip link, menu mobile e reflow de 320 a 1280 px.
 
 ## Requisitos
 
@@ -150,9 +151,10 @@ npm run test:e2e:smoke
 - `tests\e2e\content-modules.spec.js` cobre áreas, escritórios, páginas institucionais, ordem dos arquivos e perfil de sócio.
 - `tests\e2e\footer.spec.js` cobre a organização do rodapé, escritórios linkados e CTA de contato.
 - `tests\e2e\seo.spec.js` cobre descrição, Open Graph, Twitter Card, schema, trilha visível e `noindex` em busca/404.
+- `tests\e2e\a11y.spec.js` cobre estrutura, alt, ids únicos, ordem de títulos, skip link, foco visível, controles nomeados, menu mobile e reflow de 320 a 1280 px.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **32/32**; `tools\test.ps1` → **153/153**; `tools\seo-check.ps1` → **65/65**; `php -l` em 39 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **38/38**; `tools\test.ps1` → **153/153**; `tools\seo-check.ps1` → **65/65**; `php -l` em 39 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -395,9 +397,20 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - **Verificado em 30/10/2026:** 12/12 unitários, 32/32 E2E, 153/153 da F1, 65/65 no `seo-check` e `php -l` em 39 arquivos.
 - **Pendente:** escolher e instalar o plugin em produção, configurar redirects 301, Search Console e a imagem social definitiva.
 
+### F6.3 — Acessibilidade (implementada em 30/10/2026)
+
+- Lighthouse (axe) marcou **100 em acessibilidade** na home, artigos (arquivo e artigo), áreas (arquivo e individual), escritórios (arquivo e individual), sócios (arquivo e perfil), histórias, Sobre, Contato e busca. A rota 404 não é auditável pelo Lighthouse porque responde 404; o `noindex` dela é coberto por E2E.
+- **Ordem de títulos corrigida** nos arquivos de artigos, áreas e escritórios: os cards usam `h2` abaixo do `h1` da página e continuam `h3` dentro das seções da home, que já têm `h2`.
+- **Compartilhamento:** o link “X” tinha 7 px de largura; todos os `.share__link` agora têm alvo mínimo de 24 × 44 px.
+- **Teclado e foco:** skip link aparece no primeiro Tab, leva ao conteúdo e exibe contorno visível; menu mobile abre/fecha com Escape e devolve o foco ao botão; trilha tem nome acessível e `aria-current`.
+- **Formulários e controles:** busca do rodapé e do estado vazio têm rótulo; links de compartilhamento e botão de cópia têm nome acessível.
+- **Reflow:** sem rolagem horizontal em 320, 360, 768 e 1280 px nas páginas verificadas.
+- Cobertura em `tests/e2e/a11y.spec.js`.
+- **Verificado em 30/10/2026:** 12/12 unitários, 38/38 E2E, 153/153 da F1, 65/65 no `seo-check`, `php -l` em 39 arquivos.
+- **Observação:** o Lighthouse local marcou desempenho 80 com LCP sintético de 5,4 s; a medição direta no navegador segue em ~0,67 s. Reavaliar em staging com cache/CDN na F6.4.
+
 ### Pendente na F6
 
-- **F6.3 Acessibilidade:** revalidar teclado, foco, contraste, share e busca do footer; Lighthouse/axe.
 - **F6.4 Produção:** staging com MySQL/nginx, SSL, backup, cache, CDN, monitoramento, formulário de contato, LGPD/cookies e manual do cliente.
 
 ## Limitações conhecidas

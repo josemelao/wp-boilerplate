@@ -15,6 +15,9 @@ if ( ! $tb_area ) {
 $tb_excerpt = has_excerpt( $tb_area )
 	? get_the_excerpt( $tb_area )
 	: wp_trim_words( wp_strip_all_tags( $tb_area->post_content ), 20, '…' );
+
+$tb_heading_level = isset( $args['heading_level'] ) ? max( 2, min( 6, (int) $args['heading_level'] ) ) : 3;
+$tb_heading_tag   = 'h' . $tb_heading_level;
 ?>
 <article class="area-card">
 	<a class="area-card__link" href="<?php echo esc_url( get_permalink( $tb_area ) ); ?>">
@@ -23,7 +26,7 @@ $tb_excerpt = has_excerpt( $tb_area )
 		<?php endif; ?>
 		<div class="area-card__body">
 			<p class="tb-kicker"><?php esc_html_e( 'Área de atuação', 'tema-base' ); ?></p>
-			<h3 class="area-card__title"><?php echo esc_html( get_the_title( $tb_area ) ); ?></h3>
+			<<?php echo esc_html( $tb_heading_tag ); ?> class="area-card__title"><?php echo esc_html( get_the_title( $tb_area ) ); ?></<?php echo esc_html( $tb_heading_tag ); ?>>
 			<?php if ( $tb_excerpt ) : ?>
 				<p class="area-card__excerpt"><?php echo esc_html( $tb_excerpt ); ?></p>
 			<?php endif; ?>

@@ -59,7 +59,7 @@ if ( is_search() ) {
 				<?php
 				while ( have_posts() ) :
 					the_post();
-					get_template_part( 'template-parts/card-post', null, array( 'post_id' => get_the_ID() ) );
+					get_template_part( 'template-parts/card-post', null, array( 'post_id' => get_the_ID(), 'heading_level' => 2 ) );
 				endwhile;
 				?>
 			</div>

@@ -19,7 +19,7 @@ get_header();
 				<?php
 				while ( have_posts() ) :
 					the_post();
-					get_template_part( 'template-parts/card', 'office', array( 'post_id' => get_the_ID() ) );
+					get_template_part( 'template-parts/card', 'office', array( 'post_id' => get_the_ID(), 'heading_level' => 2 ) );
 				endwhile;
 				?>
 			</div>

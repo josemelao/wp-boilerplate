@@ -1579,8 +1579,10 @@ img {
 
 .share__link {
 	display: inline-flex;
+	min-width: 24px;
 	min-height: 44px;
 	align-items: center;
+	justify-content: center;
 	padding: 0.25rem 0;
 	border: 0;
 	border-bottom: 1px solid transparent;
