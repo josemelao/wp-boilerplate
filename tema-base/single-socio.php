@@ -23,6 +23,7 @@ if ( have_posts() ) :
 				</div>
 				<div class="socio-profile__main">
 					<header class="socio-profile__header">
+						<?php get_template_part( 'template-parts/breadcrumbs' ); ?>
 						<p class="tb-kicker"><?php esc_html_e( 'Sócio', 'tema-base' ); ?></p>
 						<h1 class="socio-profile__name"><?php the_title(); ?></h1>
 						<?php if ( $tb_role ) : ?><p class="socio-profile__role"><?php echo esc_html( $tb_role ); ?></p><?php endif; ?>

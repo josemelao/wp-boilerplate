@@ -19,6 +19,7 @@ if ( have_posts() ) :
 		<article <?php post_class( 'office-single' ); ?>>
 			<div class="tb-container office-single__layout">
 				<div class="office-single__main">
+					<?php get_template_part( 'template-parts/breadcrumbs' ); ?>
 					<p class="tb-kicker"><?php esc_html_e( 'Escritório', 'tema-base' ); ?></p>
 					<h1 class="content-page__title"><?php the_title(); ?></h1>
 					<div class="entry-content">

@@ -10,6 +10,7 @@ if ( have_posts() ) :
 		?>
 		<article <?php post_class( 'post-single' ); ?>>
 			<header class="post-single__header tb-container">
+				<?php get_template_part( 'template-parts/breadcrumbs' ); ?>
 				<?php if ( $tb_categories ) : ?>
 					<p class="tb-kicker post-single__category"><?php echo esc_html( $tb_categories[0]->name ); ?></p>
 				<?php endif; ?>

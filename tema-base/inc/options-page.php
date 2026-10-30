@@ -71,6 +71,7 @@ function tb_sanitize_options( $input ) {
 				$clean[ $key ] = esc_url_raw( trim( $value ) );
 				break;
 			case 'offices':
+			case 'seo_home_description':
 				$clean[ $key ] = sanitize_textarea_field( $value );
 				break;
 			default:
@@ -222,6 +223,25 @@ function tb_register_options() {
 			'description' => __( 'Fica ao lado do copyright.', 'tema-base' ),
 		)
 	);
+
+	add_settings_section(
+		'tb_section_seo',
+		__( 'SEO', 'tema-base' ),
+		'tb_section_seo_intro',
+		'tb-options'
+	);
+
+	add_settings_field(
+		'seo_home_description',
+		__( 'Descrição da página inicial', 'tema-base' ),
+		'tb_render_textarea_field',
+		'tb-options',
+		'tb_section_seo',
+		array(
+			'key'         => 'seo_home_description',
+			'description' => __( 'Usada por buscadores e redes sociais ao compartilhar a home. Deixe em branco para usar o slogan do site. Máximo recomendado: 160 caracteres.', 'tema-base' ),
+		)
+	);
 }
 add_action( 'admin_init', 'tb_register_options' );
 
@@ -259,6 +279,15 @@ function tb_section_offices_intro() {
  */
 function tb_section_footer_intro() {
 	echo '<p>' . esc_html__( 'Inscrição e texto do rodapé.', 'tema-base' ) . '</p>';
+}
+
+/**
+ * Texto de apoio da seção de SEO.
+ *
+ * @return void
+ */
+function tb_section_seo_intro() {
+	echo '<p>' . esc_html__( 'Textos usados por buscadores e redes sociais. Cada conteúdo também tem um campo de descrição na lateral do editor.', 'tema-base' ) . '</p>';
 }
 
 /**

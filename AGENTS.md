@@ -15,10 +15,11 @@ Instruções para sessões do OpenCode neste repositório.
 - 7 CPTs ficam no tema (`banner`, `destaque`, `depoimento`, `historia`, `socio`, `area`, `escritorio`), mais `post` nativo. Ordem = `menu_order`; rascunho = oculto; imagem = imagem destacada.
 - Edite só `tema-base/`, `tools/`, `tests/` e `docs/`. `tema-base/` é exposto ao WP local por junction em `.local/wp/wp-content/themes/tema-base`; não edite essa cópia, o core nem plugins em `.local/`.
 - A implementação atual está na branch `codex/trabalho`; `master` está atrás (sem F1–F4). Confirme com `git status`/`git log` antes de trocar de branch.
-- F0–F4 concluídas e validadas; F5 (identidade visual) tem uma primeira passada com o wordmark temporário **JT**, e a F5.1 cobre as páginas internas e o compartilhamento. A F5.2 concluiu e validou o protótipo P0. A F6.1 iniciou a profissionalização com derivados WebP automáticos. F6.2–F6.4 e F7 pendentes.
+- F0–F4 concluídas e validadas; F5 (identidade visual) tem uma primeira passada com o wordmark temporário **JT**, e a F5.1 cobre as páginas internas e o compartilhamento. A F5.2 concluiu e validou o protótipo P0. A F6.1 iniciou a profissionalização com derivados WebP automáticos e a F6.2 concluiu o SEO híbrido (tema agora, plugin em produção). F6.3–F6.4 e F7 pendentes.
 - Identidade visual: siga `docs/brand-guidelines.md`. Fontes self-hosted em `tema-base/assets/fonts/`; imagens demo e créditos em `tools/demo-images/` (`CREDITS.md`). Critérios por fase na seção 12 do plano.
 - Mídia: `inc/media.php` gera derivados WebP para uploads JPEG/PNG. Depois de mudar tamanhos ou o pipeline, rode `tools\wp.ps1 media regenerate --yes`.
 - Compartilhamento: componente próprio em `template-parts/share.php` + `tb_share_links()`. Web Share API é uma avaliação futura; não implementar sem teste real em mobile e necessidade comprovada.
+- SEO: `inc/seo.php` emite descrição, Open Graph/Twitter, JSON-LD e trilha, e **se desliga** se Yoast, Rank Math, The SEO Framework, SEOPress, All in One SEO ou Slim SEO estiver ativo. Não adicionar tags de SEO soltas em templates; siga `docs/seo.md` e valide com `tools\seo-check.ps1`.
 
 ## Ambiente (Windows-only)
 
@@ -68,6 +69,7 @@ powershell -ExecutionPolicy Bypass -File tools\test.ps1
   ```powershell
   .\.local\php\php.exe -l tema-base\inc\setup.php
   node --check tema-base\assets\js\main.js
+  powershell -ExecutionPolicy Bypass -File tools\seo-check.ps1
   ```
 
 - Para mudanças de front-end/rotas, suba o site e confirme HTTP: `/`, `/artigos/`, `/socios/` e `/historias/{slug}/` devem dar 200; URL inexistente deve dar 404.

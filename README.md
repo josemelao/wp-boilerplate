@@ -13,6 +13,7 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **F5.1 (Páginas internas) implementada**: blog, artigo, página, sócios, história e 404 revisados com leitura minimalista; compartilhamento nativo no artigo e na história, sem plugin.
 - **F5.2 (Protótipo de conteúdo P0) implementada e validada**: áreas de atuação, escritórios, perfis de sócios demo, páginas Sobre/Contato/Reconhecimentos/Privacidade, menus, seção de áreas na home e footer reorganizado com escritórios linkados e CTA de contato.
 - **F6.1 (Performance de mídia) implementada**: derivados WebP automáticos para uploads JPEG/PNG, qualidade 80, regeneração das 18 imagens e preload do hero na home.
+- **F6.2 (SEO) implementada em modo híbrido**: descrição, Open Graph/Twitter, schema, trilha de navegação e `noindex` no tema; o tema se desliga quando um plugin de SEO está ativo. Plugin segue recomendado em produção (ver `docs/seo.md`).
 
 ## Requisitos
 
@@ -148,9 +149,10 @@ npm run test:e2e:smoke
 - `tests\e2e\search.spec.js` cobre a busca restrita a artigos, estado vazio e campo do rodapé.
 - `tests\e2e\content-modules.spec.js` cobre áreas, escritórios, páginas institucionais, ordem dos arquivos e perfil de sócio.
 - `tests\e2e\footer.spec.js` cobre a organização do rodapé, escritórios linkados e CTA de contato.
+- `tests\e2e\seo.spec.js` cobre descrição, Open Graph, Twitter Card, schema, trilha visível e `noindex` em busca/404.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **26/26**; `tools\test.ps1` → **153/153**; `php -l` em 37 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **32/32**; `tools\test.ps1` → **153/153**; `tools\seo-check.ps1` → **65/65**; `php -l` em 39 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -176,7 +178,8 @@ LWclone/
 ├── .gitignore
 ├── .local/                 ← runtime gerado (fora do Git; inclui env.json)
 ├── docs/
-│   └── brand-guidelines.md ← paleta, tipografia e regras da identidade JT
+│   ├── brand-guidelines.md ← paleta, tipografia e regras da identidade JT
+│   └── seo.md             ← decisão de SEO, plugin recomendado e checklist
 ├── tests/
 │   ├── f1-checks.php       ← verificações da fundação (wp eval-file)
 │   ├── unit/               ← testes Node do JS puro
@@ -186,6 +189,7 @@ LWclone/
 │   ├── dev.ps1             ← start / stop / status
 │   ├── wp.ps1              ← atalho do WP-CLI
 │   ├── test.ps1            ← roda tests/f1-checks.php
+│   ├── seo-check.ps1       ← confere as tags de SEO do site em execução
 │   ├── router.php          ← rewrite do servidor embutido
 │   ├── seed-demo.ps1       ← gera imagens e popula conteúdo da home
 │   ├── seed-demo.php       ← cria/atualiza conteúdo via WP-CLI
@@ -216,8 +220,10 @@ LWclone/
     │   ├── meta-fields.php ← meta boxes, salvamento, REST
     │   ├── options-page.php← "Opções do Site"
     │   ├── helpers.php     ← tb_opt(), tb_query(), tb_featured_posts(), tb_share_links()
+    │   ├── media.php       ← derivados WebP e preload do hero
+    │   ├── seo.php         ← descrição, Open Graph, schema e trilha
     │   └── admin-ux.php    ← colunas, ordem, dicas, aviso de Leitura
-    ├── template-parts/     ← hero, destaques, depoimentos, histórias, artigos e compartilhamento
+    ├── template-parts/     ← hero, destaques, depoimentos, histórias, artigos, compartilhamento e trilha
     └── assets/
         ├── css/main.css    ← tokens, componentes e responsivo
         ├── fonts/          ← Libre Franklin, Source Sans 3 e Source Serif 4
@@ -303,7 +309,7 @@ Verificações locais feitas em 29/10/2026:
 - Ajustes de acessibilidade feitos durante o QA: um `<h1>` ativo por vez no Hero (os outros títulos são `<h2>` e o nível acompanha a rotação), autoplay desligado por padrão quando `prefers-reduced-motion: reduce`, pausa dos faders em foco/hover e grupos de bullets com nome acessível.
 - Lighthouse na home local: mobile — desempenho 100, acessibilidade 100, boas práticas 100, SEO 92; desktop — 100 nas quatro categorias. Mobile: FCP 1,2 s, LCP 1,5 s, Speed Index 1,2 s, TBT 0 ms e CLS 0. As pontuações são medições sintéticas do ambiente local e podem variar entre execuções.
 - Para zerar os apontamentos de acessibilidade do primeiro Lighthouse, removi o `aria-label` redundante dos links dos cards e aumentei a área clicável dos bullets e controles de Histórias para pelo menos 24 × 24 px; as novas medições não apontaram falhas de acessibilidade.
-- SEO marcou 92 porque a home local não tem meta description. O plano recomenda configurar SEO/Open Graph com um plugin na fase de entrega/backlog, em vez de adicionar metadados incompletos no tema. Relatórios HTML/JSON (ignorados pelo Git) estão em `.local/lighthouse/`.
+- SEO marcou 92 porque a home local não tem meta description. O plano recomenda configurar SEO/Open Graph com um plugin na fase de entrega/backlog, em vez de adicionar metadados incompletos no tema. Relatórios HTML/JSON (ignorados pelo Git) estão em `.local/lighthouse/`. **Superado na F6.2:** o tema passou a emitir descrição, Open Graph, schema e trilha; ver `docs/seo.md`.
 
 Validação manual confirmada pelo usuário: login e permissões do Editor; controles por teclado/foco; toque no carrossel; página inicial completa sem conteúdo; Histórias com 3 e 4 itens, além da configuração com 5; e comportamento visual em 360/768/1280 px. O usuário também já havia validado os fluxos F2/F3 descritos acima.
 
@@ -313,7 +319,7 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
 - **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
-- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (4), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (1), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/search.spec.js` (2), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1) e `tests/e2e/media.spec.js` (1). Total E2E: **26**.
+- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (4), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (1), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/search.spec.js` (2), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1) e `tests/e2e/seo.spec.js` (6). Total E2E: **32**.
 - **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 26/26; `tools\test.ps1` → 153/153; `php -l` em 37 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
@@ -375,9 +381,22 @@ Baseline antes: **~2,5 MB** no total, **~2,39 MB** em imagens, LCP local **~2,0 
 - Depois: **~1,97 MB** no total, **~1,80 MB** em imagens, LCP local **~0,67 s** (medição sintética local).
 - Cobertura em `tests/e2e/media.spec.js`.
 
+### F6.2 — SEO (implementada em 30/10/2026)
+
+Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automaticamente quando um plugin de SEO reconhecido está ativo (Yoast, Rank Math, The SEO Framework, SEOPress, All in One SEO ou Slim SEO). Em produção o plugin continua recomendado para redirects, análise e painel editorial.
+
+- `inc/seo.php`: meta description (campo SEO → resumo → conteúdo → padrão), Open Graph, Twitter Card, canonical em home/arquivos, JSON-LD (`Organization`/`LegalService`, `WebSite`, `WebPage`/`CollectionPage`, `Article`, `Person`, `Service`, `LocalBusiness` e `BreadcrumbList`) e `noindex` na 404.
+- Caixa **SEO** na lateral do editor para post, página, área, escritório, sócio e história (`_tb_seo_description`, até 160 caracteres, registrada na REST).
+- Opções do Site → SEO → descrição da página inicial.
+- Imagem social: destacada → ícone do site → logo → primeiro banner, no tamanho `tb-slide` (1280 × 640).
+- Trilha de navegação visível em artigo, página, história, sócio, área e escritório.
+- `tools\seo-check.ps1` valida **65 itens** no site em execução; `tests/e2e/seo.spec.js` cobre o comportamento no navegador.
+- Checklist do plugin em `docs/seo.md`.
+- **Verificado em 30/10/2026:** 12/12 unitários, 32/32 E2E, 153/153 da F1, 65/65 no `seo-check` e `php -l` em 39 arquivos.
+- **Pendente:** escolher e instalar o plugin em produção, configurar redirects 301, Search Console e a imagem social definitiva.
+
 ### Pendente na F6
 
-- **F6.2 SEO:** plugin de SEO, meta description, Open Graph/Twitter, schema (`Organization`, `LegalService`, `Person`, `Article`, `BreadcrumbList`), breadcrumbs e `noindex` em busca.
 - **F6.3 Acessibilidade:** revalidar teclado, foco, contraste, share e busca do footer; Lighthouse/axe.
 - **F6.4 Produção:** staging com MySQL/nginx, SSL, backup, cache, CDN, monitoramento, formulário de contato, LGPD/cookies e manual do cliente.
 

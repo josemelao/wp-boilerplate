@@ -14,6 +14,7 @@ if ( have_posts() ) :
 		?>
 		<article <?php post_class( 'area-single' ); ?>>
 			<header class="content-page__header tb-container">
+				<?php get_template_part( 'template-parts/breadcrumbs' ); ?>
 				<p class="tb-kicker"><?php esc_html_e( 'Área de atuação', 'tema-base' ); ?></p>
 				<h1 class="content-page__title"><?php the_title(); ?></h1>
 				<?php if ( $tb_excerpt ) : ?>

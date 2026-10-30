@@ -179,7 +179,7 @@ Toda seção **retorna sem imprimir nada** se não houver itens.
 - Tamanhos de imagem registrados com `add_image_size()`; usar `sizes` corretos. Ao mudar tamanhos, **regenerar miniaturas** (`wp media regenerate`).
 - Não aplicar lazy-load na imagem do LCP (primeiro slide do hero).
 - Carregar CSS/JS só do tema; JS com `defer`. Versionar assets por `filemtime`.
-- `title-tag` ativado. Para SEO completo (meta description, Open Graph, sitemap), **recomendar** um plugin (Yoast, Rank Math ou The SEO Framework) em vez de reimplementar.
+- `title-tag` ativado. A F6.2 adotou o modo **híbrido** aprovado pelo usuário: o tema entrega descrição, Open Graph, Twitter Card, schema e trilha; ao detectar um plugin de SEO ativo, o tema se desliga. Em produção o plugin segue **recomendado** (The SEO Framework; alternativa Rank Math) para redirects, análise e painel editorial. Detalhes e checklist em `docs/seo.md`.
 - Cache/otimização de imagens: plugin só em produção, depois de validar o tema.
 
 ## 11. Ambiente, comandos e fluxo de trabalho
@@ -322,14 +322,14 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - **Validado pelo usuário em 30/10/2026:** áreas, escritórios, perfis de sócios, páginas institucionais e footer.
 - **Pendente:** módulos P1/P2 (setores, news, carreiras, eventos, busca global).
 
-#### F6 — Profissionalização técnica — F6.1 implementada — 30/10/2026
+#### F6 — Profissionalização técnica — F6.1 e F6.2 implementadas — 30/10/2026
 
 - **F6.1 Performance:** filtro `image_editor_output_format` em `inc/media.php` gera derivados WebP para uploads JPEG/PNG quando o editor suporta; qualidade WebP 80; original preservado; fallback para o formato original. `wp media regenerate --yes` regenerou 18 imagens. Preload do primeiro hero apenas na home, com `fetchpriority="high"`.
 - Baseline antes: ~2,5 MB, ~2,39 MB em imagens, LCP local ~2,0 s. Depois: ~1,97 MB, ~1,80 MB em imagens, LCP local ~0,67 s (medida sintética local).
 - Upload futuro verificado por importação temporária de JPEG: derivados `tb-*` gerados em `.webp`; anexo removido depois.
-- **F6.2 SEO:** plugin de SEO, meta description, Open Graph/Twitter, schema, breadcrumbs e `noindex` na busca — pendente.
+- **F6.2 SEO (modo híbrido):** `inc/seo.php` emite meta description (campo SEO → resumo → conteúdo → padrão), Open Graph, Twitter Card, canonical em home/arquivos, JSON-LD (`Organization`/`LegalService`, `WebSite`, `WebPage`/`CollectionPage`, `Article`, `Person`, `Service`, `LocalBusiness`, `BreadcrumbList`) e `noindex` na 404. Caixa SEO em post, página, área, escritório, sócio e história; opção de descrição da home; trilha visível nas páginas individuais. O tema se desliga quando Yoast, Rank Math, The SEO Framework, SEOPress, All in One SEO ou Slim SEO está ativo. `tools\seo-check.ps1` valida 65 itens; cobertura E2E em `tests/e2e/seo.spec.js`.
 - **F6.3 Acessibilidade:** revalidar teclado, foco, contraste, share e busca do footer — pendente.
-- **F6.4 Produção:** staging MySQL/nginx, SSL, backup, cache, CDN, monitoramento, contato, LGPD e manual do cliente — pendente.
+- **F6.4 Produção:** staging MySQL/nginx, SSL, backup, cache, CDN, monitoramento, contato, LGPD e manual do cliente — pendente. Inclui instalar o plugin de SEO escolhido e configurar redirects/Search Console.
 
 ## 13. Cuidados, armadilhas e precauções
 

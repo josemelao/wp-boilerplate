@@ -17,6 +17,7 @@ if ( have_posts() ) :
 				<?php endif; ?>
 				<div class="story-single__scrim" aria-hidden="true"></div>
 				<div class="tb-container story-single__hero-content">
+					<?php get_template_part( 'template-parts/breadcrumbs', null, array( 'modifier' => 'breadcrumbs--light' ) ); ?>
 					<p class="tb-kicker tb-kicker--light"><?php esc_html_e( 'História', 'tema-base' ); ?></p>
 					<h1><?php echo esc_html( get_the_title() ); ?></h1>
 					<?php if ( $tb_summary ) : ?><p class="story-single__lead"><?php echo esc_html( $tb_summary ); ?></p><?php endif; ?>

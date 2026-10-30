@@ -36,6 +36,7 @@ function tb_options_defaults() {
 		'subscribe_label'  => __( 'Inscreva-se', 'tema-base' ),
 		'subscribe_url'    => '',
 		'footer_note'      => __( 'Todos os direitos reservados.', 'tema-base' ),
+		'seo_home_description' => '',
 	);
 }
 

@@ -9,6 +9,7 @@ if ( have_posts() ) :
 		?>
 		<article <?php post_class( 'content-page' ); ?>>
 			<header class="content-page__header tb-container">
+				<?php get_template_part( 'template-parts/breadcrumbs' ); ?>
 				<p class="tb-kicker"><?php esc_html_e( 'Informações', 'tema-base' ); ?></p>
 				<h1 class="content-page__title"><?php the_title(); ?></h1>
 			</header>
