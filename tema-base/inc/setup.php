@@ -55,8 +55,9 @@ add_action( 'after_setup_theme', 'tb_setup' );
  * @return void
  */
 function tb_enqueue_assets() {
-	$css_path = TB_DIR . '/assets/css/main.css';
-	$js_path  = TB_DIR . '/assets/js/main.js';
+	$css_path    = TB_DIR . '/assets/css/main.css';
+	$js_path     = TB_DIR . '/assets/js/main.js';
+	$target_path = TB_DIR . '/assets/js/carousel-target.js';
 
 	wp_enqueue_style(
 		'tb-main',
@@ -66,13 +67,22 @@ function tb_enqueue_assets() {
 	);
 
 	wp_enqueue_script(
+		'tb-carousel-target',
+		TB_URI . '/assets/js/carousel-target.js',
+		array(),
+		file_exists( $target_path ) ? (string) filemtime( $target_path ) : TB_VERSION,
+		true
+	);
+
+	wp_enqueue_script(
 		'tb-main',
 		TB_URI . '/assets/js/main.js',
-		array(),
+		array( 'tb-carousel-target' ),
 		file_exists( $js_path ) ? (string) filemtime( $js_path ) : TB_VERSION,
 		true
 	);
 
+	wp_script_add_data( 'tb-carousel-target', 'strategy', 'defer' );
 	wp_script_add_data( 'tb-main', 'strategy', 'defer' );
 }
 add_action( 'wp_enqueue_scripts', 'tb_enqueue_assets' );

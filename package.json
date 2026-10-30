@@ -1,0 +1,14 @@
+{
+  "name": "lwclone-theme",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Ferramentas de teste do tema LWclone.",
+  "scripts": {
+    "test:unit": "node --test tests/unit/*.test.js",
+    "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test --grep @smoke"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
+  }
+}

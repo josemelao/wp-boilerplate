@@ -12,6 +12,12 @@ wp-content/uploads/
 node_modules/
 vendor/
 
+# Artefatos de testes E2E
+playwright-report/
+test-results/
+blob-report/
+tests/e2e/.auth/
+
 # Logs e temporarios
 *.log
 *.tmp

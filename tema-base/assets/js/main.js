@@ -199,6 +199,11 @@
 	function initCarousel(root) {
 		var viewport = root.querySelector('[data-carousel-viewport]');
 		var items = viewport ? Array.prototype.slice.call(viewport.querySelectorAll('.featured__item')) : [];
+		var targetApi = window.tbCarouselTarget || {};
+		var FLICK_VELOCITY = 0.2;
+		var MIN_DRAG = 10;
+		var RELEASE_DECAY = 100;
+		var SETTLE_DURATION = 340;
 
 		if (!viewport || items.length < 2) {
 			return;
@@ -209,17 +214,29 @@
 		var pointerDrag = null;
 		var suppressClick = false;
 		var suppressClickTimer = null;
-		var settleTimer = null;
-		var settleListener = null;
+		var dragFrame = null;
+		var scrollFrame = null;
 
-		function behavior() {
-			return reducedMotion ? 'auto' : 'smooth';
+		/**
+		 * Limita um valor ao intervalo.
+		 *
+		 * @param {number} value Valor.
+		 * @param {number} min   Mínimo.
+		 * @param {number} max   Máximo.
+		 * @return {number}
+		 */
+		function clamp(value, min, max) {
+			return Math.max(min, Math.min(max, value));
 		}
 
-		function centeredIndex(scrollPosition) {
+		/**
+		 * Índice do card mais próximo do centro do viewport.
+		 *
+		 * @return {number}
+		 */
+		function centeredIndex() {
 			var viewportLeft = viewport.getBoundingClientRect().left;
-			var scrollLeft = 'number' === typeof scrollPosition ? scrollPosition : viewport.scrollLeft;
-			var center = scrollLeft + viewport.clientWidth / 2;
+			var center = viewport.scrollLeft + viewport.clientWidth / 2;
 			var nearest = 0;
 			var distance = Infinity;
 
@@ -236,8 +253,14 @@
 			return nearest;
 		}
 
+		/**
+		 * Posição de scroll que centraliza um card.
+		 *
+		 * @param {number} index Índice.
+		 * @return {number}
+		 */
 		function scrollLeftFor(index) {
-			var item = items[Math.max(0, Math.min(items.length - 1, index))];
+			var item = items[clamp(index, 0, items.length - 1)];
 			if (!item) {
 				return viewport.scrollLeft;
 			}
@@ -245,34 +268,172 @@
 			return Math.max(0, Math.min(viewport.scrollWidth - viewport.clientWidth, itemLeft - (viewport.clientWidth - item.offsetWidth) / 2));
 		}
 
-		function goTo(index) {
-			viewport.scrollTo({ left: scrollLeftFor(index), behavior: behavior() });
+		/**
+		 * Expõe o índice central para testes e leitores de tela.
+		 *
+		 * @param {number} index Índice.
+		 * @return {void}
+		 */
+		function markCentered(index) {
+			viewport.setAttribute('data-centered-index', String(clamp(index, 0, items.length - 1)));
 		}
 
-		function finishSettling() {
-			window.clearTimeout(settleTimer);
-			if (settleListener) {
-				viewport.removeEventListener('scrollend', settleListener);
-				settleListener = null;
+		/**
+		 * Cancela a animação de scroll em andamento.
+		 *
+		 * @return {void}
+		 */
+		function cancelScrollAnimation() {
+			if (scrollFrame) {
+				window.cancelAnimationFrame(scrollFrame);
+				scrollFrame = null;
 			}
 			viewport.classList.remove('is-settling');
 		}
 
-		function settleAfterDrag(projectedScrollLeft) {
-			var targetLeft = scrollLeftFor(centeredIndex(projectedScrollLeft));
-			var needsAnimation = !reducedMotion && Math.abs(viewport.scrollLeft - targetLeft) > 1;
+		/**
+		 * Anima o scroll até o card alvo.
+		 *
+		 * @param {number} index    Índice de destino.
+		 * @param {number} duration Duração em ms.
+		 * @return {void}
+		 */
+		function animateScrollTo(index, duration) {
+			var targetLeft = scrollLeftFor(index);
 
-			if (!needsAnimation) {
-				viewport.classList.remove('is-dragging', 'is-settling');
+			cancelScrollAnimation();
+			markCentered(index);
+
+			if (reducedMotion || duration <= 0 || Math.abs(viewport.scrollLeft - targetLeft) < 1) {
+				viewport.scrollLeft = targetLeft;
 				return;
 			}
 
+			var startLeft = viewport.scrollLeft;
+			var startTime = null;
+			var total = duration || SETTLE_DURATION;
+
 			viewport.classList.add('is-settling');
+
+			function frame(now) {
+				if (null === startTime) {
+					startTime = now;
+				}
+
+				var progress = Math.min(1, (now - startTime) / total);
+				var eased = 1 - Math.pow(1 - progress, 3);
+
+				viewport.scrollLeft = startLeft + (targetLeft - startLeft) * eased;
+
+				if (progress < 1) {
+					scrollFrame = window.requestAnimationFrame(frame);
+				} else {
+					scrollFrame = null;
+					viewport.classList.remove('is-settling');
+				}
+			}
+
+			scrollFrame = window.requestAnimationFrame(frame);
+		}
+
+		/**
+		 * Navega para um card.
+		 *
+		 * @param {number} index Índice.
+		 * @return {void}
+		 */
+		function goTo(index) {
+			animateScrollTo(index, SETTLE_DURATION);
+		}
+
+		/**
+		 * Decide o destino depois do arrasto.
+		 *
+		 * @param {Object} options Opções.
+		 * @return {number}
+		 */
+		function chooseTarget(options) {
+			if (targetApi && 'function' === typeof targetApi.chooseTarget) {
+				return targetApi.chooseTarget(options);
+			}
+
+			// Fallback mínimo se o script auxiliar não tiver carregado.
+			var isFlick = Math.abs(options.velocity) >= FLICK_VELOCITY && Math.abs(options.distance) >= MIN_DRAG;
+			var target = isFlick ? options.startIndex + (options.velocity > 0 ? 1 : -1) : options.nearestIndex;
+
+			return clamp(target, 0, options.length - 1);
+		}
+
+		/**
+		 * Aplica o último movimento do ponteiro no próximo frame.
+		 *
+		 * @return {void}
+		 */
+		function applyDragFrame() {
+			dragFrame = null;
+
+			if (!pointerDrag || null === pointerDrag.pendingX) {
+				return;
+			}
+
+			viewport.scrollLeft = pointerDrag.scrollLeft - (pointerDrag.pendingX - pointerDrag.x);
+			pointerDrag.pendingX = null;
+		}
+
+		/**
+		 * Finaliza o arrasto e inicia o settle.
+		 *
+		 * @param {PointerEvent} event Evento.
+		 * @return {void}
+		 */
+		function finishPointerDrag(event) {
+			if (!pointerDrag || (event && event.pointerId !== pointerDrag.id)) {
+				return;
+			}
+
+			var drag = pointerDrag;
+			var didMove = drag.moved;
+			var finalX = event && 'pointercancel' !== event.type && 'number' === typeof event.clientX ? event.clientX : drag.lastX;
+
+			pointerDrag = null;
+
+			if (dragFrame) {
+				window.cancelAnimationFrame(dragFrame);
+				dragFrame = null;
+			}
+
+			if (!didMove) {
+				viewport.classList.remove('is-dragging');
+				return;
+			}
+
+			// Garante que o último movimento não se perca antes da decisão.
+			viewport.scrollLeft = drag.scrollLeft - (finalX - drag.x);
+
+			var releaseAge = Math.max(
+				0,
+				(event && 'number' === typeof event.timeStamp ? event.timeStamp : drag.lastTime) - drag.lastTime
+			);
+			var releaseVelocity = drag.velocity * Math.exp(-releaseAge / RELEASE_DECAY);
+			var isCancel = event && 'pointercancel' === event.type;
+			var targetIndex = chooseTarget({
+				startIndex: drag.startIndex,
+				velocity: isCancel ? 0 : releaseVelocity,
+				distance: finalX - drag.x,
+				nearestIndex: centeredIndex(),
+				length: items.length,
+				flickVelocity: FLICK_VELOCITY,
+				minDrag: MIN_DRAG
+			});
+
+			suppressClick = true;
+			window.clearTimeout(suppressClickTimer);
+			suppressClickTimer = window.setTimeout(function () {
+				suppressClick = false;
+			}, 400);
+
 			viewport.classList.remove('is-dragging');
-			settleListener = finishSettling;
-			viewport.addEventListener('scrollend', finishSettling);
-			viewport.scrollTo({ left: targetLeft, behavior: 'smooth' });
-			settleTimer = window.setTimeout(finishSettling, 1200);
+			animateScrollTo(targetIndex, SETTLE_DURATION);
 		}
 
 		if (previous) {
@@ -297,10 +458,9 @@
 			if (!event.isPrimary || ('mouse' === event.pointerType && 0 !== event.button)) {
 				return;
 			}
-			if (settleListener) {
-				finishSettling();
-				viewport.scrollTo({ left: viewport.scrollLeft, behavior: 'auto' });
-			}
+
+			cancelScrollAnimation();
+
 			pointerDrag = {
 				id: event.pointerId,
 				x: event.clientX,
@@ -308,7 +468,9 @@
 				lastTime: event.timeStamp,
 				velocity: 0,
 				scrollLeft: viewport.scrollLeft,
-				moved: false
+				moved: false,
+				startIndex: centeredIndex(),
+				pendingX: null
 			};
 		});
 
@@ -316,52 +478,37 @@
 			if (!pointerDrag || event.pointerId !== pointerDrag.id) {
 				return;
 			}
+
 			var distance = event.clientX - pointerDrag.x;
+
 			if (!pointerDrag.moved && Math.abs(distance) > 6) {
 				pointerDrag.moved = true;
+				try {
+					viewport.setPointerCapture(event.pointerId);
+				} catch (error) {
+					// O ponteiro pode já ter sido liberado; o arrasto continua via document.
+				}
 				viewport.classList.add('is-dragging');
 			}
+
 			if (pointerDrag.moved) {
 				event.preventDefault();
-				viewport.scrollLeft = pointerDrag.scrollLeft - distance;
+				pointerDrag.pendingX = event.clientX;
+
+				if (!dragFrame) {
+					dragFrame = window.requestAnimationFrame(applyDragFrame);
+				}
+
 				var elapsed = Math.max(1, event.timeStamp - pointerDrag.lastTime);
 				var delta = event.clientX - pointerDrag.lastX;
 				var instantVelocity = -delta / elapsed;
+
 				pointerDrag.velocity = elapsed > 120 ? instantVelocity : (pointerDrag.velocity * 0.55) + (instantVelocity * 0.45);
 			}
+
 			pointerDrag.lastX = event.clientX;
 			pointerDrag.lastTime = event.timeStamp;
 		}, { passive: false });
-
-		function finishPointerDrag(event) {
-			if (!pointerDrag || (event && event.pointerId !== pointerDrag.id)) {
-				return;
-			}
-			var drag = pointerDrag;
-			var didMove = drag.moved;
-			var projectedScrollLeft = viewport.scrollLeft;
-			if (didMove && event && 'pointerup' === event.type) {
-				var releaseAge = Math.max(0, event.timeStamp - drag.lastTime);
-				var momentum = drag.velocity * 210 * Math.exp(-releaseAge / 100);
-				var slideStep = Math.abs(items[1].getBoundingClientRect().left - items[0].getBoundingClientRect().left);
-				var momentumLimit = Math.min(320, slideStep * 0.35);
-				momentum = Math.max(-momentumLimit, Math.min(momentumLimit, momentum));
-				projectedScrollLeft = Math.max(0, Math.min(viewport.scrollWidth - viewport.clientWidth, viewport.scrollLeft + momentum));
-			}
-			if (didMove) {
-				suppressClick = true;
-				window.clearTimeout(suppressClickTimer);
-				suppressClickTimer = window.setTimeout(function () {
-					suppressClick = false;
-				}, 400);
-			}
-			pointerDrag = null;
-			if (didMove) {
-				settleAfterDrag(projectedScrollLeft);
-			} else {
-				viewport.classList.remove('is-dragging');
-			}
-		}
 
 		document.addEventListener('pointerup', finishPointerDrag);
 		document.addEventListener('pointercancel', finishPointerDrag);
@@ -380,6 +527,12 @@
 				window.clearTimeout(suppressClickTimer);
 			}
 		}, true);
+
+		window.addEventListener('resize', function () {
+			viewport.scrollLeft = scrollLeftFor(centeredIndex());
+		});
+
+		markCentered(centeredIndex());
 	}
 
 	/**
@@ -406,7 +559,7 @@
 
 		function setEntryState(entry, active, visible) {
 			var link = entry.querySelector('[data-story-link]');
-			var button = entry.querySelector('[data-story-select]');
+			var label = entry.querySelector('[data-story-label]');
 			var teaser = entry.querySelector('[data-story-summary]');
 
 			entry.classList.toggle('is-active', active);
@@ -425,12 +578,11 @@
 					link.removeAttribute('aria-current');
 				}
 			}
-			if (button) {
-				button.hidden = active;
-				button.setAttribute('aria-pressed', active ? 'true' : 'false');
+			if (label) {
+				label.hidden = active;
 			}
 			if (teaser) {
-				teaser.hidden = !active;
+				teaser.setAttribute('aria-hidden', active ? 'false' : 'true');
 			}
 		}
 
@@ -475,7 +627,7 @@
 			}
 		}
 
-		function rotate(direction, announce, moveFocus, targetEntry) {
+		function rotate(direction, announce, moveFocus) {
 			var currentEntries = entries();
 			var count = currentEntries.length;
 			var oldStart = Math.max(0, count - 4);
@@ -517,19 +669,20 @@
 				var incomingFromBottom = 'up' === direction && entry === currentEntries[0];
 
 				if (incomingFromBottom) {
+					// Posiciona fora da seção sem animar a geometria, mas restaura
+					// a transição antes de ativar a cor para o fade acontecer.
 					entry.style.transition = 'none';
+					setEntryGeometry(entry, 100, active);
+					entry.offsetHeight;
+					entry.style.transition = '';
 				}
+
 				setEntryState(entry, active, visible);
+
 				if (visible) {
 					moving.push(entry);
 				} else if (!incomingFromBottom) {
 					entry.style.transition = 'none';
-				}
-
-				if (incomingFromBottom) {
-					setEntryGeometry(entry, 100, active);
-					entry.offsetHeight;
-					entry.style.transition = '';
 				}
 			});
 
@@ -576,28 +729,9 @@
 					list.appendChild(entry);
 				});
 				animating = false;
-				sync(announce, moveFocus && (!targetEntry || nextEntries[nextEntries.length - 1] === targetEntry));
-
-				if (targetEntry && entries()[entries().length - 1] !== targetEntry) {
-					var targetIndex = entries().indexOf(targetEntry);
-					var downSteps = entries().length - 1 - targetIndex;
-					var upSteps = targetIndex + 1;
-					rotate(downSteps <= upSteps ? 'down' : 'up', announce, moveFocus, targetEntry);
-				}
+				sync(announce, moveFocus);
 			}, duration);
 		}
-
-		list.addEventListener('click', function (event) {
-			var button = event.target.closest('[data-story-select]');
-			if (button) {
-				event.preventDefault();
-				var targetEntry = button.closest('[data-story-entry]');
-				var targetIndex = entries().indexOf(targetEntry);
-				var downSteps = entries().length - 1 - targetIndex;
-				var upSteps = targetIndex + 1;
-				rotate(downSteps <= upSteps ? 'down' : 'up', true, true, targetEntry);
-			}
-		});
 
 		root.addEventListener('click', function (event) {
 			if (event.target.closest('[data-story-up]')) {

@@ -62,7 +62,7 @@
 - Hospedagem, DNS, SSL, e-mail, CDN.
 - Instalação/configuração de plugins de SEO, cache, backup, segurança (apenas **recomendar**, ver seção 11).
 - Banner de cookies/LGPD e analytics (decidir com o cliente).
-- Testes automatizados E2E (opcional no backlog).
+- Testes E2E completos/CI — suíte básica implementada em 30/10/2026; ampliar cobertura e configurar CI continuam no backlog.
 
 ## 4. Arquitetura do projeto
 
@@ -272,6 +272,18 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - Lighthouse executado na home local, com perfil mobile padrão e desktop: desempenho/acessibilidade/boas práticas — **100/100/100** nos dois perfis; SEO — **92**. Métricas mobile: FCP 1,2 s; LCP 1,5 s; Speed Index 1,2 s; TBT 0 ms; CLS 0. Medições sintéticas locais, sujeitas a variação.
 - Os primeiros resultados apontaram nomes acessíveis divergentes nos links dos cards e área insuficiente nos bullets/setas. O `aria-label` redundante foi removido; bullets e controles de Histórias passaram a ter alvo de pelo menos 24 × 24 px. A medição final ficou com 100 em acessibilidade e sem auditorias de acessibilidade reprovadas.
 - SEO 92 decorre da falta de meta description na home local; configurar SEO/Open Graph fica para a fase de entrega/backlog e plugin definido pelo cliente. Relatórios HTML/JSON estão em `.local/lighthouse/` (pasta ignorada pelo Git).
+
+#### Ajustes de carrossel e Histórias — 30/10/2026
+
+- **Destaques:** o drag passou a ser aplicado em `requestAnimationFrame`; o settle usa animação própria com `easeOutCubic` em 340 ms, sem `scrollTo({ behavior: 'smooth' })`. O destino é escolhido por velocidade: flick rápido avança no máximo um card; arrasto lento usa o card mais próximo. A velocidade decai se o usuário segura antes de soltar. `prefers-reduced-motion` vai direto ao card e resize recentraliza.
+- A lógica de destino foi extraída para `tema-base/assets/js/carousel-target.js`, com teste unitário.
+- **Histórias:** fade simétrico de 320 ms para título e subtexto; entrada branco → vermelho, saída vermelho → branco, com a mesma curva. O subtexto passou de `hidden` para opacidade e o `aria-hidden` é sincronizado no JS.
+- Itens inativos deixaram de ser botões e não aceitam clique; a navegação entre histórias é feita somente pelas setas (e pelas teclas ↑/↓). O título ativo continua sendo link para a single.
+- As setas usam SVG para alinhamento consistente: 52 × 40 px no desktop e 44 × 36 px no mobile. No mobile, os controles foram posicionados na linha inferior do cartão para preservar o espaço do texto.
+- **Testes adicionados:** `tests/unit/carousel-target.test.js` (9), `tests/e2e/featured.spec.js` (7), `tests/e2e/stories.spec.js` (4) e `tests/e2e/smoke.spec.js` (2). Total E2E: **13**.
+- **Verificação em 30/10/2026:** `npm run test:unit` → 9/9; `npm run test:e2e` → 13/13; `tools/test.ps1` → 153/153; `php -l` em 27 arquivos e `node --check` nos dois JS sem erros.
+- **Ajuste fino:** `--story-fade-duration` no CSS controla o fade; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY` e `SETTLE_DURATION` controlam o carrossel.
+- **Pendências:** F5 (identidade visual), F6 (entrega/hospedagem, incluindo `build-zip.ps1` ainda ausente) e F7 (backlog). CI de E2E ainda não foi configurado.
 
 ## 13. Cuidados, armadilhas e precauções
 

@@ -116,6 +116,33 @@ Executa `tests\f1-checks.php` dentro do WordPress (`wp eval-file`). Só precisa 
 
 Cobre: CPTs registrados (público, arquivo, supports, REST), metas registradas na REST com `auth_callback`, tamanhos de imagem, menus, opções e sanitização, salvamento de meta (nonce, capability, sanitização), colunas e ordem do admin, helpers (`tb_opt`, `tb_query`, `tb_featured_posts`, `tb_blog_url`) e renderização de header/footer.
 
+### Testes unitários e E2E
+
+Os testes de navegador usam Playwright e precisam do site local rodando:
+
+```powershell
+# uma vez
+npm install
+npx playwright install chromium
+
+# conteúdo conhecido para os testes
+powershell -ExecutionPolicy Bypass -File tools\dev.ps1 start
+powershell -ExecutionPolicy Bypass -File tools\seed-demo.ps1
+
+# execução
+npm run test:unit
+npm run test:e2e
+npm run test:e2e:smoke
+```
+
+- `tests\unit\carousel-target.test.js` cobre a decisão de destino do carrossel de Destaques (arrasto lento, flick, limites e deslocamento mínimo).
+- `tests\e2e\smoke.spec.js` cobre a home sem erros de console e as rotas principais (200/404).
+- `tests\e2e\featured.spec.js` cobre arrasto, flick, setas, teclado, clique após arrasto e ausência de classes presas.
+- `tests\e2e\stories.spec.js` cobre o fade simétrico de título e subtexto, a navegação pelas setas, a ausência de clique nos itens inativos e o alinhamento das setas.
+- Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
+
+Verificação desta entrega em 30/10/2026: `npm run test:unit` → **9/9**; `npm run test:e2e` → **13/13**; `tools\test.ps1` → **153/153**; `php -l` em 27 arquivos e `node --check` nos dois arquivos JS sem erros.
+
 ## Ambiente padronizado
 
 | Peça | Versão | Caminho |
@@ -133,11 +160,16 @@ Ficam iguais para todo o time: versões, portas (8080/3307), URL, `php.ini`, per
 LWclone/
 ├── PLANO-DE-ACAO.md
 ├── README.md
+├── AGENTS.md
 ├── assets-full-page.png
+├── package.json
+├── playwright.config.js
 ├── .gitignore
 ├── .local/                 ← runtime gerado (fora do Git; inclui env.json)
 ├── tests/
-│   └── f1-checks.php       ← verificações da fundação (wp eval-file)
+│   ├── f1-checks.php       ← verificações da fundação (wp eval-file)
+│   ├── unit/               ← testes Node do JS puro
+│   └── e2e/                ← testes Playwright de navegador
 ├── tools/
 │   ├── setup-local.ps1     ← instala o ambiente do zero
 │   ├── dev.ps1             ← start / stop / status
@@ -171,7 +203,9 @@ LWclone/
     ├── template-parts/     ← hero, destaques, depoimentos, histórias e artigos
     └── assets/
         ├── css/main.css    ← tokens, componentes e responsivo
-        └── js/main.js      ← menu, faders, carrossel e histórias
+        └── js/
+            ├── main.js     ← menu, faders, carrossel e histórias
+            └── carousel-target.js ← decisão pura do destino do carrossel
 ```
 
 O `router.php` é versionado de propósito: sem ele, um clone não reproduz os permalinks no `php -S`.
@@ -254,6 +288,16 @@ Verificações locais feitas em 29/10/2026:
 - SEO marcou 92 porque a home local não tem meta description. O plano recomenda configurar SEO/Open Graph com um plugin na fase de entrega/backlog, em vez de adicionar metadados incompletos no tema. Relatórios HTML/JSON (ignorados pelo Git) estão em `.local/lighthouse/`.
 
 Validação manual confirmada pelo usuário: login e permissões do Editor; controles por teclado/foco; toque no carrossel; página inicial completa sem conteúdo; Histórias com 3 e 4 itens, além da configuração com 5; e comportamento visual em 360/768/1280 px. O usuário também já havia validado os fluxos F2/F3 descritos acima.
+
+## Ajustes de carrossel e Histórias (30/10/2026)
+
+- **Destaques:** drag aplicado via `requestAnimationFrame`; settle próprio com `easeOutCubic` em 340 ms, sem `scrollTo({ behavior: 'smooth' })`; flick rápido avança no máximo um card; arrasto lento usa o card mais próximo; pausa antes de soltar reduz a velocidade; `prefers-reduced-motion` vai direto ao card; resize recentraliza.
+- A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
+- **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
+- **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
+- **Testes:** `tests/unit/` (9), `tests/e2e/featured.spec.js` (7), `tests/e2e/stories.spec.js` (4) e `tests/e2e/smoke.spec.js` (2). Total E2E: **13**.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 9/9; `npm run test:e2e` → 13/13; `tools\test.ps1` → 153/153; `php -l` em 27 arquivos e `node --check` nos dois JS sem erros.
+- **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY` e `SETTLE_DURATION` controlam o carrossel.
 
 ## Limitações conhecidas
 
