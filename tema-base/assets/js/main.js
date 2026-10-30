@@ -8,14 +8,6 @@
 	'use strict';
 
 	var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-	var lastInputWasKeyboard = false;
-
-	document.addEventListener('keydown', function () {
-		lastInputWasKeyboard = true;
-	});
-	document.addEventListener('pointerdown', function () {
-		lastInputWasKeyboard = false;
-	}, true);
 
 	/**
 	 * Menu principal no mobile.
@@ -67,8 +59,9 @@
 		var current = 0;
 		var interval = parseInt(root.getAttribute('data-interval'), 10) || 6000;
 		var timer = null;
-		var playing = true;
+		var playing = !reducedMotion;
 		var focusLocked = false;
+		var hoverPaused = false;
 		var hidden = document.hidden;
 
 		function updateToggle() {
@@ -94,6 +87,17 @@
 
 			slides.forEach(function (slide, slideIndex) {
 				var active = slideIndex === current;
+				var title = slide.querySelector('.hero__title');
+
+				if (title) {
+					var headingTag = active ? 'H1' : 'H2';
+					if (title.tagName !== headingTag) {
+						var replacement = document.createElement(headingTag.toLowerCase());
+						replacement.className = title.className;
+						replacement.textContent = title.textContent;
+						title.replaceWith(replacement);
+					}
+				}
 
 				slide.classList.toggle('is-active', active);
 				slide.setAttribute('aria-hidden', active ? 'false' : 'true');
@@ -111,7 +115,7 @@
 
 		function schedule() {
 			stopTimer();
-			if (!playing || focusLocked || hidden) {
+			if (!playing || focusLocked || hoverPaused || hidden) {
 				return;
 			}
 
@@ -155,9 +159,6 @@
 		});
 
 		root.addEventListener('focusin', function () {
-			if (!lastInputWasKeyboard) {
-				return;
-			}
 			focusLocked = true;
 			stopTimer();
 		});
@@ -167,6 +168,16 @@
 				return;
 			}
 			focusLocked = false;
+			schedule();
+		});
+
+		root.addEventListener('mouseenter', function () {
+			hoverPaused = true;
+			stopTimer();
+		});
+
+		root.addEventListener('mouseleave', function () {
+			hoverPaused = false;
 			schedule();
 		});
 
@@ -409,7 +420,7 @@
 			if (link) {
 				link.hidden = !active;
 				if (active) {
-					link.setAttribute('aria-current', 'page');
+					link.setAttribute('aria-current', 'true');
 				} else {
 					link.removeAttribute('aria-current');
 				}

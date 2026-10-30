@@ -35,7 +35,7 @@ $tb_count = count( $tb_items );
 		</div>
 		<?php if ( $tb_count > 1 ) : ?>
 			<div class="testimonials__controls">
-				<div class="testimonials__pagination" aria-label="<?php esc_attr_e( 'Escolher depoimento', 'tema-base' ); ?>">
+				<div class="testimonials__pagination" role="group" aria-label="<?php esc_attr_e( 'Escolher depoimento', 'tema-base' ); ?>">
 					<?php foreach ( $tb_items as $tb_index => $tb_item ) : ?>
 						<button class="testimonials__bullet" type="button" data-slide-to="<?php echo esc_attr( $tb_index ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Mostrar depoimento %d', 'tema-base' ), $tb_index + 1 ) ); ?>" aria-current="<?php echo 0 === $tb_index ? 'true' : 'false'; ?>"></button>
 					<?php endforeach; ?>

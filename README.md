@@ -8,6 +8,7 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **F1 (Fundação) concluída**: 5 tipos de conteúdo, meta boxes, “Opções do Site”, experiência do cliente no painel, header/footer e menus.
 - **F2 (Home) implementada e validada pelo usuário**: as seções, estilos, interações, seed local e página individual de História estão no tema. A validação manual confirmou autoplay, carrosséis, Histórias, navegação, console e larguras de 360/768/1280 px.
 - **F3 (Blog/Páginas/Sócios) implementada e validada**: listagens, singles, página, arquivo/perfil de sócio e 404 têm templates próprios; rotas e conteúdo passaram nas verificações locais e no passo a passo do usuário.
+- **F4 (QA) validada pelo usuário**: Editor, toque, teclado/foco, Histórias com 3/4/5 itens e seções vazias conferidos. Lighthouse/performance ainda pendente.
 
 ## Requisitos
 
@@ -223,7 +224,7 @@ Iterações solicitadas pelo usuário: corrigir drag do mouse que prendia/aciona
 
 Verificado após os ajustes: seed executado com sucesso; `/` responde **200**; `/historias/historia-01/` responde **200** e usa `single-historia.php`; a lista da home aponta para essa URL.
 
-O usuário informou **“validado”** após conferir autoplay do Hero/Depoimentos; arrasto do carrossel; setas dos Depoimentos; Histórias para cima e para baixo, sem salto, com cartão/setas fixos e link para a single; cards e rotas de artigos; e layout em 360/768/1280 px sem erros no Console. A lista usada tinha cinco histórias, incluindo “Teste”. Ainda falta validar separadamente toque, Histórias com 3/4 itens e o estado das seções sem conteúdo.
+O usuário informou **“validado”** após conferir autoplay do Hero/Depoimentos; arrasto do carrossel; setas dos Depoimentos; Histórias para cima e para baixo, sem salto, com cartão/setas fixos e link para a single; cards e rotas de artigos; e layout em 360/768/1280 px sem erros no Console. A lista usada tinha cinco histórias, incluindo “Teste”. Na validação F4, também confirmou toque, teclado/foco, histórias com 3 e 4 itens e home com seções vazias.
 
 ## Estado da F3
 
@@ -237,6 +238,21 @@ Verificado no ambiente local:
 - Um perfil temporário de sócio confirmou a rota `/socios/{slug}/`, renderização de nome, cargo, biografia e links de e-mail, telefone e LinkedIn; o registro temporário foi removido após a verificação.
 
 O usuário informou **“validado”** após navegar por artigos, single, retorno, categoria, página, arquivo de sócios e 404. O perfil temporário usado na verificação automatizada foi removido; não há perfis de sócio publicados no conteúdo local agora.
+
+## Estado da F4
+
+Verificações locais feitas em 29/10/2026:
+
+- Capacidades do papel Editor: `edit_posts`, `edit_pages` e `edit_others_posts` habilitadas; `manage_options`, `activate_plugins` e `edit_theme_options` desabilitadas. O usuário confirmou o login real e a validação do acesso como Editor.
+- As cinco partes da home (`hero`, `carousel-featured`, `testimonials`, `stories`, `insights`) renderizaram saída vazia quando receberam `items=[]`.
+- A parte de Histórias renderizou 3, 4 e 5 itens com exatamente um ativo e um grupo de controles em cada configuração. Isso confirma o markup/slots; a animação em navegador continua validada manualmente com cinco itens.
+- Com `WP_DEBUG` e `WP_DEBUG_LOG` temporariamente ativos, as rotas da home, artigos, página, sócios, categoria e história responderam com 200 e uma URL inexistente com 404. Não foi criado `wp-content/debug.log`; `wp-config.php` foi restaurado para `WP_DEBUG=false`. O log do servidor contém acessos HTTP, sem linhas de warning/notice/fatal do PHP.
+- `php -l` nos 23 arquivos PHP do tema → sem erros; `node --check assets/js/main.js` → sem erro; `tools\test.ps1` → **153 verificações da F1 passaram**. As sete rotas de conteúdo verificadas retornaram exatamente um `<h1>` no HTML inicial.
+- Ajustes de acessibilidade feitos durante o QA: um `<h1>` ativo por vez no Hero (os outros títulos são `<h2>` e o nível acompanha a rotação), autoplay desligado por padrão quando `prefers-reduced-motion: reduce`, pausa dos faders em foco/hover e grupos de bullets com nome acessível.
+
+Validação manual confirmada pelo usuário: login e permissões do Editor; controles por teclado/foco; toque no carrossel; página inicial completa sem conteúdo; Histórias com 3 e 4 itens, além da configuração com 5; e comportamento visual em 360/768/1280 px. O usuário também já havia validado os fluxos F2/F3 descritos acima.
+
+Ainda pendente: executar Lighthouse/performance. A CLI Lighthouse não está instalada neste ambiente.
 
 ## Limitações conhecidas
 
@@ -286,4 +302,4 @@ O `-Reset` para os serviços, apaga o runtime e reinstala. O conteúdo local (po
 
 ## Próximos passos
 
-1. **F4 — QA**: testar como Editor, acessibilidade/foco de todos os componentes, toque, Histórias com 3/4 itens, seções vazias, desempenho/Lighthouse e `WP_DEBUG`.
+1. Executar Lighthouse/performance para fechar a **F4 — QA**.

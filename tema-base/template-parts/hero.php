@@ -19,6 +19,7 @@ $tb_count = count( $tb_items );
 			$tb_text      = tb_post_meta( $tb_item->ID, '_tb_text' );
 			$tb_link      = tb_post_meta( $tb_item->ID, '_tb_link' );
 			$tb_link_label = tb_post_meta( $tb_item->ID, '_tb_link_label' );
+			$tb_heading_tag = $tb_active ? 'h1' : 'h2';
 			?>
 			<article class="hero__slide<?php echo $tb_active ? ' is-active' : ''; ?>" data-slide aria-hidden="<?php echo $tb_active ? 'false' : 'true'; ?>"<?php echo $tb_active ? '' : ' inert'; ?>>
 				<?php if ( $tb_image_id ) : ?>
@@ -38,7 +39,7 @@ $tb_count = count( $tb_items );
 				<div class="hero__scrim" aria-hidden="true"></div>
 				<div class="tb-container hero__content">
 					<?php if ( '' !== $tb_label ) : ?><p class="hero__eyebrow"><?php echo esc_html( $tb_label ); ?></p><?php endif; ?>
-					<h1 class="hero__title"><?php echo esc_html( get_the_title( $tb_item ) ); ?></h1>
+					<<?php echo esc_html( $tb_heading_tag ); ?> class="hero__title"><?php echo esc_html( get_the_title( $tb_item ) ); ?></<?php echo esc_html( $tb_heading_tag ); ?>>
 					<?php if ( '' !== $tb_text ) : ?><p class="hero__text"><?php echo esc_html( $tb_text ); ?></p><?php endif; ?>
 					<?php if ( '' !== $tb_link ) : ?>
 						<a class="tb-button hero__button" href="<?php echo esc_url( $tb_link ); ?>"><?php echo esc_html( $tb_link_label ); ?></a>
@@ -49,7 +50,7 @@ $tb_count = count( $tb_items );
 	</div>
 	<?php if ( $tb_count > 1 ) : ?>
 		<div class="hero__controls tb-container">
-			<div class="hero__pagination" aria-label="<?php esc_attr_e( 'Escolher destaque', 'tema-base' ); ?>">
+			<div class="hero__pagination" role="group" aria-label="<?php esc_attr_e( 'Escolher destaque', 'tema-base' ); ?>">
 				<?php foreach ( $tb_items as $tb_index => $tb_item ) : ?>
 					<button class="hero__bullet" type="button" data-slide-to="<?php echo esc_attr( $tb_index ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Mostrar destaque %d', 'tema-base' ), $tb_index + 1 ) ); ?>" aria-current="<?php echo 0 === $tb_index ? 'true' : 'false'; ?>"></button>
 				<?php endforeach; ?>

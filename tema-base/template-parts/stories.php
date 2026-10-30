@@ -61,7 +61,7 @@ $tb_story_teaser = static function ( $tb_item ) {
 				);
 				?>
 				<li class="stories__entry<?php echo $tb_active ? ' is-active' : ''; ?><?php echo $tb_visible ? ' is-visible' : ''; ?>" data-story-entry data-story-id="<?php echo esc_attr( $tb_item->ID ); ?>" data-story-title="<?php echo esc_attr( get_the_title( $tb_item ) ); ?>" style="<?php echo esc_attr( $tb_inline_style ); ?>" aria-hidden="<?php echo $tb_visible ? 'false' : 'true'; ?>"<?php echo $tb_visible ? '' : ' inert'; ?>>
-					<a class="stories__title" data-story-link href="<?php echo esc_url( get_permalink( $tb_item ) ); ?>"<?php echo $tb_active ? ' aria-current="page"' : ' hidden'; ?>><?php echo esc_html( get_the_title( $tb_item ) ); ?></a>
+					<a class="stories__title" data-story-link href="<?php echo esc_url( get_permalink( $tb_item ) ); ?>"<?php echo $tb_active ? ' aria-current="true"' : ' hidden'; ?>><?php echo esc_html( get_the_title( $tb_item ) ); ?></a>
 					<button class="stories__title" type="button" data-story-select aria-pressed="false"<?php echo $tb_active ? ' hidden' : ''; ?>><?php echo esc_html( get_the_title( $tb_item ) ); ?></button>
 					<p class="stories__summary" data-story-summary<?php echo $tb_active ? '' : ' hidden'; ?>><?php echo esc_html( $tb_story_teaser( $tb_item ) ); ?></p>
 				</li>

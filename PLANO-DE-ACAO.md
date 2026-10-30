@@ -258,8 +258,19 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 
 #### Pendências para retomar
 
-- Completar F4: testar como Editor, foco/acessibilidade de todos os componentes, toque em dispositivo, `WP_DEBUG`, desempenho/Lighthouse e seções sem conteúdo; repetir Histórias com 3 e 4 itens (a revisão manual recente usou 5).
+- F4: executar Lighthouse/performance; os demais itens de QA foram validados pelo usuário e estão registrados abaixo.
 - Identidade visual (F5), hospedagem/entrega (F6) e itens de backlog (F7) seguem dependendo dos dados e decisões do cliente.
+
+#### F4 — QA validada pelo usuário; Lighthouse pendente — 29/10/2026
+
+- Capacidades WordPress do papel Editor verificadas por WP-CLI: pode editar posts/páginas e posts de outros autores; não pode gerenciar opções, plugins ou temas. O usuário confirmou o login real e a validação do acesso como Editor.
+- Renderizadas diretamente com `items=[]` as partes `hero`, `carousel-featured`, `testimonials`, `stories` e `insights`; nenhuma imprimiu conteúdo. O usuário confirmou também a home completa sem seções com conteúdo.
+- Renderizada a lista de Histórias com 3, 4 e 5 itens: cada caso tem uma entrada ativa e um único grupo de controles. O usuário confirmou visualmente as configurações com 3 e 4 histórias, além da revisão anterior da animação com 5.
+- `WP_DEBUG`/`WP_DEBUG_LOG` foram ligados temporariamente enquanto se requisitaram a home, blog, post, página, arquivo de sócios, categoria, single de História e rota 404. Respostas: 200 nas rotas válidas e 404 na rota inexistente; nenhum `debug.log` foi criado. A configuração original (`WP_DEBUG=false`) foi restaurada. O `php.err.log` contém pedidos HTTP; não foram encontradas mensagens de warning/notice/fatal PHP.
+- Checagem automática: 23 arquivos PHP sem erros de sintaxe; `node --check` sem erro; 153 verificações da F1 passaram; sete rotas verificadas expõem um `<h1>` no HTML inicial.
+- Correções de semântica/acessibilidade introduzidas: Hero alterna um único `<h1>` ativo e títulos `<h2>` nos slides inativos; autoplay não inicia se `prefers-reduced-motion: reduce` estiver ativo; faders pausam em foco/hover e retomam ao sair; controles de bullets estão em grupos nomeados; história selecionada anuncia `aria-current="true"`.
+- O usuário confirmou como validados: acesso/permissões do Editor; controles por teclado/foco; toque no carrossel; Histórias com 3/4/5 itens; home completa com seções vazias; e os tamanhos 360/768/1280 px, Console e interações F2/F3. A rotação para cima/baixo das Histórias foi validada após corrigir a direção da entrada.
+- Única pendência de F4: executar Lighthouse/performance. A CLI Lighthouse não está instalada neste ambiente.
 
 ## 13. Cuidados, armadilhas e precauções
 
