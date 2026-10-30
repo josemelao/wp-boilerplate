@@ -140,6 +140,32 @@ $articles = array(
 	array( 'Mudanças regulatórias: o que acompanhar', 'Um resumo dos temas regulatórios que estão no radar das organizações.', 'artigo-04.jpg', 'artigo-04', 'Mercado', "Mudanças regulatórias costumam chegar acompanhadas de novas obrigações de documentação, governança e reporte. Antecipar esses movimentos reduz o custo de adaptação e melhora a qualidade das decisões.\n\nO acompanhamento deve ser contínuo, com fontes confiáveis e critérios claros para priorizar o que exige ação imediata e o que pode ser monitorado." ),
 );
 
+$areas = array(
+	array( 'Contencioso e Arbitragem', 'Atuação estratégica em disputas complexas, negociação e resolução de conflitos.', 'destaque-01.jpg', 'contencioso-e-arbitragem', "A área acompanha casos contenciosos e arbitrais desde a avaliação inicial até a execução da decisão. O trabalho combina análise técnica, definição de estratégia e comunicação clara com o cliente.\n\nAtuamos em negociações, medidas de urgência, produção de provas e audiências, sempre com foco em preservar o interesse do cliente e reduzir exposição." ),
+	array( 'Societário e M&A', 'Estruturação societária, governança e operações de fusão e aquisição.', 'destaque-02.jpg', 'societario-e-ma', "Prestamos assessoria em constituição e reorganização de sociedades, acordos de sócios, governança e operações de compra e venda de participações.\n\nO trabalho envolve due diligence, negociação de documentos, coordenação de especialistas e acompanhamento da implementação." ),
+	array( 'Tributário', 'Planejamento, consultoria e defesa em matérias tributárias.', 'destaque-03.jpg', 'tributario', "A atuação tributária combina análise de riscos, planejamento e defesa administrativa ou judicial. O objetivo é dar previsibilidade às decisões e segurança jurídica às operações.\n\nA equipe acompanha mudanças regulatórias e avalia impactos concretos no negócio do cliente." ),
+	array( 'Trabalhista', 'Consultoria preventiva e atuação em relações de trabalho.', 'destaque-04.jpg', 'trabalhista', "A área apoia empresas na estruturação de relações de trabalho, políticas internas e gestão de riscos. Também atua em negociações e processos trabalhistas.\n\nO trabalho é próximo do cliente e orientado à prevenção, com linguagem clara e foco na continuidade da operação." ),
+);
+
+$offices = array(
+	array( 'São Paulo', 'Av. Exemplo, 1000 — 12º andar\nSão Paulo/SP', 'destaque-01.jpg', 'sao-paulo', '+55 11 0000-0000', 'saopaulo@jt.example', 'https://maps.google.com/?q=Av.+Exemplo+1000+Sao+Paulo', "O escritório de São Paulo concentra as equipes de contencioso, societário e tributário, com atendimento próximo a clientes em diferentes setores.\n\nA unidade é o ponto de contato para assuntos institucionais e novas demandas." ),
+	array( 'Rio de Janeiro', 'Rua Exemplo, 500 — 8º andar\nRio de Janeiro/RJ', 'banner-02.jpg', 'rio-de-janeiro', '+55 21 0000-0000', 'riodejaneiro@jt.example', 'https://maps.google.com/?q=Rua+Exemplo+500+Rio+de+Janeiro', "A unidade do Rio de Janeiro atende clientes com foco em contencioso, arbitragem e relações institucionais.\n\nA equipe local trabalha de forma integrada com os demais escritórios." ),
+);
+
+$socios = array(
+	array( 'Ana Exemplo', 'Sócia', 'Contencioso e Arbitragem', 'ana.exemplo@jt.example', '+55 11 0000-0001', 'https://www.linkedin.com/', 'socio-01.jpg', 'ana-exemplo', "Ana Exemplo atua em disputas complexas, arbitragem e negociação estratégica. Acompanha clientes em setores regulados e em situações de alta exposição.\n\nSua prática combina análise técnica, coordenação de equipes e comunicação clara com conselhos e áreas de negócio." ),
+	array( 'Bruno Exemplo', 'Sócio', 'Societário e M&A', 'bruno.exemplo@jt.example', '+55 11 0000-0002', 'https://www.linkedin.com/', 'socio-02.jpg', 'bruno-exemplo', "Bruno Exemplo assessora operações societárias, governança e transações de fusão e aquisição. Tem experiência em due diligence e negociação de documentos complexos.\n\nTrabalha de forma integrada com equipes financeiras, regulatórias e tributárias." ),
+	array( 'Carla Exemplo', 'Sócia', 'Tributário', 'carla.exemplo@jt.example', '+55 11 0000-0003', 'https://www.linkedin.com/', 'socio-03.jpg', 'carla-exemplo', "Carla Exemplo atua em planejamento tributário, consultoria e defesa em disputas administrativas. Acompanha mudanças regulatórias e seus impactos nas decisões de negócio.\n\nSua abordagem prioriza previsibilidade, documentação e segurança jurídica." ),
+	array( 'Diego Exemplo', 'Sócio', 'Trabalhista', 'diego.exemplo@jt.example', '+55 21 0000-0004', 'https://www.linkedin.com/', 'socio-04.jpg', 'diego-exemplo', "Diego Exemplo assessora empresas em relações de trabalho, políticas internas e gestão de riscos. Também atua em negociações e processos trabalhistas.\n\nSeu trabalho combina prevenção, treinamento de equipes e acompanhamento próximo da operação." ),
+);
+
+$institutional_pages = array(
+	array( 'Sobre', 'sobre', "O JT é um escritório institucional dedicado a decisões que exigem análise rigorosa, discrição e visão de longo prazo.\n\nReunimos diferentes especialidades para oferecer uma leitura completa de cada contexto, com equipes próximas e coordenação integrada." ),
+	array( 'Contato', 'contato', "Para conversar com nossa equipe, escreva para contato@jt.example ou utilize os contatos dos escritórios.\n\nSão Paulo: +55 11 0000-0000\nRio de Janeiro: +55 21 0000-0000" ),
+	array( 'Reconhecimentos', 'reconhecimentos', "Reconhecimentos e rankings demonstrativos para apresentação do layout.\n\nA versão final deve reunir prêmios, publicações e classificações reais, com ano, fonte e área de atuação." ),
+	array( 'Privacidade', 'privacidade', "Esta é uma página demonstrativa de política de privacidade. Antes da publicação, o cliente deve fornecer o texto jurídico definitivo, incluindo bases legais, cookies, retenção e direitos dos titulares.\n\nContato do encarregado: privacidade@jt.example." ),
+);
+
 foreach ( $banners as $index => $item ) {
 	$id = tb_seed_demo_post(
 		array(
@@ -242,6 +268,82 @@ if ( ! empty( $article_ids ) ) {
 	update_option( 'sticky_posts', array_values( array_unique( array_map( 'intval', $sticky_ids ) ) ) );
 }
 
+foreach ( $areas as $index => $item ) {
+	$id = tb_seed_demo_post(
+		array(
+			'post_type'    => 'area',
+			'post_name'    => $item[3],
+			'post_title'   => $item[0],
+			'post_excerpt' => $item[1],
+			'post_content' => $item[4],
+			'menu_order'   => $index + 1,
+		)
+	);
+	if ( is_wp_error( $id ) ) {
+		WP_CLI::error( $id->get_error_message() );
+	}
+	tb_seed_demo_image( $item[2], $id );
+}
+
+foreach ( $offices as $index => $item ) {
+	$id = tb_seed_demo_post(
+		array(
+			'post_type'    => 'escritorio',
+			'post_name'    => $item[3],
+			'post_title'   => $item[0],
+			'post_excerpt' => $item[1],
+			'post_content' => $item[7],
+			'menu_order'   => $index + 1,
+		)
+	);
+	if ( is_wp_error( $id ) ) {
+		WP_CLI::error( $id->get_error_message() );
+	}
+	update_post_meta( $id, '_tb_address', $item[1] );
+	update_post_meta( $id, '_tb_phone', $item[4] );
+	update_post_meta( $id, '_tb_email', $item[5] );
+	update_post_meta( $id, '_tb_maps_url', $item[6] );
+	tb_seed_demo_image( $item[2], $id );
+}
+
+foreach ( $socios as $index => $item ) {
+	$id = tb_seed_demo_post(
+		array(
+			'post_type'    => 'socio',
+			'post_name'    => $item[7],
+			'post_title'   => $item[0],
+			'post_excerpt' => $item[2],
+			'post_content' => $item[8],
+			'menu_order'   => $index + 1,
+		)
+	);
+	if ( is_wp_error( $id ) ) {
+		WP_CLI::error( $id->get_error_message() );
+	}
+	update_post_meta( $id, '_tb_role', $item[1] . ' · ' . $item[2] );
+	update_post_meta( $id, '_tb_email', $item[3] );
+	update_post_meta( $id, '_tb_phone', $item[4] );
+	update_post_meta( $id, '_tb_linkedin', $item[5] );
+	tb_seed_demo_image( $item[6], $id );
+}
+
+$page_ids = array();
+foreach ( $institutional_pages as $index => $page ) {
+	$id = tb_seed_demo_post(
+		array(
+			'post_type'    => 'page',
+			'post_name'    => $page[1],
+			'post_title'   => $page[0],
+			'post_content' => $page[2],
+			'menu_order'   => $index + 1,
+		)
+	);
+	if ( is_wp_error( $id ) ) {
+		WP_CLI::error( $id->get_error_message() );
+	}
+	$page_ids[ $page[1] ] = (int) $id;
+}
+
 $home_id = tb_seed_demo_post(
 	array(
 		'post_type'  => 'page',
@@ -280,10 +382,24 @@ $demo_options = array_merge(
 );
 update_option( 'tb_options', $demo_options );
 
+flush_rewrite_rules();
+
 $demo_menu_items = array(
 	array( 'title' => 'Início', 'type' => 'page', 'id' => (int) $home_id ),
-	array( 'title' => 'Artigos', 'type' => 'page', 'id' => (int) $blog_id ),
+	array( 'title' => 'Áreas', 'type' => 'custom', 'url' => home_url( '/areas-de-atuacao/' ) ),
 	array( 'title' => 'Sócios', 'type' => 'custom', 'url' => home_url( '/socios/' ) ),
+	array( 'title' => 'Artigos', 'type' => 'page', 'id' => (int) $blog_id ),
+	array( 'title' => 'Escritórios', 'type' => 'custom', 'url' => home_url( '/escritorios/' ) ),
+	array( 'title' => 'Sobre', 'type' => 'page', 'id' => $page_ids['sobre'] ),
+	array( 'title' => 'Contato', 'type' => 'page', 'id' => $page_ids['contato'] ),
+);
+
+$footer_menu_items = array_merge(
+	$demo_menu_items,
+	array(
+		array( 'title' => 'Reconhecimentos', 'type' => 'page', 'id' => $page_ids['reconhecimentos'] ),
+		array( 'title' => 'Privacidade', 'type' => 'page', 'id' => $page_ids['privacidade'] ),
+	)
 );
 
 $seed_menu = static function ( $name, $location, $items ) {
@@ -318,6 +434,6 @@ $seed_menu = static function ( $name, $location, $items ) {
 };
 
 $seed_menu( 'Menu principal', 'primary', $demo_menu_items );
-$seed_menu( 'Menu do rodapé', 'footer', $demo_menu_items );
+$seed_menu( 'Menu do rodapé', 'footer', $footer_menu_items );
 
-WP_CLI::success( 'Conteúdo de demonstração criado/atualizado: 2 banners, 4 destaques, 3 depoimentos, 4 histórias, 4 artigos, páginas Início/Artigos, menus e opções do site.' );
+WP_CLI::success( 'Conteúdo de demonstração criado/atualizado: 2 banners, 4 destaques, 3 depoimentos, 4 histórias, 4 artigos, 4 áreas, 2 escritórios, 4 sócios, páginas institucionais, menus e opções do site.' );

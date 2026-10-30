@@ -20,5 +20,9 @@ Fonte: [Pexels](https://www.pexels.com/license/) — licença gratuita para uso 
 | `artigo-02.jpg` | [Pexels 5668473](https://www.pexels.com/photo/5668473/) | Artigos |
 | `artigo-03.jpg` | [Pexels 3184465](https://www.pexels.com/photo/3184465/) | Artigos |
 | `artigo-04.jpg` | [Pexels 590493](https://www.pexels.com/photo/590493/) | Artigos |
+| `socio-01.jpg` | [Pexels 1181686](https://www.pexels.com/photo/1181686/) | Sócios demo |
+| `socio-02.jpg` | [Pexels 2182970](https://www.pexels.com/photo/2182970/) | Sócios demo |
+| `socio-03.jpg` | [Pexels 2381069](https://www.pexels.com/photo/2381069/) | Sócios demo |
+| `socio-04.jpg` | [Pexels 3778603](https://www.pexels.com/photo/3778603/) | Sócios demo |
 
 As imagens de `historia-*.jpg` são exibidas em preto e branco via CSS; os arquivos originais permanecem coloridos.

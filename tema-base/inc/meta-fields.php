@@ -118,6 +118,31 @@ function tb_meta_fields() {
 				),
 			),
 		),
+		'escritorio' => array(
+			'title'  => 'Dados do escritório',
+			'fields' => array(
+				'_tb_address'  => array(
+					'label'       => 'Endereço',
+					'type'        => 'textarea',
+					'description' => 'Endereço completo, uma linha por campo se preferir.',
+				),
+				'_tb_phone'    => array(
+					'label'       => 'Telefone',
+					'type'        => 'text',
+					'description' => 'Telefone com DDD.',
+				),
+				'_tb_email'    => array(
+					'label'       => 'E-mail',
+					'type'        => 'email',
+					'description' => 'Contato da unidade.',
+				),
+				'_tb_maps_url' => array(
+					'label'       => 'Link do mapa',
+					'type'        => 'url',
+					'description' => 'URL do Google Maps ou similar. Opcional.',
+				),
+			),
+		),
 	);
 }
 

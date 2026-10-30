@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return string[]
  */
 function tb_content_types() {
-	return array( 'banner', 'destaque', 'depoimento', 'historia', 'socio' );
+	return array( 'banner', 'destaque', 'depoimento', 'historia', 'socio', 'area', 'escritorio' );
 }
 
 /**
@@ -126,6 +126,47 @@ function tb_get_offices() {
 	$lines = array_map( 'trim', (array) $lines );
 
 	return array_values( array_filter( $lines, 'strlen' ) );
+}
+
+/**
+ * Escritórios com link para a página individual, quando existir.
+ *
+ * @return array<int,array{label:string,url:string}>
+ */
+function tb_get_office_links() {
+	$offices = tb_get_offices();
+
+	if ( empty( $offices ) ) {
+		return array();
+	}
+
+	$posts = get_posts(
+		array(
+			'post_type'      => 'escritorio',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => 'menu_order',
+			'order'          => 'ASC',
+		)
+	);
+
+	$urls = array();
+
+	foreach ( $posts as $post ) {
+		$urls[ sanitize_title( $post->post_title ) ] = get_permalink( $post );
+	}
+
+	$links = array();
+
+	foreach ( $offices as $office ) {
+		$key     = sanitize_title( $office );
+		$links[] = array(
+			'label' => $office,
+			'url'   => isset( $urls[ $key ] ) ? $urls[ $key ] : '',
+		);
+	}
+
+	return $links;
 }
 
 /**

@@ -16,11 +16,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function tb_image_size_tips() {
 	return array(
-		'banner'   => array( 1920, 800 ),
-		'destaque' => array( 1280, 640 ),
-		'historia' => array( 1600, 900 ),
-		'socio'    => array( 640, 800 ),
-		'post'     => array( 720, 480 ),
+		'banner'     => array( 1920, 800 ),
+		'destaque'   => array( 1280, 640 ),
+		'historia'   => array( 1600, 900 ),
+		'socio'      => array( 640, 800 ),
+		'area'       => array( 720, 480 ),
+		'escritorio' => array( 720, 480 ),
+		'post'       => array( 720, 480 ),
 	);
 }
 

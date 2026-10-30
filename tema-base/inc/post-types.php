@@ -151,6 +151,54 @@ function tb_register_post_types() {
 			)
 		)
 	);
+
+	register_post_type(
+		'area',
+		array_merge(
+			$base,
+			array(
+				'labels'              => tb_post_type_labels( 'Área de Atuação', 'Áreas de Atuação', true ),
+				'description'         => 'Áreas de atuação do escritório, com página própria.',
+				'menu_icon'           => 'dashicons-category',
+				'menu_position'       => 19,
+				'public'              => true,
+				'publicly_queryable'  => true,
+				'exclude_from_search' => false,
+				'show_in_nav_menus'   => true,
+				'query_var'           => 'area',
+				'has_archive'         => true,
+				'rewrite'             => array(
+					'slug'       => 'areas-de-atuacao',
+					'with_front' => false,
+				),
+				'supports'            => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
+			)
+		)
+	);
+
+	register_post_type(
+		'escritorio',
+		array_merge(
+			$base,
+			array(
+				'labels'              => tb_post_type_labels( 'Escritório', 'Escritórios' ),
+				'description'         => 'Unidades do escritório, com endereço e contato.',
+				'menu_icon'           => 'dashicons-location-alt',
+				'menu_position'       => 25,
+				'public'              => true,
+				'publicly_queryable'  => true,
+				'exclude_from_search' => false,
+				'show_in_nav_menus'   => true,
+				'query_var'           => 'escritorio',
+				'has_archive'         => true,
+				'rewrite'             => array(
+					'slug'       => 'escritorios',
+					'with_front' => false,
+				),
+				'supports'            => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
+			)
+		)
+	);
 }
 add_action( 'init', 'tb_register_post_types', 5 );
 

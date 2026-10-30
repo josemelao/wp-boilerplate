@@ -311,6 +311,25 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - **Verificação:** 12 testes unitários, 20 E2E e 153 verificações da F1 passando; 29 arquivos PHP sem erro de sintaxe.
 - **Pendente:** aprovação visual das telas internas e revisão do cliente.
 
+#### F5.2 — Protótipo de conteúdo P0 — 30/10/2026
+
+- Novos CPTs públicos: `area` (`/areas-de-atuacao/`) e `escritorio` (`/escritorios/`), com arquivo, single e campos de contato do escritório.
+- Home ganhou a seção **Áreas de atuação**; templates novos para áreas e escritórios, cards e página de contato da unidade.
+- Seed demo cria 4 áreas, 2 escritórios, 4 sócios com retratos, páginas **Sobre**, **Contato**, **Reconhecimentos** e **Privacidade**, além dos menus principal/rodapé.
+- Arquivos públicos ordenados por `menu_order`; busca continua restrita a artigos.
+- Footer reorganizado em topo (marca + busca), três colunas (navegação, escritórios, redes/inscrição) e base de copyright; escritórios linkados e CTA “Fale conosco”.
+- **Verificação:** 12 testes unitários, 25 E2E e 153 verificações da F1 passando; 36 arquivos PHP sem erro de sintaxe.
+- **Validado pelo usuário em 30/10/2026:** áreas, escritórios, perfis de sócios, páginas institucionais e footer.
+- **Pendente:** módulos P1/P2 (setores, news, carreiras, eventos, busca global).
+
+#### F6 — Profissionalização técnica — planejado
+
+- Baseline local da home: ~2,5 MB no total, ~2,39 MB em imagens, LCP ~2,0 s e CLS praticamente zero.
+- **F6.1 Performance:** WebP/AVIF, `srcset`/`sizes`, imagens de histórias menores, preload do LCP e orçamento de página.
+- **F6.2 SEO:** plugin de SEO, meta description, Open Graph/Twitter, schema, breadcrumbs e `noindex` na busca.
+- **F6.3 Acessibilidade:** revalidar teclado, foco, contraste, share e busca do footer.
+- **F6.4 Produção:** staging MySQL/nginx, SSL, backup, cache, CDN, monitoramento, contato, LGPD e manual do cliente.
+
 ## 13. Cuidados, armadilhas e precauções
 
 1. **Permalinks/rewrite:** depois de mudar CPTs ou slugs, rodar `wp rewrite flush --hard` (ou Configurações → Links permanentes → Salvar). O tema já faz flush ao ser ativado. Sem isso, `/socios/` dá 404.

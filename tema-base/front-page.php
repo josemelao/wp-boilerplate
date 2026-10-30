@@ -10,6 +10,7 @@ get_header();
 $tb_home_items = array(
 	'banners'     => tb_query( 'banner' )->posts,
 	'destaques'   => tb_query( 'destaque' )->posts,
+	'areas'       => tb_query( 'area', array( 'posts_per_page' => 3 ) )->posts,
 	'depoimentos' => tb_query( 'depoimento' )->posts,
 	'historias'   => tb_query( 'historia', array( 'order' => 'DESC' ) )->posts,
 	'artigos'     => tb_featured_posts( 3 ),
@@ -23,6 +24,7 @@ endif;
 
 get_template_part( 'template-parts/hero', null, array( 'items' => $tb_home_items['banners'] ) );
 get_template_part( 'template-parts/carousel-featured', null, array( 'items' => $tb_home_items['destaques'] ) );
+get_template_part( 'template-parts/areas', null, array( 'items' => $tb_home_items['areas'] ) );
 get_template_part( 'template-parts/testimonials', null, array( 'items' => $tb_home_items['depoimentos'] ) );
 get_template_part( 'template-parts/stories', null, array( 'items' => $tb_home_items['historias'] ) );
 get_template_part( 'template-parts/insights', null, array( 'items' => $tb_home_items['artigos'] ) );

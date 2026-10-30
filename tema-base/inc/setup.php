@@ -99,3 +99,21 @@ function tb_search_only_posts( $query ) {
 	}
 }
 add_action( 'pre_get_posts', 'tb_search_only_posts' );
+
+/**
+ * Ordena arquivos públicos de conteúdo por menu_order.
+ *
+ * @param WP_Query $query Consulta.
+ * @return void
+ */
+function tb_public_archive_order( $query ) {
+	if ( is_admin() || ! $query->is_main_query() ) {
+		return;
+	}
+
+	if ( is_post_type_archive( array( 'area', 'escritorio', 'socio' ) ) ) {
+		$query->set( 'orderby', 'menu_order' );
+		$query->set( 'order', 'ASC' );
+	}
+}
+add_action( 'pre_get_posts', 'tb_public_archive_order' );

@@ -12,10 +12,10 @@ Instruções para sessões do OpenCode neste repositório.
 
 - Site institucional WordPress com tema clássico próprio em `tema-base/`; layout travado em PHP/CSS, conteúdo editável pelo cliente.
 - Não migrar para Gutenberg/page builder nem adicionar ACF, jQuery, Swiper ou build de assets sem pedido explícito (D1–D4).
-- 5 CPTs ficam no tema (`banner`, `destaque`, `depoimento`, `historia`, `socio`), mais `post` nativo. Ordem = `menu_order`; rascunho = oculto; imagem = imagem destacada.
+- 7 CPTs ficam no tema (`banner`, `destaque`, `depoimento`, `historia`, `socio`, `area`, `escritorio`), mais `post` nativo. Ordem = `menu_order`; rascunho = oculto; imagem = imagem destacada.
 - Edite só `tema-base/`, `tools/`, `tests/` e `docs/`. `tema-base/` é exposto ao WP local por junction em `.local/wp/wp-content/themes/tema-base`; não edite essa cópia, o core nem plugins em `.local/`.
 - A implementação atual está na branch `codex/trabalho`; `master` está atrás (sem F1–F4). Confirme com `git status`/`git log` antes de trocar de branch.
-- F0–F4 concluídas e validadas; F5 (identidade visual) tem uma primeira passada com o wordmark temporário **JT**, e a F5.1 cobre as páginas internas e o compartilhamento. F6 (entrega) e F7 (backlog) pendentes.
+- F0–F4 concluídas e validadas; F5 (identidade visual) tem uma primeira passada com o wordmark temporário **JT**, e a F5.1 cobre as páginas internas e o compartilhamento. A F5.2 concluiu e validou o protótipo P0 (áreas, escritórios, sócios, páginas institucionais e footer). F6 (entrega/técnica) e F7 (backlog) pendentes.
 - Identidade visual: siga `docs/brand-guidelines.md`. Fontes self-hosted em `tema-base/assets/fonts/`; imagens demo e créditos em `tools/demo-images/` (`CREDITS.md`). Critérios por fase na seção 12 do plano.
 - Compartilhamento: componente próprio em `template-parts/share.php` + `tb_share_links()`. Web Share API é uma avaliação futura; não implementar sem teste real em mobile e necessidade comprovada.
 
