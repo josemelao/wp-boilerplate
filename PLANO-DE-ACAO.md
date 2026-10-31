@@ -374,6 +374,13 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - `Article.creditText` no schema quando há crédito.
 - **Verificação:** 12 unitários, 62 E2E, 168 da F1, 65 no `seo-check`, 40 arquivos PHP sem erro e Lighthouse de acessibilidade 100 na single de história.
 
+#### Ajustes de CPTs e comentários — 30/10/2026
+
+- Excerto do sócio exibido como lead; seed com frase própria, sem duplicar a bio.
+- Meta description de história passa a usar `_tb_summary` antes do conteúdo.
+- Comentários e pingbacks fechados globalmente; suporte removido de post/page; feed de comentários desligado; menu de comentários removido do painel.
+- **Verificação:** 12 unitários, 62 E2E, 171 da F1, 65 no `seo-check`, 40 arquivos PHP sem erro.
+
 ## 13. Cuidados, armadilhas e precauções
 
 1. **Permalinks/rewrite:** depois de mudar CPTs ou slugs, rodar `wp rewrite flush --hard` (ou Configurações → Links permanentes → Salvar). O tema já faz flush ao ser ativado. Sem isso, `/socios/` dá 404.

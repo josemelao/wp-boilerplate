@@ -314,6 +314,10 @@ $tb_post_id = wp_insert_post(
 tb_test_check( $tb_post_id > 0, 'post de teste criado' );
 tb_test_check( has_action( 'save_post', 'tb_save_meta' ), 'save_post ligado a tb_save_meta' );
 
+tb_test_check( ! comments_open( $tb_post_id ), 'comentários fechados no post' );
+tb_test_check( ! pings_open( $tb_post_id ), 'pingbacks fechados no post' );
+tb_test_check( ! post_type_supports( 'post', 'comments' ), 'post não suporta comentários' );
+
 if ( $tb_post_id > 0 && function_exists( 'tb_render_meta_box' ) ) {
 	ob_start();
 	tb_render_meta_box( get_post( $tb_post_id ) );

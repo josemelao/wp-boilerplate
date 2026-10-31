@@ -19,6 +19,7 @@ Instruções para sessões do OpenCode neste repositório.
 - Identidade visual: siga `docs/brand-guidelines.md`. Fontes self-hosted em `tema-base/assets/fonts/`; imagens demo e créditos em `tools/demo-images/` (`CREDITS.md`). Critérios por fase na seção 12 do plano.
 - Mídia: `inc/media.php` gera derivados WebP para uploads JPEG/PNG. Depois de mudar tamanhos ou o pipeline, rode `tools\wp.ps1 media regenerate --yes`.
 - Compartilhamento: componente próprio em `template-parts/share.php` + `tb_share_links()`. Web Share API é uma avaliação futura; não implementar sem teste real em mobile e necessidade comprovada.
+- Comentários: desabilitados globalmente no tema (`comments_open`, `pings_open`, suporte removido de post/page e menu oculto). Não reativar sem decisão do cliente e tratamento de moderação/spam.
 - SEO: `inc/seo.php` emite descrição, Open Graph/Twitter, JSON-LD e trilha, e **se desliga** se Yoast, Rank Math, The SEO Framework, SEOPress, All in One SEO ou Slim SEO estiver ativo. Não adicionar tags de SEO soltas em templates; siga `docs/seo.md` e valide com `tools\seo-check.ps1`.
 
 ## Ambiente (Windows-only)

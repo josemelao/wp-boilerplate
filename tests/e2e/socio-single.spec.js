@@ -5,6 +5,7 @@ test('@socio single mostra cargo, áreas, formação, idiomas e OAB', async ({ p
 
 	await expect(page.locator('h1')).toHaveText('Ana Exemplo');
 	await expect(page.locator('.socio-profile__role')).toHaveText('Sócia');
+	await expect(page.locator('.socio-profile__lead')).toContainText('Sócia de contencioso e arbitragem');
 
 	const areaLinks = page.locator('.socio-profile__areas a');
 	await expect(areaLinks).toHaveCount(1);

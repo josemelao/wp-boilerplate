@@ -6,6 +6,9 @@ test('@story single mostra crédito e outras histórias', async ({ page }) => {
 	await expect(page.locator('.story-single__credit')).toHaveText('Imagem demonstrativa');
 	await expect(page.locator('.share')).toBeVisible();
 
+	const description = await page.locator('meta[name="description"]').getAttribute('content');
+	expect(description).toContain('Seguimos construindo relações de longo prazo');
+
 	const related = page.locator('.story-related');
 	await expect(related.locator('.story-card')).toHaveCount(3);
 	await expect(related.locator('a[href*="/historias/historia-04/"]')).toHaveCount(0);

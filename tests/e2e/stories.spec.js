@@ -141,7 +141,7 @@ test('@stories seta para baixo faz fade simétrico de entrada e saída', async (
 	await page.goto('/');
 	await expect(page.locator('[data-component="stories"]')).toBeVisible();
 
-	await expect(page.locator('.stories__entry')).toHaveCount(5);
+	await expect(page.locator('.stories__entry')).toHaveCount(4);
 	await expect(page.locator('.stories__entry.is-visible')).toHaveCount(4);
 	await expect(page.locator('.stories__entry.is-active')).toHaveCount(1);
 

@@ -687,6 +687,14 @@ img {
 	text-transform: uppercase;
 }
 
+.socio-profile__lead {
+	max-width: 40rem;
+	margin: 0.85rem 0 0;
+	color: var(--tb-color-ink-soft);
+	font-size: 1rem;
+	line-height: 1.55;
+}
+
 .socio-profile__areas {
 	display: flex;
 	flex-wrap: wrap;

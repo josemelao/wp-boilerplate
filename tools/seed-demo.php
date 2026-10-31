@@ -185,6 +185,13 @@ $socios = array(
 	array( 'Diego Exemplo', 'Sócio', 'Trabalhista', 'diego.exemplo@jt.example', '+55 21 0000-0004', 'https://www.linkedin.com/', 'socio-04.jpg', 'diego-exemplo', "Diego Exemplo assessora empresas em relações de trabalho, políticas internas e gestão de riscos. Também atua em negociações e processos trabalhistas.\n\nSeu trabalho combina prevenção, treinamento de equipes e acompanhamento próximo da operação." ),
 );
 
+$socio_excerpts = array(
+	'ana-exemplo'   => 'Sócia de contencioso e arbitragem, com experiência em disputas complexas e setores regulados.',
+	'bruno-exemplo' => 'Sócio de societário e M&A, com foco em governança e operações de fusão e aquisição.',
+	'carla-exemplo' => 'Sócia de tributário, dedicada a planejamento, consultoria e defesa em matérias fiscais.',
+	'diego-exemplo' => 'Sócio de trabalhista, com atuação preventiva e em negociações coletivas.',
+);
+
 $socio_details = array(
 	'ana-exemplo'   => array(
 		'education' => "Graduação em Direito — USP\nMestrado em Direito Processual Civil — USP",
@@ -374,7 +381,7 @@ foreach ( $socios as $index => $item ) {
 			'post_type'    => 'socio',
 			'post_name'    => $item[7],
 			'post_title'   => $item[0],
-			'post_excerpt' => wp_trim_words( wp_strip_all_tags( $item[8] ), 28, '…' ),
+			'post_excerpt' => isset( $socio_excerpts[ $item[7] ] ) ? $socio_excerpts[ $item[7] ] : wp_trim_words( wp_strip_all_tags( $item[8] ), 28, '…' ),
 			'post_content' => $item[8],
 			'menu_order'   => $index + 1,
 		)

@@ -164,7 +164,7 @@ npm run test:e2e:smoke
 - `tests\e2e\a11y.spec.js` cobre estrutura, alt, ids únicos, ordem de títulos, skip link, foco visível, controles nomeados, menu mobile e reflow de 320 a 1280 px.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **62/62**; `tools\test.ps1` → **168/168**; `tools\seo-check.ps1` → **65/65**; `php -l` em 40 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **62/62**; `tools\test.ps1` → **171/171**; `tools\seo-check.ps1` → **65/65**; `php -l` em 40 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -335,7 +335,7 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
 - **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (8), `tests/e2e/story-single.spec.js` (3), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/search.spec.js` (2), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3) e `tests/e2e/design.spec.js` (3). Total E2E: **62**.
-- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 62/62; `tools\test.ps1` → 168/168; `tools\seo-check.ps1` → 65/65; `php -l` em 40 arquivos e `node --check` nos dois JS sem erros.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 62/62; `tools\test.ps1` → 171/171; `tools\seo-check.ps1` → 65/65; `php -l` em 40 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
 ## Primeira passada de identidade visual — F5 (30/10/2026)
@@ -470,7 +470,7 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 
 - `_tb_role` agora guarda só o cargo; a área saiu do texto do cargo.
 - Novos campos: `_tb_areas` (relação múltipla com o CPT `area`), `_tb_education`, `_tb_languages` e `_tb_oab`.
-- Layout: retrato + cabeçalho com cargo, chips de áreas linkadas e contato; bio em coluna de leitura; sidebar com formação, idiomas e OAB; retorno aos sócios.
+- Layout: retrato + cabeçalho com cargo, **lead a partir do excerto**, chips de áreas linkadas e contato; bio em coluna de leitura; sidebar com formação, idiomas e OAB; retorno aos sócios.
 - `Person` no schema ganhou `knowsAbout` com as áreas.
 - Seed: cargos limpos, uma área por sócio e detalhes demo em Ana, Bruno e Carla; Diego cobre o estado sem detalhes.
 - O card de `/socios/` mantém o layout e passa a exibir apenas o cargo.
@@ -484,8 +484,16 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - Card novo em `template-parts/card-story.php`, com imagem 3:2, kicker, título e resumo.
 - Seed: crédito em três histórias; `historia-01` e “Teste” ficam sem crédito para o estado vazio.
 - `Article.creditText` incluído no schema quando há crédito.
+- A meta description da história usa `_tb_summary` antes do conteúdo.
 - **Testes:** `tests/e2e/story-single.spec.js` (3), F1 com **168** verificações e **62** E2E.
 - **Verificado em 30/10/2026:** 360/1280 px e Lighthouse de acessibilidade **100**.
+
+## Ajustes de CPTs e comentários (30/10/2026)
+
+- O excerto do sócio agora aparece como **lead** no cabeçalho; o seed usa uma frase própria, sem repetir a bio.
+- A meta description de **história** usa `_tb_summary` antes do conteúdo.
+- **Comentários e pingbacks desabilitados globalmente**: filtros de fechamento, remoção do suporte em posts/páginas, feed de comentários desligado e menu de comentários removido do painel.
+- F1 passou a cobrir comentários fechados e ausência de suporte.
 
 ## Limitações conhecidas
 

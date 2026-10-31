@@ -101,6 +101,14 @@ function tb_seo_description() {
 			return tb_seo_excerpt( $custom );
 		}
 
+		if ( 'historia' === get_post_type( $post_id ) ) {
+			$summary = get_post_meta( $post_id, '_tb_summary', true );
+
+			if ( '' !== $summary ) {
+				return tb_seo_excerpt( $summary );
+			}
+		}
+
 		$post = get_post( $post_id );
 
 		if ( $post && has_excerpt( $post ) ) {

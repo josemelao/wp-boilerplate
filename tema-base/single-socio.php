@@ -47,6 +47,7 @@ if ( have_posts() ) :
 						<p class="tb-kicker"><?php esc_html_e( 'Sócio', 'tema-base' ); ?></p>
 						<h1 class="socio-profile__name"><?php the_title(); ?></h1>
 						<?php if ( $tb_role ) : ?><p class="socio-profile__role"><?php echo esc_html( $tb_role ); ?></p><?php endif; ?>
+						<?php if ( has_excerpt() ) : ?><p class="socio-profile__lead"><?php echo esc_html( get_the_excerpt() ); ?></p><?php endif; ?>
 
 						<?php if ( $tb_areas ) : ?>
 							<ul class="socio-profile__areas" aria-label="<?php esc_attr_e( 'Áreas de atuação', 'tema-base' ); ?>">

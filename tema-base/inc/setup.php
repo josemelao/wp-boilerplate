@@ -101,6 +101,43 @@ function tb_search_only_posts( $query ) {
 add_action( 'pre_get_posts', 'tb_search_only_posts' );
 
 /**
+ * Fecha comentários e pingbacks em todo o site.
+ *
+ * O tema não exibe comentários; manter o recurso aberto só cria ruído no
+ * painel e superfície de spam.
+ *
+ * @return void
+ */
+function tb_disable_comments() {
+	add_filter( 'comments_open', '__return_false', 20 );
+	add_filter( 'pings_open', '__return_false', 20 );
+	add_filter( 'comments_array', '__return_empty_array', 10 );
+	add_filter( 'feed_links_show_comments_feed', '__return_false' );
+}
+add_action( 'init', 'tb_disable_comments', 20 );
+
+/**
+ * Remove o suporte nativo a comentários de posts e páginas.
+ *
+ * @return void
+ */
+function tb_remove_comments_support() {
+	remove_post_type_support( 'post', 'comments' );
+	remove_post_type_support( 'page', 'comments' );
+}
+add_action( 'init', 'tb_remove_comments_support', 20 );
+
+/**
+ * Esconde o menu de comentários no painel.
+ *
+ * @return void
+ */
+function tb_remove_comments_menu() {
+	remove_menu_page( 'edit-comments.php' );
+}
+add_action( 'admin_menu', 'tb_remove_comments_menu', 99 );
+
+/**
  * Ordena arquivos públicos de conteúdo por menu_order.
  *
  * @param WP_Query $query Consulta.
