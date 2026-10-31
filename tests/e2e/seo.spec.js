@@ -80,6 +80,7 @@ test('@seo sócio tem schema Person e tipo de perfil', async ({ page }) => {
 
 	const person = nodes.find(( node ) => node['@type'] === 'Person');
 	expect(person.name).toBe('Ana Exemplo');
+	expect(person.knowsAbout).toContain('Contencioso e Arbitragem');
 });
 
 test('@seo área tem schema Service e trilha visível', async ({ page }) => {

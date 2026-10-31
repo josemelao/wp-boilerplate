@@ -129,8 +129,9 @@ $tb_meta_map = array(
 	'destaque'   => array( '_tb_label', '_tb_link', '_tb_link_label' ),
 	'depoimento' => array( '_tb_quote', '_tb_source' ),
 	'historia'   => array( '_tb_summary', '_tb_link' ),
-	'socio'      => array( '_tb_role', '_tb_email', '_tb_phone', '_tb_linkedin' ),
+	'socio'      => array( '_tb_role', '_tb_email', '_tb_phone', '_tb_linkedin', '_tb_areas', '_tb_education', '_tb_languages', '_tb_oab' ),
 	'area'       => array( '_tb_services', '_tb_sectors' ),
+	'escritorio' => array( '_tb_address', '_tb_phone', '_tb_email', '_tb_maps_url', '_tb_hours' ),
 );
 
 foreach ( $tb_meta_map as $tb_type => $tb_keys ) {
@@ -151,6 +152,25 @@ if ( isset( $tb_banner_meta['_tb_label']['auth_callback'] ) ) {
 	wp_set_current_user( 0 );
 	$tb_allowed = call_user_func( $tb_banner_meta['_tb_label']['auth_callback'], false, '_tb_label', 0 );
 	tb_test_check( false === (bool) $tb_allowed, 'auth_callback nega visitante anônimo' );
+}
+
+// Relação: aceita apenas IDs existentes do tipo certo, sem duplicatas.
+wp_set_current_user( 1 );
+$tb_area_test_id = wp_insert_post(
+	array(
+		'post_type'   => 'area',
+		'post_title'  => 'Área de teste',
+		'post_status' => 'publish',
+	)
+);
+if ( $tb_area_test_id && ! is_wp_error( $tb_area_test_id ) ) {
+	$tb_relation = tb_sanitize_meta_value(
+		array( $tb_area_test_id, $tb_area_test_id, 999999, 'x' ),
+		'relationship',
+		array( 'post_type' => 'area' )
+	);
+	tb_test_check( array( $tb_area_test_id ) === $tb_relation, 'relação mantém apenas IDs válidos e únicos' );
+	wp_delete_post( $tb_area_test_id, true );
 }
 
 /* -------------------------------------------------------------------------

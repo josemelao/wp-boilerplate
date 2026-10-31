@@ -603,6 +603,24 @@ function tb_seo_content_node() {
 		if ( '' !== $linkedin ) {
 			$node['sameAs'] = array( $linkedin );
 		}
+
+		$area_ids = array_values( array_filter( array_map( 'absint', (array) get_post_meta( $post_id, '_tb_areas', true ) ) ) );
+
+		if ( $area_ids ) {
+			$areas = get_posts(
+				array(
+					'post_type'      => 'area',
+					'post_status'    => 'publish',
+					'post__in'       => $area_ids,
+					'posts_per_page' => -1,
+					'orderby'        => 'post__in',
+				)
+			);
+
+			if ( $areas ) {
+				$node['knowsAbout'] = wp_list_pluck( $areas, 'post_title' );
+			}
+		}
 	} elseif ( 'area' === $type ) {
 		$node = array(
 			'@type'       => 'Service',

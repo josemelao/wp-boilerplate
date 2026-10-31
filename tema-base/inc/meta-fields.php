@@ -96,22 +96,43 @@ function tb_meta_fields() {
 		'socio'      => array(
 			'title'  => 'Dados do sócio',
 			'fields' => array(
-				'_tb_role'     => array(
+				'_tb_role'      => array(
 					'label'       => 'Cargo',
 					'type'        => 'text',
 					'description' => 'Ex.: Sócio fundador.',
 				),
-				'_tb_email'    => array(
+				'_tb_areas'     => array(
+					'label'       => 'Áreas de atuação',
+					'type'        => 'relationship',
+					'post_type'   => 'area',
+					'description' => 'Selecione as áreas que aparecem no perfil.',
+				),
+				'_tb_education' => array(
+					'label'       => 'Formação',
+					'type'        => 'textarea',
+					'description' => 'Uma formação por linha. Opcional.',
+				),
+				'_tb_languages' => array(
+					'label'       => 'Idiomas',
+					'type'        => 'textarea',
+					'description' => 'Um idioma por linha. Opcional.',
+				),
+				'_tb_oab'       => array(
+					'label'       => 'OAB',
+					'type'        => 'text',
+					'description' => 'Registro profissional. Opcional.',
+				),
+				'_tb_email'     => array(
 					'label'       => 'E-mail',
 					'type'        => 'email',
 					'description' => 'Opcional.',
 				),
-				'_tb_phone'    => array(
+				'_tb_phone'     => array(
 					'label'       => 'Telefone',
 					'type'        => 'text',
 					'description' => 'Opcional.',
 				),
-				'_tb_linkedin' => array(
+				'_tb_linkedin'  => array(
 					'label'       => 'LinkedIn',
 					'type'        => 'url',
 					'description' => 'URL completa do perfil. Opcional.',
@@ -156,6 +177,11 @@ function tb_meta_fields() {
 					'type'        => 'url',
 					'description' => 'URL do Google Maps ou similar. Opcional.',
 				),
+				'_tb_hours'    => array(
+					'label'       => 'Horário de atendimento',
+					'type'        => 'textarea',
+					'description' => 'Um período por linha. Ex.: Segunda a sexta: 9h às 18h. Opcional.',
+				),
 			),
 		),
 	);
@@ -166,9 +192,30 @@ function tb_meta_fields() {
  *
  * @param mixed  $value Valor bruto.
  * @param string $type  Tipo do campo.
- * @return string
+ * @param array  $field Configuração do campo.
+ * @return string|array
  */
-function tb_sanitize_meta_value( $value, $type ) {
+function tb_sanitize_meta_value( $value, $type, $field = array() ) {
+	if ( 'relationship' === $type ) {
+		$ids       = is_array( $value ) ? $value : array();
+		$ids       = array_map( 'absint', $ids );
+		$ids       = array_values( array_unique( array_filter( $ids ) ) );
+		$post_type = isset( $field['post_type'] ) ? $field['post_type'] : '';
+		$valid     = array();
+
+		if ( '' === $post_type ) {
+			return array();
+		}
+
+		foreach ( $ids as $id ) {
+			if ( get_post_type( $id ) === $post_type && 'publish' === get_post_status( $id ) ) {
+				$valid[] = $id;
+			}
+		}
+
+		return $valid;
+	}
+
 	$value = is_scalar( $value ) ? trim( (string) $value ) : '';
 
 	switch ( $type ) {
@@ -247,9 +294,56 @@ function tb_render_meta_box( $post ) {
 	echo '<table class="form-table tb-meta-table"><tbody>';
 
 	foreach ( $config[ $type ]['fields'] as $key => $field ) {
-		$value = (string) get_post_meta( $post->ID, $key, true );
-		$id    = 'tb-field-' . ltrim( $key, '_' );
+		$value     = get_post_meta( $post->ID, $key, true );
+		$id        = 'tb-field-' . ltrim( $key, '_' );
 		$type_attr = 'text';
+
+		if ( 'relationship' === $field['type'] ) {
+			$related_type = isset( $field['post_type'] ) ? $field['post_type'] : '';
+			$selected     = array_map( 'absint', (array) $value );
+			$options      = $related_type ? get_posts(
+				array(
+					'post_type'      => $related_type,
+					'post_status'    => 'publish',
+					'posts_per_page' => -1,
+					'orderby'        => 'menu_order',
+					'order'          => 'ASC',
+				)
+			) : array();
+
+			echo '<tr>';
+			echo '<th scope="row">' . esc_html( $field['label'] ) . '</th>';
+			echo '<td>';
+			echo '<fieldset class="tb-relationship">';
+
+			if ( $options ) {
+				foreach ( $options as $option ) {
+					$option_id = $id . '-' . $option->ID;
+
+					printf(
+						'<p><label for="%1$s"><input type="checkbox" id="%1$s" name="%2$s[]" value="%3$d"%4$s> %5$s</label></p>',
+						esc_attr( $option_id ),
+						esc_attr( $key ),
+						(int) $option->ID,
+						checked( in_array( (int) $option->ID, $selected, true ), true, false ),
+						esc_html( get_the_title( $option ) )
+					);
+				}
+			} else {
+				echo '<p class="description">' . esc_html__( 'Nenhum item publicado para selecionar.', 'tema-base' ) . '</p>';
+			}
+
+			echo '</fieldset>';
+
+			if ( ! empty( $field['description'] ) ) {
+				echo '<p class="description">' . esc_html( $field['description'] ) . '</p>';
+			}
+
+			echo '</td></tr>';
+			continue;
+		}
+
+		$value = is_scalar( $value ) ? (string) $value : '';
 
 		if ( 'url' === $field['type'] ) {
 			$type_attr = 'url';
@@ -330,13 +424,17 @@ function tb_save_meta( $post_id ) {
 
 	foreach ( $config[ $type ]['fields'] as $key => $field ) {
 		if ( ! isset( $_POST[ $key ] ) ) {
+			if ( 'relationship' === $field['type'] ) {
+				delete_post_meta( $post_id, $key );
+			}
+
 			continue;
 		}
 
 		$raw   = wp_unslash( $_POST[ $key ] );
-		$value = tb_sanitize_meta_value( $raw, $field['type'] );
+		$value = tb_sanitize_meta_value( $raw, $field['type'], $field );
 
-		if ( '' === $value ) {
+		if ( '' === $value || array() === $value ) {
 			delete_post_meta( $post_id, $key );
 			continue;
 		}
@@ -357,29 +455,36 @@ function tb_register_meta() {
 	foreach ( $config as $post_type => $box ) {
 		foreach ( $box['fields'] as $key => $field ) {
 			$field_type = $field['type'];
+			$args       = array(
+				'type'              => 'string',
+				'single'            => true,
+				'show_in_rest'      => true,
+				'sanitize_callback' => function ( $value ) use ( $field_type, $field ) {
+					return tb_sanitize_meta_value( $value, $field_type, $field );
+				},
+				'auth_callback'     => function ( $allowed = false, $meta_key = '', $post_id = 0 ) {
+					$post_id = (int) $post_id;
 
-			register_post_meta(
-				$post_type,
-				$key,
-				array(
-					'type'              => 'string',
-					'single'            => true,
-					'show_in_rest'      => true,
-					'sanitize_callback' => function ( $value ) use ( $field_type ) {
-						return tb_sanitize_meta_value( $value, $field_type );
-					},
-					'auth_callback'     => function ( $allowed = false, $meta_key = '', $post_id = 0 ) {
-						$post_id = (int) $post_id;
+					// Em criação via REST ainda não há post: exige edit_posts.
+					if ( $post_id > 0 ) {
+						return current_user_can( 'edit_post', $post_id );
+					}
 
-						// Em criação via REST ainda não há post: exige edit_posts.
-						if ( $post_id > 0 ) {
-							return current_user_can( 'edit_post', $post_id );
-						}
-
-						return current_user_can( 'edit_posts' );
-					},
-				)
+					return current_user_can( 'edit_posts' );
+				},
 			);
+
+			if ( 'relationship' === $field_type ) {
+				$args['type']         = 'array';
+				$args['show_in_rest'] = array(
+					'schema' => array(
+						'type'  => 'array',
+						'items' => array( 'type' => 'integer' ),
+					),
+				);
+			}
+
+			register_post_meta( $post_type, $key, $args );
 		}
 	}
 }

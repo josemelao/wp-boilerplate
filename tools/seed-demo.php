@@ -163,8 +163,13 @@ $area_content = array(
 );
 
 $offices = array(
-	array( 'São Paulo', 'Av. Exemplo, 1000 — 12º andar\nSão Paulo/SP', 'destaque-01.jpg', 'sao-paulo', '+55 11 0000-0000', 'saopaulo@jt.example', 'https://maps.google.com/?q=Av.+Exemplo+1000+Sao+Paulo', "O escritório de São Paulo concentra as equipes de contencioso, societário e tributário, com atendimento próximo a clientes em diferentes setores.\n\nA unidade é o ponto de contato para assuntos institucionais e novas demandas." ),
-	array( 'Rio de Janeiro', 'Rua Exemplo, 500 — 8º andar\nRio de Janeiro/RJ', 'banner-02.jpg', 'rio-de-janeiro', '+55 21 0000-0000', 'riodejaneiro@jt.example', 'https://maps.google.com/?q=Rua+Exemplo+500+Rio+de+Janeiro', "A unidade do Rio de Janeiro atende clientes com foco em contencioso, arbitragem e relações institucionais.\n\nA equipe local trabalha de forma integrada com os demais escritórios." ),
+	array( 'São Paulo', "Av. Exemplo, 1000 — 12º andar\nSão Paulo/SP", 'destaque-01.jpg', 'sao-paulo', '+55 11 0000-0000', 'saopaulo@jt.example', 'https://maps.google.com/?q=Av.+Exemplo+1000+Sao+Paulo', "O escritório de São Paulo concentra as equipes de contencioso, societário e tributário, com atendimento próximo a clientes em diferentes setores.\n\nA unidade é o ponto de contato para assuntos institucionais e novas demandas." ),
+	array( 'Rio de Janeiro', "Rua Exemplo, 500 — 8º andar\nRio de Janeiro/RJ", 'banner-02.jpg', 'rio-de-janeiro', '+55 21 0000-0000', 'riodejaneiro@jt.example', 'https://maps.google.com/?q=Rua+Exemplo+500+Rio+de+Janeiro', "A unidade do Rio de Janeiro atende clientes com foco em contencioso, arbitragem e relações institucionais.\n\nA equipe local trabalha de forma integrada com os demais escritórios." ),
+);
+
+$office_excerpts = array(
+	'sao-paulo'      => 'Unidade de São Paulo, com equipes de contencioso, societário e tributário.',
+	'rio-de-janeiro' => 'Unidade do Rio de Janeiro, com foco em contencioso, arbitragem e relações institucionais.',
 );
 
 $socios = array(
@@ -172,6 +177,24 @@ $socios = array(
 	array( 'Bruno Exemplo', 'Sócio', 'Societário e M&A', 'bruno.exemplo@jt.example', '+55 11 0000-0002', 'https://www.linkedin.com/', 'socio-02.jpg', 'bruno-exemplo', "Bruno Exemplo assessora operações societárias, governança e transações de fusão e aquisição. Tem experiência em due diligence e negociação de documentos complexos.\n\nTrabalha de forma integrada com equipes financeiras, regulatórias e tributárias." ),
 	array( 'Carla Exemplo', 'Sócia', 'Tributário', 'carla.exemplo@jt.example', '+55 11 0000-0003', 'https://www.linkedin.com/', 'socio-03.jpg', 'carla-exemplo', "Carla Exemplo atua em planejamento tributário, consultoria e defesa em disputas administrativas. Acompanha mudanças regulatórias e seus impactos nas decisões de negócio.\n\nSua abordagem prioriza previsibilidade, documentação e segurança jurídica." ),
 	array( 'Diego Exemplo', 'Sócio', 'Trabalhista', 'diego.exemplo@jt.example', '+55 21 0000-0004', 'https://www.linkedin.com/', 'socio-04.jpg', 'diego-exemplo', "Diego Exemplo assessora empresas em relações de trabalho, políticas internas e gestão de riscos. Também atua em negociações e processos trabalhistas.\n\nSeu trabalho combina prevenção, treinamento de equipes e acompanhamento próximo da operação." ),
+);
+
+$socio_details = array(
+	'ana-exemplo'   => array(
+		'education' => "Graduação em Direito — USP\nMestrado em Direito Processual Civil — USP",
+		'languages' => "Português\nInglês\nEspanhol",
+		'oab'       => 'OAB/SP 000.001',
+	),
+	'bruno-exemplo' => array(
+		'education' => "Graduação em Direito — FGV\nLL.M. em Direito Societário — FGV",
+		'languages' => "Português\nInglês",
+		'oab'       => 'OAB/SP 000.002',
+	),
+	'carla-exemplo' => array(
+		'education' => "Graduação em Direito — USP\nEspecialização em Direito Tributário — IBDT",
+		'languages' => "Português\nInglês\nAlemão",
+		'oab'       => 'OAB/SP 000.003',
+	),
 );
 
 $institutional_pages = array(
@@ -312,7 +335,7 @@ foreach ( $offices as $index => $item ) {
 			'post_type'    => 'escritorio',
 			'post_name'    => $item[3],
 			'post_title'   => $item[0],
-			'post_excerpt' => $item[1],
+			'post_excerpt' => isset( $office_excerpts[ $item[3] ] ) ? $office_excerpts[ $item[3] ] : $item[1],
 			'post_content' => $item[7],
 			'menu_order'   => $index + 1,
 		)
@@ -324,6 +347,11 @@ foreach ( $offices as $index => $item ) {
 	update_post_meta( $id, '_tb_phone', $item[4] );
 	update_post_meta( $id, '_tb_email', $item[5] );
 	update_post_meta( $id, '_tb_maps_url', $item[6] );
+
+	if ( 'sao-paulo' === $item[3] ) {
+		update_post_meta( $id, '_tb_hours', "Segunda a sexta: 9h às 18h\nSábado: 9h às 13h" );
+	}
+
 	tb_seed_demo_image( $item[2], $id );
 }
 
@@ -333,7 +361,7 @@ foreach ( $socios as $index => $item ) {
 			'post_type'    => 'socio',
 			'post_name'    => $item[7],
 			'post_title'   => $item[0],
-			'post_excerpt' => $item[2],
+			'post_excerpt' => wp_trim_words( wp_strip_all_tags( $item[8] ), 28, '…' ),
 			'post_content' => $item[8],
 			'menu_order'   => $index + 1,
 		)
@@ -341,10 +369,29 @@ foreach ( $socios as $index => $item ) {
 	if ( is_wp_error( $id ) ) {
 		WP_CLI::error( $id->get_error_message() );
 	}
-	update_post_meta( $id, '_tb_role', $item[1] . ' · ' . $item[2] );
+	update_post_meta( $id, '_tb_role', $item[1] );
 	update_post_meta( $id, '_tb_email', $item[3] );
 	update_post_meta( $id, '_tb_phone', $item[4] );
 	update_post_meta( $id, '_tb_linkedin', $item[5] );
+
+	$tb_area = get_page_by_path( sanitize_title( $item[2] ), OBJECT, 'area' );
+
+	if ( $tb_area ) {
+		update_post_meta( $id, '_tb_areas', array( (int) $tb_area->ID ) );
+	} else {
+		delete_post_meta( $id, '_tb_areas' );
+	}
+
+	if ( isset( $socio_details[ $item[7] ] ) ) {
+		update_post_meta( $id, '_tb_education', $socio_details[ $item[7] ]['education'] );
+		update_post_meta( $id, '_tb_languages', $socio_details[ $item[7] ]['languages'] );
+		update_post_meta( $id, '_tb_oab', $socio_details[ $item[7] ]['oab'] );
+	} else {
+		delete_post_meta( $id, '_tb_education' );
+		delete_post_meta( $id, '_tb_languages' );
+		delete_post_meta( $id, '_tb_oab' );
+	}
+
 	tb_seed_demo_image( $item[6], $id );
 }
 

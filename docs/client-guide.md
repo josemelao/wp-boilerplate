@@ -65,8 +65,10 @@ A home é montada por listas. Cada item tem **Ordem** em Atributos → Ordem
 1. Sócios → Adicionar novo.
 2. Título = nome; retrato **640 × 800 px**.
 3. Preencha cargo, e-mail, telefone e LinkedIn (todos opcionais).
-4. Escreva a biografia no editor e defina a **Ordem**.
-5. Publique. O perfil sai em `/socios/{slug}/`.
+4. Em **Áreas de atuação**, marque as áreas que aparecem no perfil; cada uma vira um link.
+5. Em **Formação** e **Idiomas**, use uma linha por item. **OAB** é texto livre.
+6. Escreva a biografia no editor e defina a **Ordem**.
+7. Publique. O perfil sai em `/socios/{slug}/`.
 
 ## 6. Áreas de atuação
 
@@ -82,8 +84,11 @@ A home é montada por listas. Cada item tem **Ordem** em Atributos → Ordem
 
 - Título = cidade; imagem **1280 × 640 px**.
 - Endereço, telefone, e-mail e link do mapa.
+- **Horário de atendimento:** um período por linha (ex.: “Segunda a sexta: 9h às 18h”). Opcional.
+- O resumo aparece no cabeçalho da página; o endereço fica no bloco de contato.
 - O rodapé e a home usam a lista de **Opções do Site → Escritórios**; mantenha os
   nomes iguais aos títulos das páginas para o link funcionar.
+- Cada escritório tem página própria, CTA de contato e cards automáticos dos outros escritórios.
 
 ## 8. Páginas institucionais
 

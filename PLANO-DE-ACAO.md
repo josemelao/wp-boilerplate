@@ -349,6 +349,22 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - Seed preenche três áreas e deixa **Societário e M&A** sem os campos para cobrir o estado vazio.
 - **Verificação:** 12 unitários, 54 E2E, 157 da F1, 65 no `seo-check`, 39 arquivos PHP sem erro e Lighthouse de acessibilidade 100 na single de área.
 
+#### Single de escritório — 30/10/2026
+
+- Campo `_tb_hours` (textarea, uma linha por período) somado a endereço, telefone, e-mail e mapa.
+- Layout: cabeçalho com resumo e imagem 21:9; texto; horário; aside de contato; CTA azul; outros escritórios automáticos.
+- Largura alinhada ao título; seed com São Paulo preenchido e Rio sem horário para cobrir o estado vazio.
+- Corrigido o `\n` literal nos endereços do seed e separado o resumo do endereço.
+- **Verificação:** 12 unitários, 57 E2E, 162 da F1, 65 no `seo-check`, 39 arquivos PHP sem erro e Lighthouse de acessibilidade 100 na single de escritório.
+
+#### Single de sócio — 30/10/2026
+
+- `_tb_role` limpo para cargo; novos campos `_tb_areas` (relação múltipla com `area`), `_tb_education`, `_tb_languages` e `_tb_oab`.
+- Layout com retrato, chips de áreas linkadas, contato, bio e sidebar de formação/idiomas/OAB; card do arquivo mantém o desenho e mostra apenas o cargo.
+- `Person.knowsAbout` inclui as áreas; seed separa cargo/área e preenche três perfis, deixando Diego sem detalhes.
+- Teste do painel confirmou checkboxes de áreas e limpeza da relação quando nada é marcado.
+- **Verificação:** 12 unitários, 59 E2E, 167 da F1, 65 no `seo-check`, 39 arquivos PHP sem erro e Lighthouse de acessibilidade 100 na single de sócio.
+
 ## 13. Cuidados, armadilhas e precauções
 
 1. **Permalinks/rewrite:** depois de mudar CPTs ou slugs, rodar `wp rewrite flush --hard` (ou Configurações → Links permanentes → Salvar). O tema já faz flush ao ser ativado. Sem isso, `/socios/` dá 404.
