@@ -20,6 +20,7 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **Single de área de atuação (30/10/2026)**: serviços e setores editáveis, CTA e cards automáticos das outras áreas.
 - **Single de escritório (30/10/2026)**: cabeçalho com imagem, horário de atendimento editável, contato, CTA e outros escritórios.
 - **Single de sócio (30/10/2026)**: áreas linkadas, formação, idiomas, OAB e sidebar de perfil.
+- **Single de história (30/10/2026)**: crédito da imagem, outras histórias e leitura preservada.
 
 ## Requisitos
 
@@ -154,6 +155,7 @@ npm run test:e2e:smoke
 - `tests\e2e\area-single.spec.js` cobre serviços, setores, CTA, outras áreas e o esconder dos blocos vazios.
 - `tests\e2e\office-single.spec.js` cobre horário, contato, CTA, outro escritório, estado vazio e alinhamento da largura.
 - `tests\e2e\socio-single.spec.js` cobre cargo, áreas linkadas, formação, idiomas, OAB e o estado sem detalhes.
+- `tests\e2e\story-single.spec.js` cobre crédito da imagem, outras histórias e o estado sem crédito.
 - `tests\e2e\inner-pages.spec.js` cobre o compartilhamento do artigo, cópia do link, largura de leitura e alinhamento da imagem.
 - `tests\e2e\search.spec.js` cobre a busca restrita a artigos, estado vazio e campo do rodapé.
 - `tests\e2e\content-modules.spec.js` cobre áreas, escritórios, páginas institucionais, ordem dos arquivos e perfil de sócio.
@@ -162,7 +164,7 @@ npm run test:e2e:smoke
 - `tests\e2e\a11y.spec.js` cobre estrutura, alt, ids únicos, ordem de títulos, skip link, foco visível, controles nomeados, menu mobile e reflow de 320 a 1280 px.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **59/59**; `tools\test.ps1` → **167/167**; `tools\seo-check.ps1` → **65/65**; `php -l` em 39 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **62/62**; `tools\test.ps1` → **168/168**; `tools\seo-check.ps1` → **65/65**; `php -l` em 40 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -332,8 +334,8 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
 - **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
-- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (8), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/search.spec.js` (2), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3) e `tests/e2e/design.spec.js` (3). Total E2E: **59**.
-- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 59/59; `tools\test.ps1` → 167/167; `tools\seo-check.ps1` → 65/65; `php -l` em 39 arquivos e `node --check` nos dois JS sem erros.
+- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (8), `tests/e2e/story-single.spec.js` (3), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/search.spec.js` (2), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3) e `tests/e2e/design.spec.js` (3). Total E2E: **62**.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 62/62; `tools\test.ps1` → 168/168; `tools\seo-check.ps1` → 65/65; `php -l` em 40 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
 ## Primeira passada de identidade visual — F5 (30/10/2026)
@@ -423,7 +425,7 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 ### F6.4 — Produção (pacote e documentação prontos; infraestrutura pendente)
 
 - `tools\build-zip.ps1` gera `dist\tema-base.zip` com `tema-base/` na raiz, valida os arquivos obrigatórios e recusa pacotes com pastas de desenvolvimento.
-- Pacote verificado em 30/10/2026: **0,19 MB**, **46 arquivos**, **35 PHP sem erro de sintaxe**, fontes, CSS/JS e `style.css` na versão **0.4.0**.
+- Pacote verificado em 30/10/2026: **0,19 MB**, **47 arquivos**, **36 PHP sem erro de sintaxe**, fontes, CSS/JS e `style.css` na versão **0.4.0**.
 - Tema, `TB_VERSION` e `package.json` atualizados para **0.4.0**.
 - `docs/production.md`: stack recomendada, instalação, segurança, desempenho, SEO, contato, LGPD, backup, monitoramento, go-live e pendências do cliente.
 - `docs/client-guide.md`: manual do cliente para posts, home, sócios, áreas, escritórios, páginas, opções e SEO.
@@ -474,6 +476,16 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - O card de `/socios/` mantém o layout e passa a exibir apenas o cargo.
 - **Testes:** `tests/e2e/socio-single.spec.js` (2), F1 com **167** verificações e **59** E2E.
 - **Verificado em 30/10/2026:** 360/1280 px, painel de metabox e Lighthouse de acessibilidade **100**.
+
+## Single de história (30/10/2026)
+
+- Novo campo `_tb_credit` (texto curto) para o crédito da imagem; aparece sobre o hero e só quando há imagem e crédito.
+- Layout: hero atual preservado; crédito discreto; corpo, link “Leia também” e compartilhamento; **Outras histórias** com até três cards automáticos, excluindo a atual; retorno no fecho. O corpo usa a largura útil do container (70 rem no desktop), alinhado ao título.
+- Card novo em `template-parts/card-story.php`, com imagem 3:2, kicker, título e resumo.
+- Seed: crédito em três histórias; `historia-01` e “Teste” ficam sem crédito para o estado vazio.
+- `Article.creditText` incluído no schema quando há crédito.
+- **Testes:** `tests/e2e/story-single.spec.js` (3), F1 com **168** verificações e **62** E2E.
+- **Verificado em 30/10/2026:** 360/1280 px e Lighthouse de acessibilidade **100**.
 
 ## Limitações conhecidas
 

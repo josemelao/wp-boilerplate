@@ -570,6 +570,12 @@ function tb_seo_content_node() {
 				$node['articleSection'] = $categories[0]->name;
 			}
 		}
+
+		$credit = get_post_meta( $post_id, '_tb_credit', true );
+
+		if ( '' !== $credit ) {
+			$node['creditText'] = $credit;
+		}
 	} elseif ( 'socio' === $type ) {
 		$node = array(
 			'@type'       => 'Person',

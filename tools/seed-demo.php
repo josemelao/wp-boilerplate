@@ -115,6 +115,12 @@ $stories = array(
 	array( 'O que vem pela frente', 'Seguimos construindo relações de longo prazo, com responsabilidade e atenção às mudanças do nosso tempo.', 'historia-04.jpg', 'historia-04', "O futuro pede curiosidade, preparo e compromisso com relações duradouras.\n\nSeguimos atentos às mudanças e prontos para construir, junto com nossos clientes, os próximos capítulos." ),
 );
 
+$story_credits = array(
+	'historia-02' => 'Imagem demonstrativa',
+	'historia-03' => 'Imagem demonstrativa',
+	'historia-04' => 'Imagem demonstrativa',
+);
+
 $banners = array(
 	array( 'Estratégia com propósito', 'Atuação próxima e pensamento de longo prazo para decisões que importam.', 'banner-01.jpg', 'banner-01', 'Conheça nossa atuação', 'https://example.com/atuacao', 'Saiba mais' ),
 	array( 'Experiência que constrói confiança', 'Uma equipe preparada para acompanhar cada etapa do caminho.', 'banner-02.jpg', 'banner-02', 'Como trabalhamos', 'https://example.com/sobre', 'Conheça o escritório' ),
@@ -271,6 +277,13 @@ foreach ( $stories as $index => $item ) {
 		WP_CLI::error( $id->get_error_message() );
 	}
 	update_post_meta( $id, '_tb_summary', $item[1] );
+
+	if ( isset( $story_credits[ $item[3] ] ) ) {
+		update_post_meta( $id, '_tb_credit', $story_credits[ $item[3] ] );
+	} else {
+		delete_post_meta( $id, '_tb_credit' );
+	}
+
 	tb_seed_demo_image( $item[2], $id );
 }
 

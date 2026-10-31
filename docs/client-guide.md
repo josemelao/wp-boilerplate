@@ -53,7 +53,8 @@ A home é montada por listas. Cada item tem **Ordem** em Atributos → Ordem
 
 ### Histórias
 - Título, imagem de fundo **1600 × 900 px**, resumo e URL relacionada.
-- Cada história tem página própria em `/historias/{slug}/`.
+- **Crédito da imagem:** texto curto exibido sobre o hero; opcional.
+- Cada história tem página própria em `/historias/{slug}/`, com outras histórias ao final.
 - A seção mostra até quatro itens por vez e gira em loop.
 
 ### Artigos em destaque

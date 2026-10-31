@@ -91,6 +91,11 @@ function tb_meta_fields() {
 					'type'        => 'url',
 					'description' => 'Link relacionado opcional exibido na página individual da história.',
 				),
+				'_tb_credit'  => array(
+					'label'       => 'Crédito da imagem',
+					'type'        => 'text',
+					'description' => 'Texto discreto exibido sobre a imagem. Opcional.',
+				),
 			),
 		),
 		'socio'      => array(

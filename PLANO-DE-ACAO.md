@@ -329,7 +329,7 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - Upload futuro verificado por importação temporária de JPEG: derivados `tb-*` gerados em `.webp`; anexo removido depois.
 - **F6.2 SEO (modo híbrido):** `inc/seo.php` emite meta description (campo SEO → resumo → conteúdo → padrão), Open Graph, Twitter Card, canonical em home/arquivos, JSON-LD (`Organization`/`LegalService`, `WebSite`, `WebPage`/`CollectionPage`, `Article`, `Person`, `Service`, `LocalBusiness`, `BreadcrumbList`) e `noindex` na 404. Caixa SEO em post, página, área, escritório, sócio e história; opção de descrição da home; trilha visível nas páginas individuais. O tema se desliga quando Yoast, Rank Math, The SEO Framework, SEOPress, All in One SEO ou Slim SEO está ativo. `tools\seo-check.ps1` valida 65 itens; cobertura E2E em `tests/e2e/seo.spec.js`.
 - **F6.3 Acessibilidade (30/10/2026):** Lighthouse/axe em 100 na home, artigos, áreas, escritórios, sócios, histórias, Sobre, Contato e busca. Corrigida a ordem de títulos nos arquivos (cards em `h2` sob o `h1`; `h3` na home), ampliado o alvo dos links de compartilhamento para 24 × 44 px e validados skip link, foco visível, menu mobile com Escape, rótulos de busca, `aria-current` da trilha e reflow de 320 a 1280 px. Cobertura em `tests/e2e/a11y.spec.js`.
-- **F6.4 Produção (30/10/2026):** `tools\build-zip.ps1` gera `dist\tema-base.zip` (46 arquivos, 35 PHP sem erro, `tema-base/` na raiz) e o tema foi versionado em 0.4.0. `docs/production.md` cobre stack, instalação, segurança, desempenho, SEO, contato, LGPD, backup, monitoramento e go-live; `docs/client-guide.md` é o manual do cliente. Hospedagem, staging, SSL, backup, cache/CDN, formulário, LGPD e monitoramento seguem pendentes de contas/decisões do cliente.
+- **F6.4 Produção (30/10/2026):** `tools\build-zip.ps1` gera `dist\tema-base.zip` (47 arquivos, 36 PHP sem erro, `tema-base/` na raiz) e o tema foi versionado em 0.4.0. `docs/production.md` cobre stack, instalação, segurança, desempenho, SEO, contato, LGPD, backup, monitoramento e go-live; `docs/client-guide.md` é o manual do cliente. Hospedagem, staging, SSL, backup, cache/CDN, formulário, LGPD e monitoramento seguem pendentes de contas/decisões do cliente.
 
 #### Ajuste visual da home e controles — 30/10/2026
 
@@ -364,6 +364,15 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - `Person.knowsAbout` inclui as áreas; seed separa cargo/área e preenche três perfis, deixando Diego sem detalhes.
 - Teste do painel confirmou checkboxes de áreas e limpeza da relação quando nada é marcado.
 - **Verificação:** 12 unitários, 59 E2E, 167 da F1, 65 no `seo-check`, 39 arquivos PHP sem erro e Lighthouse de acessibilidade 100 na single de sócio.
+
+#### Single de história — 30/10/2026
+
+- Campo `_tb_credit` para o crédito da imagem; exibido sobre o hero apenas quando há imagem e crédito.
+- Layout mantém hero, corpo, link e compartilhamento; adiciona **Outras histórias** com três cards automáticos e exclui a atual. O corpo usa a largura do título (70 rem).
+- Card novo em `template-parts/card-story.php`.
+- Seed com crédito em três histórias; `historia-01` e “Teste” sem crédito para o estado vazio.
+- `Article.creditText` no schema quando há crédito.
+- **Verificação:** 12 unitários, 62 E2E, 168 da F1, 65 no `seo-check`, 40 arquivos PHP sem erro e Lighthouse de acessibilidade 100 na single de história.
 
 ## 13. Cuidados, armadilhas e precauções
 
