@@ -57,6 +57,7 @@ $tb_functions = array(
 	'tb_blog_url',
 	'tb_query',
 	'tb_featured_posts',
+	'tb_lines',
 	'tb_save_meta',
 	'tb_admin_default_order',
 	'tb_reading_notice_needed',
@@ -67,6 +68,11 @@ WP_CLI::log( '== Funções do tema' );
 
 foreach ( $tb_functions as $tb_fn ) {
 	tb_test_check( function_exists( $tb_fn ), 'função ' . $tb_fn . '() existe' );
+}
+
+if ( function_exists( 'tb_lines' ) ) {
+	$tb_lines = tb_lines( "Um\n\n  Dois  \r\nTrês" );
+	tb_test_check( array( 'Um', 'Dois', 'Três' ) === $tb_lines, 'tb_lines() separa, apara e remove linhas vazias' );
 }
 
 /* -------------------------------------------------------------------------
@@ -124,6 +130,7 @@ $tb_meta_map = array(
 	'depoimento' => array( '_tb_quote', '_tb_source' ),
 	'historia'   => array( '_tb_summary', '_tb_link' ),
 	'socio'      => array( '_tb_role', '_tb_email', '_tb_phone', '_tb_linkedin' ),
+	'area'       => array( '_tb_services', '_tb_sectors' ),
 );
 
 foreach ( $tb_meta_map as $tb_type => $tb_keys ) {

@@ -17,6 +17,7 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **F6.3 (Acessibilidade) implementada**: Lighthouse/axe em 100 nas páginas auditadas, ordem de títulos corrigida nos arquivos, alvo do compartilhamento ampliado e testes de teclado, foco, skip link, menu mobile e reflow de 320 a 1280 px.
 - **F6.4 (Produção) iniciada**: pacote instalável em `dist/tema-base.zip` (tema 0.4.0) e documentação de produção/manual do cliente. Hospedagem, staging, SSL, backup, cache/CDN, formulário, LGPD e monitoramento dependem do cliente.
 - **Ajuste visual da home (30/10/2026)**: faixas de superfície, depoimentos em azul de ponta a ponta, ícones de play/pause, barra de progresso no hero e correções nas Histórias.
+- **Single de área de atuação (30/10/2026)**: serviços e setores editáveis, CTA e cards automáticos das outras áreas.
 
 ## Requisitos
 
@@ -148,6 +149,7 @@ npm run test:e2e:smoke
 - `tests\e2e\featured.spec.js` cobre arrasto, flick, setas, teclado, clique após arrasto e ausência de classes presas.
 - `tests\e2e\stories.spec.js` cobre o fade simétrico de título e subtexto, a navegação pelas setas, a ausência de clique nos itens inativos e o alinhamento das setas.
 - `tests\e2e\testimonials.spec.js` cobre a seção aberta, as setas laterais, o slide direcional, o autoplay após clique e a ausência de sobreposição em 320 px.
+- `tests\e2e\area-single.spec.js` cobre serviços, setores, CTA, outras áreas e o esconder dos blocos vazios.
 - `tests\e2e\inner-pages.spec.js` cobre o compartilhamento do artigo, cópia do link, largura de leitura e alinhamento da imagem.
 - `tests\e2e\search.spec.js` cobre a busca restrita a artigos, estado vazio e campo do rodapé.
 - `tests\e2e\content-modules.spec.js` cobre áreas, escritórios, páginas institucionais, ordem dos arquivos e perfil de sócio.
@@ -156,7 +158,7 @@ npm run test:e2e:smoke
 - `tests\e2e\a11y.spec.js` cobre estrutura, alt, ids únicos, ordem de títulos, skip link, foco visível, controles nomeados, menu mobile e reflow de 320 a 1280 px.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **51/51**; `tools\test.ps1` → **153/153**; `tools\seo-check.ps1` → **65/65**; `php -l` em 39 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **54/54**; `tools\test.ps1` → **157/157**; `tools\seo-check.ps1` → **65/65**; `php -l` em 39 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -326,8 +328,8 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
 - **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
-- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (8), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/search.spec.js` (2), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3) e `tests/e2e/design.spec.js` (3). Total E2E: **51**.
-- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 51/51; `tools\test.ps1` → 153/153; `tools\seo-check.ps1` → 65/65; `php -l` em 39 arquivos e `node --check` nos dois JS sem erros.
+- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (8), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/search.spec.js` (2), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3) e `tests/e2e/design.spec.js` (3). Total E2E: **54**.
+- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 54/54; `tools\test.ps1` → 157/157; `tools\seo-check.ps1` → 65/65; `php -l` em 39 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
 ## Primeira passada de identidade visual — F5 (30/10/2026)
@@ -437,6 +439,16 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - **Histórias:** o item “Teste” recebeu a imagem demo `historia-01`; itens sem imagem caem no primeiro banner ou em gradiente azul/ink. A seta para cima anima apenas `top`/`height` (sem deslize horizontal) e o fundo começa a trocar **no clique**, em 320 ms, acompanhando o texto.
 - **Testes:** `hero.spec.js` (3), `design.spec.js` (3), `stories.spec.js` (8) e `testimonials.spec.js` (4). Lighthouse de acessibilidade segue **100**.
 - **Observação:** a imagem do “Teste” é conteúdo local de demonstração; deve ser substituída pela definitiva antes da publicação.
+
+## Single de área de atuação (30/10/2026)
+
+- Novos campos no CPT `area`: `_tb_services` e `_tb_sectors`, ambos textarea com uma entrada por linha. `tb_lines()` limpa, apara e remove linhas vazias.
+- Layout: cabeçalho com resumo e imagem 21:9; texto do editor; **Como atuamos** em duas colunas numeradas; **Setores** em chips; faixa azul de CTA; **Outras áreas** com até três cards automáticos. Foto, texto e listas usam a largura interna do container (70 rem no desktop), alinhados ao título.
+- Blocos condicionais: sem serviços ou setores, a seção correspondente não é impressa.
+- Seed: três áreas com conteúdo e **Societário e M&A** sem os campos, cobrindo o estado vazio.
+- **Testes:** `tests/e2e/area-single.spec.js` (3), F1 com **157** verificações e **54** E2E.
+- **Verificado em 30/10/2026:** 360/768/1280 px e Lighthouse de acessibilidade **100**.
+- **Pendente:** revisão do texto e das listas pelo cliente; imagem e resumo continuam no editor/excerto.
 
 ## Limitações conhecidas
 

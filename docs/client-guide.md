@@ -72,8 +72,11 @@ A home é montada por listas. Cada item tem **Ordem** em Atributos → Ordem
 
 - Título = nome da área; imagem **1280 × 640 px**.
 - Resumo e texto explicam a atuação.
+- No box **Conteúdo da área**:
+  - **Como atuamos:** um serviço por linha; vira a lista numerada em duas colunas.
+  - **Setores:** um setor por linha; vira chips. Opcional.
 - Ordem controla a sequência em `/areas-de-atuacao/` e na home.
-- Cada área tem página própria e CTA para o contato.
+- Cada área tem página própria, CTA para o contato e cards automáticos das outras áreas.
 
 ## 7. Escritórios
 

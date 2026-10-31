@@ -333,13 +333,21 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 
 #### Ajuste visual da home e controles — 30/10/2026
 
-- Superfícies da home: Destaques em `paper`; Áreas em `paper-soft` com bordas e cards brancos; Depoimentos em `paper-soft` com painel `--tb-color-accent`; Artigos com linha superior. Hero, Histórias, rodapé e páginas internas preservados.
+- Superfícies da home: Destaques em `paper`; Áreas em `paper-soft` com bordas e cards brancos; Depoimentos em azul de ponta a ponta; Artigos com linha superior. Hero, Histórias, rodapé e páginas internas preservados.
 - Depoimentos: faixa azul de ponta a ponta, sem faixas claras em cima ou embaixo; citação serifada maior, aspas decorativas, título/controles à esquerda e citação à direita no desktop; setas, bullets e botão de pausa em branco; empilhado no mobile. A troca é por **slide direcional** (próximo entra pela direita, anterior pela esquerda), a cada 6 s.
 - A rotação dos depoimentos não pausa com o mouse sobre a seção; pausa apenas no botão, no foco/teclado e com a aba oculta.
 - Botões de hero e depoimentos passaram a usar ícones de pause/play com `aria-label`, `aria-pressed` e alvo de 44 × 44 px.
 - Barra de progresso no rodapé do hero: 2 px, vinho, intervalo de 6 s, pausa/retomada sincronizada com o timer e reset na troca manual; oculta em `prefers-reduced-motion`.
 - Histórias: "Teste" recebeu a imagem demo `historia-01`; `tb_story_image_id()` adiciona fallback para o primeiro banner; a seta para cima anima apenas `top`/`height` (sem deslocamento horizontal) e o fundo começa a trocar no clique, em 320 ms, acompanhando o texto.
 - **Verificação:** 12 unitários, 51 E2E, 153 da F1, 65 no `seo-check`, 39 arquivos PHP sem erro e Lighthouse de acessibilidade 100.
+
+#### Single de área de atuação — 30/10/2026
+
+- Campos `_tb_services` e `_tb_sectors` no CPT `area`, textarea com uma entrada por linha; `tb_lines()` limpa e apara a lista.
+- Layout: cabeçalho com imagem 21:9; texto; **Como atuamos** em duas colunas numeradas; **Setores** em chips; faixa azul de CTA; **Outras áreas** com até três cards automáticos. Foto, texto e listas usam a largura interna do container (70 rem no desktop), alinhados ao título.
+- Blocos condicionais: sem serviços/setores, a seção não é impressa.
+- Seed preenche três áreas e deixa **Societário e M&A** sem os campos para cobrir o estado vazio.
+- **Verificação:** 12 unitários, 54 E2E, 157 da F1, 65 no `seo-check`, 39 arquivos PHP sem erro e Lighthouse de acessibilidade 100 na single de área.
 
 ## 13. Cuidados, armadilhas e precauções
 

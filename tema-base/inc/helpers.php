@@ -203,6 +203,25 @@ function tb_story_image_id( $post_id = 0 ) {
 }
 
 /**
+ * Converte um texto multilinha em lista limpa.
+ *
+ * @param string $value Texto com uma entrada por linha.
+ * @return string[]
+ */
+function tb_lines( $value ) {
+	$value = (string) $value;
+
+	if ( '' === trim( $value ) ) {
+		return array();
+	}
+
+	$lines = preg_split( '/\r\n|\r|\n/', $value );
+	$lines = array_map( 'trim', (array) $lines );
+
+	return array_values( array_filter( $lines, 'strlen' ) );
+}
+
+/**
  * URL do blog (página definida em Configurações → Leitura).
  *
  * @return string

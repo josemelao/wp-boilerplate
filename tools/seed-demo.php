@@ -147,6 +147,21 @@ $areas = array(
 	array( 'Trabalhista', 'Consultoria preventiva e atuação em relações de trabalho.', 'destaque-04.jpg', 'trabalhista', "A área apoia empresas na estruturação de relações de trabalho, políticas internas e gestão de riscos. Também atua em negociações e processos trabalhistas.\n\nO trabalho é próximo do cliente e orientado à prevenção, com linguagem clara e foco na continuidade da operação." ),
 );
 
+$area_content = array(
+	'contencioso-e-arbitragem' => array(
+		'services' => "Contencioso cível e empresarial\nArbitragem nacional e internacional\nMedidas de urgência e produção de provas\nNegociação e resolução de disputas",
+		'sectors'  => "Infraestrutura\nEnergia\nConstrução e incorporação",
+	),
+	'tributario'               => array(
+		'services' => "Planejamento tributário\nConsultoria em tributos indiretos\nDefesa em autos de infração\nContencioso administrativo e judicial",
+		'sectors'  => "Indústria\nVarejo\nServiços financeiros",
+	),
+	'trabalhista'              => array(
+		'services' => "Consultoria preventiva\nPolíticas internas e compliance trabalhista\nNegociações coletivas\nContencioso trabalhista",
+		'sectors'  => "Indústria\nServiços\nTecnologia",
+	),
+);
+
 $offices = array(
 	array( 'São Paulo', 'Av. Exemplo, 1000 — 12º andar\nSão Paulo/SP', 'destaque-01.jpg', 'sao-paulo', '+55 11 0000-0000', 'saopaulo@jt.example', 'https://maps.google.com/?q=Av.+Exemplo+1000+Sao+Paulo', "O escritório de São Paulo concentra as equipes de contencioso, societário e tributário, com atendimento próximo a clientes em diferentes setores.\n\nA unidade é o ponto de contato para assuntos institucionais e novas demandas." ),
 	array( 'Rio de Janeiro', 'Rua Exemplo, 500 — 8º andar\nRio de Janeiro/RJ', 'banner-02.jpg', 'rio-de-janeiro', '+55 21 0000-0000', 'riodejaneiro@jt.example', 'https://maps.google.com/?q=Rua+Exemplo+500+Rio+de+Janeiro', "A unidade do Rio de Janeiro atende clientes com foco em contencioso, arbitragem e relações institucionais.\n\nA equipe local trabalha de forma integrada com os demais escritórios." ),
@@ -282,6 +297,12 @@ foreach ( $areas as $index => $item ) {
 	if ( is_wp_error( $id ) ) {
 		WP_CLI::error( $id->get_error_message() );
 	}
+
+	if ( isset( $area_content[ $item[3] ] ) ) {
+		update_post_meta( $id, '_tb_services', $area_content[ $item[3] ]['services'] );
+		update_post_meta( $id, '_tb_sectors', $area_content[ $item[3] ]['sectors'] );
+	}
+
 	tb_seed_demo_image( $item[2], $id );
 }
 

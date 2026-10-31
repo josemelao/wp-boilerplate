@@ -118,6 +118,21 @@ function tb_meta_fields() {
 				),
 			),
 		),
+		'area'       => array(
+			'title'  => 'Conteúdo da área',
+			'fields' => array(
+				'_tb_services' => array(
+					'label'       => 'Como atuamos',
+					'type'        => 'textarea',
+					'description' => 'Um serviço por linha. A ordem é mantida no site.',
+				),
+				'_tb_sectors'  => array(
+					'label'       => 'Setores',
+					'type'        => 'textarea',
+					'description' => 'Um setor por linha. Aparece como chips abaixo dos serviços. Opcional.',
+				),
+			),
+		),
 		'escritorio' => array(
 			'title'  => 'Dados do escritório',
 			'fields' => array(
