@@ -128,3 +128,10 @@ O tema entrega a página e o CTA, mas **não inclui formulário funcional**.
 - Analytics/consentimento e texto jurídico de LGPD.
 - Identidade final (logo, fotos, nome).
 - Redirecionamentos e migração do site antigo.
+
+## 11. Demonstração sem hospedagem
+
+Enquanto a hospedagem não estiver contratada, o site pode ser apresentado por um
+túnel temporário do Cloudflare. O passo a passo, o ajuste de URLs no
+`wp-config.php`, o usuário temporário e o checklist de segurança estão em
+`docs/demo-tunnel.md`.

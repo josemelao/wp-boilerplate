@@ -432,6 +432,7 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - Tema, `TB_VERSION` e `package.json` atualizados para **0.4.0**.
 - `docs/production.md`: stack recomendada, instalação, segurança, desempenho, SEO, contato, LGPD, backup, monitoramento, go-live e pendências do cliente.
 - `docs/client-guide.md`: manual do cliente para posts, home, sócios, áreas, escritórios, páginas, opções e SEO.
+- `docs/demo-tunnel.md`: passo a passo do Cloudflare Quick Tunnel para homologação sem hospedagem, com URLs dinâmicas, usuário temporário e checklist de segurança.
 - **Não provisionado:** hospedagem, staging, SSL, backup, cache/CDN, formulário funcional, LGPD/cookies e monitoramento. Dependem de contas e decisões do cliente.
 
 ### Pendente na F6.4 e F7
@@ -589,6 +590,6 @@ O `-Reset` para os serviços, apaga o runtime e reinstala. O conteúdo local (po
 
 ## Próximos passos
 
-1. **Validar a F5.2 com o cliente:** apresentar o protótipo P0 e decidir o que entra/sai antes de avançar para P1/P2.
-2. **F6 — Profissionalização técnica:** performance de imagens, SEO/schema, acessibilidade, staging, SSL, backup, contato, LGPD e manual.
+1. **Validar com o cliente:** apresentar o site pelo túnel temporário (`docs/demo-tunnel.md`) e coletar ajustes de conteúdo, identidade e prioridades.
+2. **F6.4 — Homologação e produção:** staging, SSL, backup, contato, LGPD, cache/CDN, monitoramento e checklist de `docs/production.md`.
 3. **F7 — Backlog:** setores, news, carreiras, eventos, newsletter e multilíngue, conforme demanda.
