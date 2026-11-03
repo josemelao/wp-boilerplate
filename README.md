@@ -167,7 +167,7 @@ npm run test:e2e:smoke
 - `tests\e2e\a11y.spec.js` cobre estrutura, alt, ids únicos, ordem de títulos, skip link, foco visível, controles nomeados, menu mobile e reflow de 320 a 1280 px.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 03/11/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **70/70**; `tools\test.ps1` → **174/174**; `tools\seo-check.ps1` → **65/65**; `php -l` em 46 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 03/11/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **70/70**; `tools\test.ps1` → **204/204**; `tools\seo-check.ps1` → **65/65**; `php -l` em 46 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -338,7 +338,7 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
 - **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (8), `tests/e2e/story-single.spec.js` (3), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/institutional.spec.js` (3), `tests/e2e/related.spec.js` (3), `tests/e2e/search.spec.js` (4), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3) e `tests/e2e/design.spec.js` (3). Total E2E: **70**.
-- **Verificado em 03/11/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 70/70; `tools\test.ps1` → 174/174; `tools\seo-check.ps1` → 65/65; `php -l` em 46 arquivos e `node --check` nos dois JS sem erros.
+- **Verificado em 03/11/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 70/70; `tools\test.ps1` → 204/204; `tools\seo-check.ps1` → 65/65; `php -l` em 46 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
 ## Primeira passada de identidade visual — F5 (30/10/2026)
@@ -520,6 +520,17 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - O formulário do rodapé passou a dizer **“Buscar no site”**.
 - A história passou a ser pesquisável; a busca continua `noindex`.
 - **Testes:** `tests/e2e/search.spec.js` (4), F1 com **174** verificações e **70** E2E. Resultados em lista editorial, sem imagens.
+
+## Polimento do painel (03/11/2026)
+
+- O box do sócio foi dividido em **Perfil profissional** (cargo, áreas, formação, idiomas e OAB) e **Contato** (e-mail, telefone e LinkedIn).
+- Textareas deixaram a classe `code`: formação, idiomas, horário e serviços aparecem em fonte normal.
+- O suporte a **autor** foi removido de posts e páginas, já que o autor não aparece no site; o box não confunde mais quem edita.
+- Cada listagem de CPT mostra um aviso com a regra de ordem e o tamanho de imagem recomendado.
+- Rótulos técnicos foram trocados: “Rótulo pequeno” virou **Etiqueta**, “Texto curto” do banner virou **Frase de apoio** e o resumo da história explica onde aparece.
+- As posições dos CPTs no menu passaram para 30–36, sem disputar Páginas ou Comentários.
+- No WordPress 7.1 as caixas de metadados começam recolhidas; o tema abre a área por padrão para quem tem `edit_posts`, respeitando a preferência do usuário depois disso.
+- **Testes:** F1 com **204** verificações; 70 E2E e 12 unitários seguem passando.
 
 ## Limitações conhecidas
 

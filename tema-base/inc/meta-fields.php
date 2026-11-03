@@ -20,12 +20,12 @@ function tb_meta_fields() {
 			'title'  => 'Conteúdo do banner',
 			'fields' => array(
 				'_tb_label'      => array(
-					'label'       => 'Rótulo pequeno',
+					'label'       => 'Etiqueta',
 					'type'        => 'text',
 					'description' => 'Texto curto acima do título (ex.: área de atuação).',
 				),
 				'_tb_text'       => array(
-					'label'       => 'Texto curto',
+					'label'       => 'Frase de apoio',
 					'type'        => 'textarea',
 					'description' => 'Frase de apoio exibida sobre a imagem.',
 				),
@@ -46,9 +46,9 @@ function tb_meta_fields() {
 			'title'  => 'Conteúdo do card',
 			'fields' => array(
 				'_tb_label'      => array(
-					'label'       => 'Rótulo pequeno',
+					'label'       => 'Etiqueta',
 					'type'        => 'text',
-					'description' => 'Categoria ou área do card.',
+					'description' => 'Categoria ou área exibida no card.',
 				),
 				'_tb_link'       => array(
 					'label'       => 'URL de destino',
@@ -84,7 +84,7 @@ function tb_meta_fields() {
 				'_tb_summary' => array(
 					'label'       => 'Resumo',
 					'type'        => 'textarea',
-					'description' => 'Aparece no painel quando o item está ativo.',
+					'description' => 'Frase curta exibida na seção Histórias e nos resultados de busca.',
 				),
 				'_tb_link'    => array(
 					'label'       => 'URL de destino',
@@ -193,6 +193,62 @@ function tb_meta_fields() {
 }
 
 /**
+ * Agrupa os campos em boxes por tipo de conteúdo.
+ *
+ * Tipos com muitos campos são divididos para separar o essencial do contato.
+ *
+ * @return array
+ */
+function tb_meta_boxes() {
+	$config = tb_meta_fields();
+	$groups = array(
+		'socio' => array(
+			array(
+				'id'     => 'perfil',
+				'title'  => 'Perfil profissional',
+				'keys'   => array( '_tb_role', '_tb_areas', '_tb_education', '_tb_languages', '_tb_oab' ),
+			),
+			array(
+				'id'     => 'contato',
+				'title'  => 'Contato',
+				'keys'   => array( '_tb_email', '_tb_phone', '_tb_linkedin' ),
+			),
+		),
+	);
+
+	$boxes = array();
+
+	foreach ( $config as $type => $box ) {
+		if ( ! isset( $groups[ $type ] ) ) {
+			$boxes[ $type ][] = array(
+				'id'     => 'conteudo',
+				'title'  => $box['title'],
+				'fields' => $box['fields'],
+			);
+			continue;
+		}
+
+		foreach ( $groups[ $type ] as $group ) {
+			$fields = array();
+
+			foreach ( $group['keys'] as $key ) {
+				if ( isset( $box['fields'][ $key ] ) ) {
+					$fields[ $key ] = $box['fields'][ $key ];
+				}
+			}
+
+			$boxes[ $type ][] = array(
+				'id'     => $group['id'],
+				'title'  => $group['title'],
+				'fields' => $fields,
+			);
+		}
+	}
+
+	return $boxes;
+}
+
+/**
  * Sanitiza um valor de meta conforme o tipo do campo.
  *
  * @param mixed  $value Valor bruto.
@@ -265,17 +321,18 @@ function tb_post_meta( $post_id, $key ) {
  * @return void
  */
 function tb_add_meta_boxes() {
-	$config = tb_meta_fields();
-
-	foreach ( $config as $post_type => $box ) {
-		add_meta_box(
-			'tb-meta-' . $post_type,
-			$box['title'],
-			'tb_render_meta_box',
-			$post_type,
-			'normal',
-			'high'
-		);
+	foreach ( tb_meta_boxes() as $post_type => $boxes ) {
+		foreach ( $boxes as $box ) {
+			add_meta_box(
+				'tb-meta-' . $post_type . '-' . $box['id'],
+				$box['title'],
+				'tb_render_meta_box',
+				$post_type,
+				'normal',
+				'high',
+				array( 'tb_fields' => $box['fields'] )
+			);
+		}
 	}
 }
 add_action( 'add_meta_boxes', 'tb_add_meta_boxes' );
@@ -283,22 +340,40 @@ add_action( 'add_meta_boxes', 'tb_add_meta_boxes' );
 /**
  * Renderiza a meta box.
  *
- * @param WP_Post $post Post em edição.
+ * @param WP_Post    $post Post em edição.
+ * @param array|null $box  Argumentos da meta box (campos do grupo).
  * @return void
  */
-function tb_render_meta_box( $post ) {
-	$config = tb_meta_fields();
+function tb_render_meta_box( $post, $box = null ) {
 	$type   = get_post_type( $post );
+	$fields = array();
 
-	if ( ! isset( $config[ $type ] ) ) {
+	if ( is_array( $box ) && isset( $box['args']['tb_fields'] ) && is_array( $box['args']['tb_fields'] ) ) {
+		$fields = $box['args']['tb_fields'];
+	} else {
+		$config = tb_meta_fields();
+
+		if ( ! isset( $config[ $type ] ) ) {
+			return;
+		}
+
+		$fields = $config[ $type ]['fields'];
+	}
+
+	if ( empty( $fields ) ) {
 		return;
 	}
 
-	wp_nonce_field( 'tb_save_meta', 'tb_meta_nonce' );
+	static $tb_nonce_printed = false;
+
+	if ( ! $tb_nonce_printed ) {
+		wp_nonce_field( 'tb_save_meta', 'tb_meta_nonce' );
+		$tb_nonce_printed = true;
+	}
 
 	echo '<table class="form-table tb-meta-table"><tbody>';
 
-	foreach ( $config[ $type ]['fields'] as $key => $field ) {
+	foreach ( $fields as $key => $field ) {
 		$value     = get_post_meta( $post->ID, $key, true );
 		$id        = 'tb-field-' . ltrim( $key, '_' );
 		$type_attr = 'text';
@@ -362,7 +437,7 @@ function tb_render_meta_box( $post ) {
 
 		if ( 'textarea' === $field['type'] ) {
 			printf(
-				'<textarea id="%1$s" name="%2$s" rows="4" class="large-text code">%3$s</textarea>',
+				'<textarea id="%1$s" name="%2$s" rows="4" class="large-text">%3$s</textarea>',
 				esc_attr( $id ),
 				esc_attr( $key ),
 				esc_textarea( $value )

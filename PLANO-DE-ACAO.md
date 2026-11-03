@@ -151,6 +151,10 @@ Toda seção **retorna sem imprimir nada** se não houver itens.
 - Entregar ao cliente um usuário com papel **Editor** (não Administrador). "Opções do Site" já é acessível ao Editor (capacidade `edit_pages`).
 - Rótulos em português, ícones diferentes por tipo, dicas de tamanho abaixo do box de imagem destacada.
 - Listagens com colunas **Imagem** e **Ordem**; ordem padrão = `menu_order`.
+- Listagens mostram um aviso curto com a regra de ordem e o tamanho de imagem recomendado.
+- Campos agrupados quando há muitos: o sócio tem boxes **Perfil profissional** e **Contato**.
+- Textareas usam a fonte normal do painel (sem `code`) e o box de autor fica oculto em posts/páginas.
+- A área de **Caixas de metadados** abre por padrão para quem edita, respeitando a preferência do usuário depois disso.
 - **Rascunho** esconde um item sem apagar.
 - Aviso para administradores se Leitura (Configurações → Leitura) não estiver com página inicial estática + página de posts definidas — sem isso, o botão "Ler mais" e o blog quebram.
 - Escrever um **manual curto do cliente** (PDF/Doc, com prints) na fase de entrega.
@@ -395,7 +399,7 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - `search.php` e `card-search.php`; a consulta inclui posts, páginas, áreas, escritórios, sócios e histórias.
 - Cada resultado tem etiqueta de seção; formulário passou a “Buscar no site”.
 - Histórias agora são pesquisáveis; banners, destaques, depoimentos e anexos ficam fora.
-- **Verificação:** 12 unitários, 70 E2E, 174 da F1, 65 no `seo-check`, 46 arquivos PHP sem erro.
+- **Verificação:** 12 unitários, 70 E2E, 204 da F1, 65 no `seo-check`, 46 arquivos PHP sem erro.
 
 ## 13. Cuidados, armadilhas e precauções
 

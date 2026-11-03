@@ -18,6 +18,9 @@ conteúdo, imagens, ordem e textos das opções; o desenho não muda pelo painel
 - Todo conteúdo tem **título**, **imagem destacada** e, de preferência, **resumo**.
 - **Rascunho fica oculto** no site. Não existe campo “ativo”: publique para
   aparecer.
+- Os campos do tema ficam em **Caixas de metadados**, no rodapé do editor. O tema
+  abre essa área por padrão; se estiver recolhida, clique em **Caixas de
+  metadados** para mostrar.
 
 ## 3. Artigo (blog)
 
@@ -40,13 +43,13 @@ A home é montada por listas. Cada item tem **Ordem** em Atributos → Ordem
 
 ### Banners do topo
 - Imagem: **1920 × 800 px**.
-- Campos: rótulo pequeno, texto curto, URL do botão e texto do botão.
+- Campos: etiqueta, frase de apoio, URL do botão e texto do botão.
 - O primeiro banner é o LCP da home; mantenha a imagem leve.
 - O botão de pause/play e a barra na base do hero são automáticos: pausam a troca e mostram o tempo até o próximo banner.
 
 ### Destaques (carrossel)
 - Imagem: **1280 × 640 px**.
-- Campos: rótulo, URL e texto do link.
+- Campos: etiqueta, URL e texto do link.
 
 ### Depoimentos
 - Título = manchete; texto do depoimento e fonte/autor.
@@ -66,11 +69,12 @@ A home é montada por listas. Cada item tem **Ordem** em Atributos → Ordem
 
 1. Sócios → Adicionar novo.
 2. Título = nome; retrato **640 × 800 px**.
-3. Preencha cargo, e-mail, telefone e LinkedIn (todos opcionais).
-4. Em **Áreas de atuação**, marque as áreas que aparecem no perfil; cada uma vira um link.
-5. Em **Formação** e **Idiomas**, use uma linha por item. **OAB** é texto livre.
-6. Escreva a biografia no editor e defina a **Ordem**.
-7. Publique. O perfil sai em `/socios/{slug}/`.
+3. No box **Perfil profissional**: cargo, áreas de atuação, formação, idiomas e OAB.
+   - Em **Áreas de atuação**, marque as áreas que aparecem no perfil; cada uma vira um link.
+   - Em **Formação** e **Idiomas**, use uma linha por item. **OAB** é texto livre.
+4. No box **Contato**: e-mail, telefone e LinkedIn (todos opcionais).
+5. Escreva a biografia no editor e defina a **Ordem**.
+6. Publique. O perfil sai em `/socios/{slug}/`.
 
 ## 6. Áreas de atuação
 
@@ -115,6 +119,7 @@ Acesse **Opções do Site** no menu lateral:
 ## 10. Imagens e ordem
 
 - Ordem: Atributos → **Ordem**. Menor número primeiro.
+- Cada listagem mostra, no topo, a dica de imagem e a regra de ordem.
 - Imagem destacada: é a imagem do card, do banner ou do perfil.
 - Texto alternativo: preencha em Mídia → biblioteca → campo “Texto alternativo”.
   Isso melhora acessibilidade e SEO.

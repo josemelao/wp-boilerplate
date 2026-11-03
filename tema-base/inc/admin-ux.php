@@ -199,6 +199,94 @@ function tb_reading_notice() {
 	);
 }
 
+/**
+ * Abre a área "Caixas de metadados" por padrão para quem edita conteúdo.
+ *
+ * No WordPress 7.1 os campos clássicos começam recolhidos; sem isso, quem
+ * nunca abriu o painel pode não encontrar os campos do tema.
+ *
+ * @param mixed $prefs Preferências persistidas do usuário.
+ * @return array
+ */
+function tb_open_meta_boxes_preference( $prefs ) {
+	if ( is_string( $prefs ) ) {
+		$decoded = json_decode( $prefs, true );
+		$prefs   = is_array( $decoded ) ? $decoded : array();
+	}
+
+	if ( ! is_array( $prefs ) ) {
+		$prefs = array();
+	}
+
+	if ( ! isset( $prefs['core/edit-post'] ) || ! is_array( $prefs['core/edit-post'] ) ) {
+		$prefs['core/edit-post'] = array();
+	}
+
+	if ( ! array_key_exists( 'metaBoxesMainIsOpen', $prefs['core/edit-post'] ) ) {
+		$prefs['core/edit-post']['metaBoxesMainIsOpen'] = true;
+	}
+
+	return $prefs;
+}
+
+/**
+ * Aplica a preferência de abrir as caixas de metadados para o usuário atual.
+ *
+ * @return void
+ */
+function tb_open_meta_boxes_by_default() {
+	if ( ! is_admin() || wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
+		return;
+	}
+
+	$user_id = get_current_user_id();
+
+	if ( $user_id <= 0 ) {
+		return;
+	}
+
+	$stored = get_user_meta( $user_id, 'wp_persisted_preferences', true );
+	$prefs  = tb_open_meta_boxes_preference( $stored );
+
+	if ( $prefs !== $stored ) {
+		update_user_meta( $user_id, 'wp_persisted_preferences', $prefs );
+	}
+}
+add_action( 'admin_init', 'tb_open_meta_boxes_by_default' );
+
+/**
+ * Ajuda curta no topo das listagens dos CPTs.
+ *
+ * @return void
+ */
+function tb_admin_list_help() {
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+
+	if ( ! $screen || 'edit' !== $screen->base || ! in_array( $screen->post_type, tb_content_types(), true ) ) {
+		return;
+	}
+
+	$message = __( 'A ordem define a sequência no site: o menor número aparece primeiro. Itens em rascunho não aparecem.', 'tema-base' );
+	$tips    = tb_image_size_tips();
+
+	if ( isset( $tips[ $screen->post_type ] ) ) {
+		$size = $tips[ $screen->post_type ];
+
+		$message .= ' ' . sprintf(
+			/* translators: 1: largura, 2: altura */
+			__( 'Imagem recomendada: %1$d × %2$d px.', 'tema-base' ),
+			$size[0],
+			$size[1]
+		);
+	}
+
+	printf(
+		'<div class="notice notice-info inline tb-admin-help"><p>%s</p></div>',
+		esc_html( $message )
+	);
+}
+add_action( 'admin_notices', 'tb_admin_list_help' );
+
 /* --- Registro dos hooks por tipo de conteúdo ------------------------------ */
 
 foreach ( tb_content_types() as $tb_type ) {

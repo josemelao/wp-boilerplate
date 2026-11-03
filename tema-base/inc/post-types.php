@@ -73,7 +73,7 @@ function tb_register_post_types() {
 				'labels'       => tb_post_type_labels( 'Banner', 'Banners do topo' ),
 				'description'  => 'Slides do topo da home. Imagem recomendada: 1920 × 800 px.',
 				'menu_icon'    => 'dashicons-format-image',
-				'menu_position' => 20,
+				'menu_position' => 31,
 			)
 		)
 	);
@@ -86,7 +86,7 @@ function tb_register_post_types() {
 				'labels'       => tb_post_type_labels( 'Destaque', 'Destaques' ),
 				'description'  => 'Cards do carrossel da home. Imagem recomendada: 1280 × 640 px.',
 				'menu_icon'    => 'dashicons-images-alt2',
-				'menu_position' => 21,
+				'menu_position' => 32,
 			)
 		)
 	);
@@ -99,7 +99,7 @@ function tb_register_post_types() {
 				'labels'        => tb_post_type_labels( 'Depoimento', 'Depoimentos' ),
 				'description'   => 'Reconhecimentos exibidos na home. O título é a manchete.',
 				'menu_icon'     => 'dashicons-format-quote',
-				'menu_position' => 22,
+				'menu_position' => 33,
 				'supports'      => array( 'title', 'page-attributes' ),
 			)
 		)
@@ -113,7 +113,7 @@ function tb_register_post_types() {
 				'labels'        => tb_post_type_labels( 'História', 'Histórias', true ),
 				'description'   => 'Itens da seção "Histórias". Imagem de fundo recomendada: 1600 × 900 px.',
 				'menu_icon'     => 'dashicons-book-alt',
-				'menu_position' => 23,
+				'menu_position' => 34,
 				'public'        => true,
 				'publicly_queryable' => true,
 				'exclude_from_search' => false,
@@ -136,7 +136,7 @@ function tb_register_post_types() {
 				'labels'              => tb_post_type_labels( 'Sócio', 'Sócios' ),
 				'description'         => 'Quadro de sócios, com página própria. Retrato recomendado: 640 × 800 px.',
 				'menu_icon'           => 'dashicons-groups',
-				'menu_position'       => 24,
+				'menu_position'       => 35,
 				'public'              => true,
 				'publicly_queryable'  => true,
 				'exclude_from_search' => false,
@@ -160,7 +160,7 @@ function tb_register_post_types() {
 				'labels'              => tb_post_type_labels( 'Área de Atuação', 'Áreas de Atuação', true ),
 				'description'         => 'Áreas de atuação do escritório, com página própria.',
 				'menu_icon'           => 'dashicons-category',
-				'menu_position'       => 19,
+				'menu_position'       => 30,
 				'public'              => true,
 				'publicly_queryable'  => true,
 				'exclude_from_search' => false,
@@ -184,7 +184,7 @@ function tb_register_post_types() {
 				'labels'              => tb_post_type_labels( 'Escritório', 'Escritórios' ),
 				'description'         => 'Unidades do escritório, com endereço e contato.',
 				'menu_icon'           => 'dashicons-location-alt',
-				'menu_position'       => 25,
+				'menu_position'       => 36,
 				'public'              => true,
 				'publicly_queryable'  => true,
 				'exclude_from_search' => false,

@@ -122,15 +122,19 @@ function tb_disable_comments() {
 add_action( 'init', 'tb_disable_comments', 20 );
 
 /**
- * Remove o suporte nativo a comentários de posts e páginas.
+ * Remove suportes nativos que o tema não usa (comentários e autor).
+ *
+ * O autor não aparece nas páginas; manter o box só confunde quem edita.
  *
  * @return void
  */
-function tb_remove_comments_support() {
+function tb_remove_unused_supports() {
 	remove_post_type_support( 'post', 'comments' );
 	remove_post_type_support( 'page', 'comments' );
+	remove_post_type_support( 'post', 'author' );
+	remove_post_type_support( 'page', 'author' );
 }
-add_action( 'init', 'tb_remove_comments_support', 20 );
+add_action( 'init', 'tb_remove_unused_supports', 20 );
 
 /**
  * Esconde o menu de comentários no painel.

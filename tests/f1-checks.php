@@ -62,7 +62,10 @@ $tb_functions = array(
 	'tb_featured_posts',
 	'tb_lines',
 	'tb_save_meta',
+	'tb_meta_boxes',
 	'tb_admin_default_order',
+	'tb_admin_list_help',
+	'tb_open_meta_boxes_preference',
 	'tb_reading_notice_needed',
 );
 
@@ -120,6 +123,22 @@ tb_test_check( $tb_historia && 'Todas as Histórias' === $tb_historia->labels->a
 tb_test_check( $tb_historia && 'Nova História' === $tb_historia->labels->new_item, 'rótulo de História no feminino (new_item)' );
 tb_test_check( $tb_historia && 'Nenhuma História encontrada.' === $tb_historia->labels->not_found, 'rótulo de História no feminino (not_found)' );
 
+tb_test_check( ! post_type_supports( 'post', 'author' ), 'post não mostra autor (não usado no site)' );
+tb_test_check( ! post_type_supports( 'page', 'author' ), 'page não mostra autor (não usado no site)' );
+
+$tb_positions = array();
+foreach ( tb_content_types() as $tb_type ) {
+	$tb_obj = get_post_type_object( $tb_type );
+
+	if ( $tb_obj ) {
+		$tb_positions[ $tb_type ] = (int) $tb_obj->menu_position;
+	}
+}
+
+tb_test_check( count( $tb_positions ) === count( array_unique( $tb_positions ) ), 'posições de menu dos CPTs são únicas', var_export( $tb_positions, true ) );
+tb_test_check( ! in_array( 20, $tb_positions, true ), 'nenhum CPT disputa a posição de Páginas (20)', var_export( $tb_positions, true ) );
+tb_test_check( ! in_array( 25, $tb_positions, true ), 'nenhum CPT disputa a posição de Comentários (25)', var_export( $tb_positions, true ) );
+
 /* -------------------------------------------------------------------------
  * 3. Metas registradas para REST
  * ---------------------------------------------------------------------- */
@@ -146,6 +165,44 @@ foreach ( $tb_meta_map as $tb_type => $tb_keys ) {
 			&& ! empty( $tb_registered[ $tb_key ]['auth_callback'] );
 
 		tb_test_check( $tb_ok, $tb_type . ' → ' . $tb_key . ' registrada em REST com auth_callback' );
+	}
+}
+
+if ( function_exists( 'tb_meta_boxes' ) ) {
+	$tb_boxes = tb_meta_boxes();
+
+	tb_test_check( isset( $tb_boxes['socio'] ) && 2 === count( $tb_boxes['socio'] ), 'sócio tem dois boxes (perfil e contato)' );
+
+	if ( isset( $tb_boxes['socio'][0], $tb_boxes['socio'][1] ) ) {
+		tb_test_check( 'Perfil profissional' === $tb_boxes['socio'][0]['title'], 'primeiro box do sócio é o perfil profissional' );
+		tb_test_check( 'Contato' === $tb_boxes['socio'][1]['title'], 'segundo box do sócio é o contato' );
+
+		$tb_profile = array_keys( $tb_boxes['socio'][0]['fields'] );
+		$tb_contact = array_keys( $tb_boxes['socio'][1]['fields'] );
+
+		tb_test_check( in_array( '_tb_role', $tb_profile, true ) && ! in_array( '_tb_email', $tb_profile, true ), 'dados profissionais separados do contato' );
+		tb_test_check( array( '_tb_email', '_tb_phone', '_tb_linkedin' ) === $tb_contact, 'contato agrupa e-mail, telefone e LinkedIn' );
+	}
+
+	$tb_flat = tb_meta_fields();
+
+	foreach ( $tb_boxes as $tb_type => $tb_type_boxes ) {
+		$tb_expected = array();
+
+		foreach ( $tb_type_boxes as $tb_box ) {
+			$tb_expected = array_merge( $tb_expected, array_keys( $tb_box['fields'] ) );
+		}
+
+		$tb_actual = isset( $tb_flat[ $tb_type ]['fields'] ) ? array_keys( $tb_flat[ $tb_type ]['fields'] ) : array();
+		tb_test_check( $tb_expected === $tb_actual, 'boxes de ' . $tb_type . ' cobrem todos os campos' );
+	}
+
+	if ( isset( $tb_flat['banner']['fields']['_tb_label']['label'] ) ) {
+		tb_test_check( 'Etiqueta' === $tb_flat['banner']['fields']['_tb_label']['label'], 'banner usa rótulo Etiqueta' );
+	}
+
+	if ( isset( $tb_flat['destaque']['fields']['_tb_label']['label'] ) ) {
+		tb_test_check( 'Etiqueta' === $tb_flat['destaque']['fields']['_tb_label']['label'], 'destaque usa rótulo Etiqueta' );
 	}
 }
 
@@ -328,6 +385,8 @@ if ( $tb_post_id > 0 && function_exists( 'tb_render_meta_box' ) ) {
 
 	tb_test_check( false !== strpos( $tb_box, 'name="_tb_label"' ), 'meta box renderiza os campos' );
 	tb_test_check( false !== strpos( $tb_box, 'name="tb_meta_nonce"' ), 'meta box imprime nonce' );
+	tb_test_check( false !== strpos( $tb_box, 'class="large-text"' ), 'textarea usa a classe large-text' );
+	tb_test_check( false === strpos( $tb_box, 'large-text code' ), 'textarea não usa fonte de código' );
 }
 
 if ( $tb_post_id > 0 && function_exists( 'tb_save_meta' ) ) {
@@ -401,6 +460,23 @@ if ( function_exists( 'tb_image_size_tips' ) ) {
 tb_test_check( has_action( 'pre_get_posts', 'tb_admin_default_order' ), 'ordem padrão no admin registrada' );
 tb_test_check( has_action( 'admin_post_thumbnail_html', 'tb_thumbnail_tip' ), 'dica de tamanho da imagem registrada' );
 tb_test_check( has_action( 'admin_notices', 'tb_reading_notice' ), 'aviso de Leitura registrado' );
+tb_test_check( has_action( 'admin_notices', 'tb_admin_list_help' ), 'ajuda nas listagens dos CPTs registrada' );
+
+if ( function_exists( 'tb_open_meta_boxes_preference' ) ) {
+	$tb_prefs = tb_open_meta_boxes_preference( array() );
+	tb_test_check( true === $tb_prefs['core/edit-post']['metaBoxesMainIsOpen'], 'caixas de metadados abertas por padrão' );
+
+	$tb_prefs = tb_open_meta_boxes_preference( array( 'core/edit-post' => array( 'metaBoxesMainIsOpen' => false ) ) );
+	tb_test_check( false === $tb_prefs['core/edit-post']['metaBoxesMainIsOpen'], 'preferência do usuário é respeitada' );
+
+	$tb_prefs = tb_open_meta_boxes_preference( array( 'core' => array( 'isComplementaryAreaVisible' => true ) ) );
+	tb_test_check( true === $tb_prefs['core']['isComplementaryAreaVisible'], 'demais preferências preservadas' );
+
+	$tb_prefs = tb_open_meta_boxes_preference( '{"core":{"isComplementaryAreaVisible":true}}' );
+	tb_test_check( true === $tb_prefs['core']['isComplementaryAreaVisible'], 'preferências em JSON preservadas' );
+}
+
+tb_test_check( has_action( 'admin_init', 'tb_open_meta_boxes_by_default' ), 'caixas de metadados abertas por padrão no admin' );
 
 if ( function_exists( 'tb_reading_notice_needed' ) ) {
 	update_option( 'show_on_front', 'posts' );
