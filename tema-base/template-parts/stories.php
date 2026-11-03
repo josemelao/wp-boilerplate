@@ -14,14 +14,22 @@ $tb_visible_height = ( ( $tb_visible_count - 1 ) * 22 ) + 34;
 $tb_top_offset = ( 100 - $tb_visible_height ) / 2;
 
 $tb_story_teaser = static function ( $tb_item ) {
+	$summary = tb_post_meta( $tb_item->ID, '_tb_summary' );
+
+	if ( '' !== $summary ) {
+		return $summary;
+	}
+
 	$content = apply_filters( 'the_content', $tb_item->post_content );
+
 	if ( preg_match( '/<p\b[^>]*>(.*?)<\/p>/is', $content, $matches ) ) {
 		$paragraph = trim( wp_strip_all_tags( $matches[1] ) );
 		if ( '' !== $paragraph ) {
 			return wp_trim_words( $paragraph, 28, '…' );
 		}
 	}
-	return tb_post_meta( $tb_item->ID, '_tb_summary' );
+
+	return wp_trim_words( wp_strip_all_tags( $tb_item->post_content ), 28, '…' );
 };
 ?>
 <section class="stories" id="historias" aria-labelledby="stories-title" data-component="stories">

@@ -204,6 +204,24 @@ if ( function_exists( 'tb_meta_boxes' ) ) {
 	if ( isset( $tb_flat['destaque']['fields']['_tb_label']['label'] ) ) {
 		tb_test_check( 'Etiqueta' === $tb_flat['destaque']['fields']['_tb_label']['label'], 'destaque usa rótulo Etiqueta' );
 	}
+
+	$tb_limits = array(
+		'banner'     => array( '_tb_label' => 40, '_tb_text' => 160, '_tb_link_label' => 30 ),
+		'destaque'   => array( '_tb_label' => 40, '_tb_link_label' => 30 ),
+		'depoimento' => array( '_tb_source' => 80 ),
+		'historia'   => array( '_tb_credit' => 120 ),
+		'socio'      => array( '_tb_role' => 80, '_tb_oab' => 30 ),
+	);
+
+	foreach ( $tb_limits as $tb_type => $tb_fields ) {
+		foreach ( $tb_fields as $tb_key => $tb_limit ) {
+			$tb_actual = isset( $tb_flat[ $tb_type ]['fields'][ $tb_key ]['maxlength'] )
+				? (int) $tb_flat[ $tb_type ]['fields'][ $tb_key ]['maxlength']
+				: 0;
+
+			tb_test_check( $tb_limit === $tb_actual, $tb_type . ' → ' . $tb_key . ' limita em ' . $tb_limit . ' caracteres', 'maxlength=' . $tb_actual );
+		}
+	}
 }
 
 // O auth_callback não pode liberar visitante anônimo.
@@ -387,6 +405,9 @@ if ( $tb_post_id > 0 && function_exists( 'tb_render_meta_box' ) ) {
 	tb_test_check( false !== strpos( $tb_box, 'name="tb_meta_nonce"' ), 'meta box imprime nonce' );
 	tb_test_check( false !== strpos( $tb_box, 'class="large-text"' ), 'textarea usa a classe large-text' );
 	tb_test_check( false === strpos( $tb_box, 'large-text code' ), 'textarea não usa fonte de código' );
+	tb_test_check( false !== strpos( $tb_box, 'maxlength="40"' ), 'campo de etiqueta tem maxlength' );
+	tb_test_check( false !== strpos( $tb_box, 'maxlength="160"' ), 'textarea de apoio tem maxlength' );
+	tb_test_check( false !== strpos( $tb_box, 'Máximo: 40 caracteres' ), 'campo mostra o limite em caracteres' );
 }
 
 if ( $tb_post_id > 0 && function_exists( 'tb_save_meta' ) ) {

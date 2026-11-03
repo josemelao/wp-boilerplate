@@ -21,6 +21,9 @@ conteúdo, imagens, ordem e textos das opções; o desenho não muda pelo painel
 - Os campos do tema ficam em **Caixas de metadados**, no rodapé do editor. O tema
   abre essa área por padrão; se estiver recolhida, clique em **Caixas de
   metadados** para mostrar.
+- Textos curtos têm limite para não quebrar o layout: etiqueta (40), frase de
+  apoio (160), texto do botão (30), cargo (80), OAB (30) e crédito de imagem
+  (120). O **Resumo** deve ficar em até ~240 caracteres.
 
 ## 3. Artigo (blog)
 
@@ -57,6 +60,8 @@ A home é montada por listas. Cada item tem **Ordem** em Atributos → Ordem
 
 ### Histórias
 - Título, imagem de fundo **1600 × 900 px**, resumo e URL relacionada.
+- O texto exibido na seção da home vem do campo **Resumo**. O primeiro parágrafo
+  do editor é usado apenas quando o Resumo está vazio.
 - **Crédito da imagem:** texto curto exibido sobre o hero; opcional.
 - Cada história tem página própria em `/historias/{slug}/`, com outras histórias ao final.
 - A seção mostra até quatro itens por vez e gira em loop.
@@ -120,6 +125,8 @@ Acesse **Opções do Site** no menu lateral:
 
 - Ordem: Atributos → **Ordem**. Menor número primeiro.
 - Cada listagem mostra, no topo, a dica de imagem e a regra de ordem.
+- Títulos: mantenha em até ~60 caracteres. Cards e hero cortam o excesso
+  visualmente para preservar o desenho.
 - Imagem destacada: é a imagem do card, do banner ou do perfil.
 - Texto alternativo: preencha em Mídia → biblioteca → campo “Texto alternativo”.
   Isso melhora acessibilidade e SEO.

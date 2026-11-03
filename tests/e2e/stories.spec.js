@@ -309,3 +309,10 @@ test('@stories fundo começa a trocar no clique e texto mantém o tempo', async 
 	expect(state.summaryDuration).toBe('0.32s');
 	expect(state.backdropDuration).toBe('0.32s');
 });
+
+test('@stories resumo da home vem do campo Resumo', async ({ page }) => {
+	await page.goto('/');
+
+	const active = page.locator('.stories__entry.is-active');
+	await expect(active.locator('[data-story-summary]')).toContainText('A história começa com uma equipe pequena');
+});

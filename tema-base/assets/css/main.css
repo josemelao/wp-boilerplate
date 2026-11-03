@@ -2965,3 +2965,45 @@ img {
 		scroll-behavior: auto !important;
 	}
 }
+
+/* Limites visuais para textos curtos vindos do painel. */
+.hero__text,
+.post-card__excerpt,
+.area-card__excerpt,
+.search-result__excerpt {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	overflow: hidden;
+}
+
+.story-card__summary {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	overflow: hidden;
+}
+
+.story-single__lead,
+.socio-profile__lead,
+.content-archive__description {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 4;
+	line-clamp: 4;
+	overflow: hidden;
+}
+
+.area-card__title,
+.office-card__title,
+.post-card__title,
+.story-card__title,
+.search-result__title {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	overflow: hidden;
+}

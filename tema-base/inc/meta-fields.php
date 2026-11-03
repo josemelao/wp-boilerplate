@@ -22,11 +22,13 @@ function tb_meta_fields() {
 				'_tb_label'      => array(
 					'label'       => 'Etiqueta',
 					'type'        => 'text',
+					'maxlength'   => 40,
 					'description' => 'Texto curto acima do título (ex.: área de atuação).',
 				),
 				'_tb_text'       => array(
 					'label'       => 'Frase de apoio',
 					'type'        => 'textarea',
+					'maxlength'   => 160,
 					'description' => 'Frase de apoio exibida sobre a imagem.',
 				),
 				'_tb_link'       => array(
@@ -37,6 +39,7 @@ function tb_meta_fields() {
 				'_tb_link_label' => array(
 					'label'       => 'Texto do botão',
 					'type'        => 'text',
+					'maxlength'   => 30,
 					'default'     => 'Leia mais',
 					'description' => 'Padrão: "Leia mais".',
 				),
@@ -48,6 +51,7 @@ function tb_meta_fields() {
 				'_tb_label'      => array(
 					'label'       => 'Etiqueta',
 					'type'        => 'text',
+					'maxlength'   => 40,
 					'description' => 'Categoria ou área exibida no card.',
 				),
 				'_tb_link'       => array(
@@ -58,6 +62,7 @@ function tb_meta_fields() {
 				'_tb_link_label' => array(
 					'label'       => 'Texto do link',
 					'type'        => 'text',
+					'maxlength'   => 30,
 					'default'     => 'Leia mais',
 					'description' => 'Padrão: "Leia mais".',
 				),
@@ -74,6 +79,7 @@ function tb_meta_fields() {
 				'_tb_source' => array(
 					'label'       => 'Fonte',
 					'type'        => 'text',
+					'maxlength'   => 80,
 					'description' => 'Quem disse (ex.: publicação, cliente, ano).',
 				),
 			),
@@ -84,7 +90,7 @@ function tb_meta_fields() {
 				'_tb_summary' => array(
 					'label'       => 'Resumo',
 					'type'        => 'textarea',
-					'description' => 'Frase curta exibida na seção Histórias e nos resultados de busca.',
+					'description' => 'Frase curta exibida na seção Histórias e nos resultados de busca. Recomendado: até 240 caracteres.',
 				),
 				'_tb_link'    => array(
 					'label'       => 'URL de destino',
@@ -94,6 +100,7 @@ function tb_meta_fields() {
 				'_tb_credit'  => array(
 					'label'       => 'Crédito da imagem',
 					'type'        => 'text',
+					'maxlength'   => 120,
 					'description' => 'Texto discreto exibido sobre a imagem. Opcional.',
 				),
 			),
@@ -104,6 +111,7 @@ function tb_meta_fields() {
 				'_tb_role'      => array(
 					'label'       => 'Cargo',
 					'type'        => 'text',
+					'maxlength'   => 80,
 					'description' => 'Ex.: Sócio fundador.',
 				),
 				'_tb_areas'     => array(
@@ -125,6 +133,7 @@ function tb_meta_fields() {
 				'_tb_oab'       => array(
 					'label'       => 'OAB',
 					'type'        => 'text',
+					'maxlength'   => 30,
 					'description' => 'Registro profissional. Opcional.',
 				),
 				'_tb_email'     => array(
@@ -377,6 +386,8 @@ function tb_render_meta_box( $post, $box = null ) {
 		$value     = get_post_meta( $post->ID, $key, true );
 		$id        = 'tb-field-' . ltrim( $key, '_' );
 		$type_attr = 'text';
+		$maxlength = isset( $field['maxlength'] ) ? (int) $field['maxlength'] : 0;
+		$max_attr  = $maxlength > 0 ? ' maxlength="' . $maxlength . '"' : '';
 
 		if ( 'relationship' === $field['type'] ) {
 			$related_type = isset( $field['post_type'] ) ? $field['post_type'] : '';
@@ -437,26 +448,38 @@ function tb_render_meta_box( $post, $box = null ) {
 
 		if ( 'textarea' === $field['type'] ) {
 			printf(
-				'<textarea id="%1$s" name="%2$s" rows="4" class="large-text">%3$s</textarea>',
+				'<textarea id="%1$s" name="%2$s" rows="4" class="large-text"%4$s>%3$s</textarea>',
 				esc_attr( $id ),
 				esc_attr( $key ),
-				esc_textarea( $value )
+				esc_textarea( $value ),
+				$max_attr
 			);
 		} else {
 			$placeholder = isset( $field['default'] ) ? $field['default'] : '';
 
 			printf(
-				'<input type="%1$s" id="%2$s" name="%3$s" value="%4$s" class="regular-text" placeholder="%5$s">',
+				'<input type="%1$s" id="%2$s" name="%3$s" value="%4$s" class="regular-text" placeholder="%5$s"%6$s>',
 				esc_attr( $type_attr ),
 				esc_attr( $id ),
 				esc_attr( $key ),
 				esc_attr( $value ),
-				esc_attr( $placeholder )
+				esc_attr( $placeholder ),
+				$max_attr
 			);
 		}
 
-		if ( ! empty( $field['description'] ) ) {
-			echo '<p class="description">' . esc_html( $field['description'] ) . '</p>';
+		$description = isset( $field['description'] ) ? $field['description'] : '';
+
+		if ( $maxlength > 0 ) {
+			$description .= ' ' . sprintf(
+				/* translators: %d: limite de caracteres */
+				__( 'Máximo: %d caracteres.', 'tema-base' ),
+				$maxlength
+			);
+		}
+
+		if ( '' !== $description ) {
+			echo '<p class="description">' . esc_html( $description ) . '</p>';
 		}
 
 		echo '</td></tr>';
