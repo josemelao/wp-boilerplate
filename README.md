@@ -21,6 +21,7 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **Single de escritório (30/10/2026)**: cabeçalho com imagem, horário de atendimento editável, contato, CTA e outros escritórios.
 - **Single de sócio (30/10/2026)**: áreas linkadas, formação, idiomas, OAB e sidebar de perfil.
 - **Single de história (30/10/2026)**: crédito da imagem, outras histórias e leitura preservada.
+- **Páginas Sobre/Contato e conteúdo relacionado (03/11/2026)**: layouts institucionais, sócios da área e artigos por categoria.
 
 ## Requisitos
 
@@ -156,15 +157,17 @@ npm run test:e2e:smoke
 - `tests\e2e\office-single.spec.js` cobre horário, contato, CTA, outro escritório, estado vazio e alinhamento da largura.
 - `tests\e2e\socio-single.spec.js` cobre cargo, áreas linkadas, formação, idiomas, OAB e o estado sem detalhes.
 - `tests\e2e\story-single.spec.js` cobre crédito da imagem, outras histórias e o estado sem crédito.
+- `tests\e2e\institutional.spec.js` cobre Sobre, Contato, escritórios, CTA e alinhamento do conteúdo.
+- `tests\e2e\related.spec.js` cobre sócios da área e artigos relacionados por categoria.
 - `tests\e2e\inner-pages.spec.js` cobre o compartilhamento do artigo, cópia do link, largura de leitura e alinhamento da imagem.
-- `tests\e2e\search.spec.js` cobre a busca restrita a artigos, estado vazio e campo do rodapé.
+- `tests\e2e\search.spec.js` cobre a busca global, etiquetas de seção, estado vazio e campo do rodapé.
 - `tests\e2e\content-modules.spec.js` cobre áreas, escritórios, páginas institucionais, ordem dos arquivos e perfil de sócio.
 - `tests\e2e\footer.spec.js` cobre a organização do rodapé, escritórios linkados e CTA de contato.
 - `tests\e2e\seo.spec.js` cobre descrição, Open Graph, Twitter Card, schema, trilha visível e `noindex` em busca/404.
 - `tests\e2e\a11y.spec.js` cobre estrutura, alt, ids únicos, ordem de títulos, skip link, foco visível, controles nomeados, menu mobile e reflow de 320 a 1280 px.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 30/10/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **62/62**; `tools\test.ps1` → **171/171**; `tools\seo-check.ps1` → **65/65**; `php -l` em 40 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 03/11/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **70/70**; `tools\test.ps1` → **174/174**; `tools\seo-check.ps1` → **65/65**; `php -l` em 46 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -334,8 +337,8 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
 - **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
-- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (8), `tests/e2e/story-single.spec.js` (3), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/search.spec.js` (2), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3) e `tests/e2e/design.spec.js` (3). Total E2E: **62**.
-- **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 62/62; `tools\test.ps1` → 171/171; `tools\seo-check.ps1` → 65/65; `php -l` em 40 arquivos e `node --check` nos dois JS sem erros.
+- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (8), `tests/e2e/story-single.spec.js` (3), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/institutional.spec.js` (3), `tests/e2e/related.spec.js` (3), `tests/e2e/search.spec.js` (4), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3) e `tests/e2e/design.spec.js` (3). Total E2E: **70**.
+- **Verificado em 03/11/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 70/70; `tools\test.ps1` → 174/174; `tools\seo-check.ps1` → 65/65; `php -l` em 46 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
 ## Primeira passada de identidade visual — F5 (30/10/2026)
@@ -356,14 +359,14 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 ## F5.1 — Páginas internas e compartilhamento (30/10/2026)
 
 - Home permanece como aprovada.
-- **Blog/arquivo/busca:** cabeçalho simples, grade 3/2/1, cards sem borda e imagem opcional; estado vazio com busca. A busca é restrita a artigos (`post`) e mostra a contagem de resultados.
+- **Blog/arquivo/busca:** cabeçalho simples, grade 3/2/1, cards sem borda e imagem opcional; estado vazio com busca. A busca é global e identifica a seção de cada resultado.
 - **Artigo individual:** coluna de leitura de 54 rem, imagem panorâmica em 21/9, metadados em caixa alta, navegação discreta e bloco de compartilhamento após o conteúdo.
 - **Página institucional:** mesmo ritmo de leitura, sem data/categoria.
 - **Sócios:** cards sem borda; perfil em duas colunas no desktop e empilhado no mobile.
 - **História individual:** hero full-bleed mantido, corpo em coluna de leitura e compartilhamento após o texto.
 - **404/busca vazia:** layout curto, centrado e funcional.
 - **Compartilhamento sem plugin:** WhatsApp, X, LinkedIn, Facebook, e-mail e “copiar link”; links externos com `noopener noreferrer`, botão de cópia com `navigator.clipboard` e fallback. Instagram não tem URL oficial de compartilhamento web; o fallback é copiar o link/Web Share API.
-- **Busca:** formulário próprio em `searchform.php`, campo discreto no rodapé e busca limitada a artigos.
+- **Busca:** formulário próprio em `searchform.php`, campo discreto no rodapé e busca global com etiqueta de seção.
 - **Web Share API — avaliar no futuro:** antes de implementar, testar em dispositivos móveis reais se há necessidade/ganho concreto sobre o botão “copiar link”. Não adicionar complexidade sem essa validação.
 - **Arquivos novos:** `tema-base/template-parts/share.php`, `tb_share_links()` em `inc/helpers.php` e `tests/e2e/inner-pages.spec.js`.
 - **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 20/20; `tools\test.ps1` → 153/153; `php -l` em 29 arquivos e `node --check` sem erros.
@@ -376,11 +379,11 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - Home ganhou a seção **Áreas de atuação** com três cards.
 - Templates novos: `archive-area.php`, `single-area.php`, `archive-escritorio.php`, `single-escritorio.php`, `template-parts/areas.php`, `card-area.php` e `card-office.php`.
 - Seed demo agora cria 4 áreas, 2 escritórios, 4 sócios com retratos, páginas **Sobre**, **Contato**, **Reconhecimentos** e **Privacidade**, além dos menus principal/rodapé.
-- Arquivos públicos ordenados por `menu_order`; busca continua restrita a artigos.
+- Arquivos públicos ordenados por `menu_order`; a busca cobre posts, páginas, áreas, escritórios, sócios e histórias.
 - Footer reorganizado em topo (marca + busca), três colunas (navegação, escritórios, redes/inscrição) e base de copyright; escritórios linkados e CTA “Fale conosco”.
 - **Verificado em 30/10/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 26/26; `tools\test.ps1` → 153/153; `php -l` em 37 arquivos e `node --check` sem erros.
 - **Validado pelo usuário em 30/10/2026:** áreas, escritórios, perfis de sócios, páginas institucionais e novo footer.
-- **Pendente:** P1/P2 (setores, news, carreiras, eventos, busca global) ficam para depois da reação ao protótipo.
+- **Pendente:** P1/P2 (setores, news, carreiras, eventos) ficam para depois da reação ao protótipo.
 
 ## F6 — Profissionalização técnica
 
@@ -425,7 +428,7 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 ### F6.4 — Produção (pacote e documentação prontos; infraestrutura pendente)
 
 - `tools\build-zip.ps1` gera `dist\tema-base.zip` com `tema-base/` na raiz, valida os arquivos obrigatórios e recusa pacotes com pastas de desenvolvimento.
-- Pacote verificado em 30/10/2026: **0,19 MB**, **47 arquivos**, **36 PHP sem erro de sintaxe**, fontes, CSS/JS e `style.css` na versão **0.4.0**.
+- Pacote verificado em 03/11/2026: **0,20 MB**, **53 arquivos**, **42 PHP sem erro de sintaxe**, fontes, CSS/JS e `style.css` na versão **0.4.0**.
 - Tema, `TB_VERSION` e `package.json` atualizados para **0.4.0**.
 - `docs/production.md`: stack recomendada, instalação, segurança, desempenho, SEO, contato, LGPD, backup, monitoramento, go-live e pendências do cliente.
 - `docs/client-guide.md`: manual do cliente para posts, home, sócios, áreas, escritórios, páginas, opções e SEO.
@@ -434,7 +437,7 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 ### Pendente na F6.4 e F7
 
 - **F6.4:** executar o checklist de `docs/production.md` no ambiente contratado, com staging e testes de restauração.
-- **F7 Backlog:** setores, news, carreiras, eventos, busca global, newsletter e multilíngue, conforme demanda.
+- **F7 Backlog:** setores, news, carreiras, eventos, newsletter e multilíngue, conforme demanda.
 
 ## Ajuste visual da home e controles (30/10/2026)
 
@@ -495,6 +498,29 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - **Comentários e pingbacks desabilitados globalmente**: filtros de fechamento, remoção do suporte em posts/páginas, feed de comentários desligado e menu de comentários removido do painel.
 - F1 passou a cobrir comentários fechados e ausência de suporte.
 
+## Páginas institucionais (03/11/2026)
+
+- `page-sobre.php`: conteúdo, **Nosso time** com os sócios e **Onde estamos** com os escritórios; CTA para Contato.
+- `page-contato.php`: conteúdo, canais e cards de contato dos escritórios (telefone, e-mail, mapa e link da unidade).
+- **Sem formulário de contato** por enquanto; ele depende da escolha de ferramenta e do texto de LGPD.
+- Conteúdo das páginas alinhado ao título em 54 rem.
+- Reaproveita `card-socio`, `card-office` e um novo `card-office-contact`. Nenhum campo novo.
+
+## Conteúdo relacionado (03/11/2026)
+
+- **Sócios da área:** a single de área consulta a relação `_tb_areas` já existente e mostra os sócios vinculados, na ordem do painel.
+- **Artigos relacionados:** a single de artigo mostra até três posts da mesma categoria, excluindo o atual; a seção some quando não há outro post.
+- Nenhum campo novo; a relação sócio ↔ área já existia.
+
+## Busca global (03/11/2026)
+
+- Novo `search.php` e `card-search.php`.
+- A busca cobre posts, páginas, áreas, escritórios, sócios e histórias; banners, destaques, depoimentos e anexos ficam fora.
+- Cada card mostra a etiqueta da seção: Artigo, Página, Área de atuação, Escritório, Sócio ou História.
+- O formulário do rodapé passou a dizer **“Buscar no site”**.
+- A história passou a ser pesquisável; a busca continua `noindex`.
+- **Testes:** `tests/e2e/search.spec.js` (4), F1 com **174** verificações e **70** E2E. Resultados em lista editorial, sem imagens.
+
 ## Limitações conhecidas
 
 - **Windows-only.** Mac/Linux precisam de outro caminho (Docker ou LocalWP), ainda não suportado.
@@ -545,4 +571,4 @@ O `-Reset` para os serviços, apaga o runtime e reinstala. O conteúdo local (po
 
 1. **Validar a F5.2 com o cliente:** apresentar o protótipo P0 e decidir o que entra/sai antes de avançar para P1/P2.
 2. **F6 — Profissionalização técnica:** performance de imagens, SEO/schema, acessibilidade, staging, SSL, backup, contato, LGPD e manual.
-3. **F7 — Backlog:** setores, news, carreiras, eventos, busca global, newsletter e multilíngue, conforme demanda.
+3. **F7 — Backlog:** setores, news, carreiras, eventos, newsletter e multilíngue, conforme demanda.

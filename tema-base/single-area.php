@@ -13,6 +13,7 @@ if ( have_posts() ) :
 		$tb_excerpt  = has_excerpt() ? get_the_excerpt() : '';
 		$tb_services = tb_lines( tb_post_meta( get_the_ID(), '_tb_services' ) );
 		$tb_sectors  = tb_lines( tb_post_meta( get_the_ID(), '_tb_sectors' ) );
+		$tb_team     = tb_get_area_socios( get_the_ID() );
 		?>
 		<article <?php post_class( 'area-single' ); ?>>
 			<header class="content-page__header tb-container">
@@ -57,6 +58,19 @@ if ( have_posts() ) :
 					</section>
 				<?php endif; ?>
 			</div>
+
+			<?php if ( $tb_team ) : ?>
+				<section class="area-team tb-section" aria-labelledby="area-team-title">
+					<div class="tb-container">
+						<h2 class="tb-section__title" id="area-team-title"><?php esc_html_e( 'Sócios da área', 'tema-base' ); ?></h2>
+						<div class="socio-grid">
+							<?php foreach ( $tb_team as $tb_socio ) : ?>
+								<?php get_template_part( 'template-parts/card-socio', null, array( 'post_id' => $tb_socio->ID ) ); ?>
+							<?php endforeach; ?>
+						</div>
+					</div>
+				</section>
+			<?php endif; ?>
 
 			<section class="area-cta" aria-labelledby="area-cta-title">
 				<div class="tb-container area-cta__inner">

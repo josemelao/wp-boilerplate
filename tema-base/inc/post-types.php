@@ -116,7 +116,7 @@ function tb_register_post_types() {
 				'menu_position' => 23,
 				'public'        => true,
 				'publicly_queryable' => true,
-				'exclude_from_search' => true,
+				'exclude_from_search' => false,
 				'has_archive'   => false,
 				'query_var'     => 'historia',
 				'rewrite'       => array(

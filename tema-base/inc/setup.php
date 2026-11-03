@@ -88,17 +88,22 @@ function tb_enqueue_assets() {
 add_action( 'wp_enqueue_scripts', 'tb_enqueue_assets' );
 
 /**
- * Restringe a busca pública a artigos.
+ * Amplia a busca pública para os tipos de conteúdo públicos do tema.
  *
  * @param WP_Query $query Consulta.
  * @return void
  */
-function tb_search_only_posts( $query ) {
-	if ( ! is_admin() && $query->is_main_query() && $query->is_search() ) {
-		$query->set( 'post_type', 'post' );
+function tb_search_public_content( $query ) {
+	if ( is_admin() || ! $query->is_main_query() || ! $query->is_search() ) {
+		return;
 	}
+
+	$query->set(
+		'post_type',
+		array( 'post', 'page', 'area', 'escritorio', 'socio', 'historia' )
+	);
 }
-add_action( 'pre_get_posts', 'tb_search_only_posts' );
+add_action( 'pre_get_posts', 'tb_search_public_content' );
 
 /**
  * Fecha comentários e pingbacks em todo o site.

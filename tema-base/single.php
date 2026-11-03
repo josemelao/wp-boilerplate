@@ -36,6 +36,41 @@ if ( have_posts() ) :
 				</div>
 			</div>
 		</article>
+
+		<?php
+		if ( $tb_categories ) {
+			$tb_related = new WP_Query(
+				array(
+					'post_type'           => 'post',
+					'post_status'         => 'publish',
+					'posts_per_page'      => 3,
+					'post__not_in'        => array( get_the_ID() ),
+					'category__in'        => wp_list_pluck( $tb_categories, 'term_id' ),
+					'no_found_rows'       => true,
+					'ignore_sticky_posts' => true,
+				)
+			);
+
+			if ( $tb_related->have_posts() ) :
+				?>
+				<section class="related-posts tb-section" aria-labelledby="related-posts-title">
+					<div class="tb-container">
+						<h2 class="tb-section__title" id="related-posts-title"><?php esc_html_e( 'Artigos relacionados', 'tema-base' ); ?></h2>
+						<div class="insights__grid">
+							<?php
+							while ( $tb_related->have_posts() ) :
+								$tb_related->the_post();
+								get_template_part( 'template-parts/card-post', null, array( 'post_id' => get_the_ID(), 'heading_level' => 3 ) );
+							endwhile;
+							?>
+						</div>
+					</div>
+				</section>
+				<?php
+			endif;
+			wp_reset_postdata();
+		}
+		?>
 		<?php
 	endwhile;
 endif;

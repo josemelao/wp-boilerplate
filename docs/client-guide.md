@@ -30,7 +30,8 @@ conteúdo, imagens, ordem e textos das opções; o desenho não muda pelo painel
 7. **Publicar**.
 
 O artigo aparece em `/artigos/`, na busca e nos destaques da home conforme a
-data e os fixos.
+data e os fixos. A busca do rodapé é **global**: inclui artigos, páginas, áreas,
+escritórios, sócios e histórias, e cada resultado mostra a seção de origem.
 
 ## 4. Home
 
@@ -95,6 +96,10 @@ A home é montada por listas. Cada item tem **Ordem** em Atributos → Ordem
 
 Sobre, Contato, Reconhecimentos e Privacidade são páginas normais: título, texto
 e imagem destacada opcional. A caixa **SEO** também vale aqui.
+
+- **Sobre** mostra automaticamente o time e os escritórios.
+- **Contato** lista os canais e os escritórios; o formulário ainda será definido.
+- O texto e a imagem continuam editáveis no painel.
 
 ## 9. Opções do Site
 

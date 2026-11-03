@@ -320,7 +320,7 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - Footer reorganizado em topo (marca + busca), três colunas (navegação, escritórios, redes/inscrição) e base de copyright; escritórios linkados e CTA “Fale conosco”.
 - **Verificação:** 12 testes unitários, 26 E2E e 153 verificações da F1 passando; 37 arquivos PHP sem erro de sintaxe.
 - **Validado pelo usuário em 30/10/2026:** áreas, escritórios, perfis de sócios, páginas institucionais e footer.
-- **Pendente:** módulos P1/P2 (setores, news, carreiras, eventos, busca global).
+- **Pendente:** módulos P1/P2 (setores, news, carreiras, eventos).
 
 #### F6 — Profissionalização técnica — F6.1 e F6.2 implementadas — 30/10/2026
 
@@ -329,7 +329,7 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - Upload futuro verificado por importação temporária de JPEG: derivados `tb-*` gerados em `.webp`; anexo removido depois.
 - **F6.2 SEO (modo híbrido):** `inc/seo.php` emite meta description (campo SEO → resumo → conteúdo → padrão), Open Graph, Twitter Card, canonical em home/arquivos, JSON-LD (`Organization`/`LegalService`, `WebSite`, `WebPage`/`CollectionPage`, `Article`, `Person`, `Service`, `LocalBusiness`, `BreadcrumbList`) e `noindex` na 404. Caixa SEO em post, página, área, escritório, sócio e história; opção de descrição da home; trilha visível nas páginas individuais. O tema se desliga quando Yoast, Rank Math, The SEO Framework, SEOPress, All in One SEO ou Slim SEO está ativo. `tools\seo-check.ps1` valida 65 itens; cobertura E2E em `tests/e2e/seo.spec.js`.
 - **F6.3 Acessibilidade (30/10/2026):** Lighthouse/axe em 100 na home, artigos, áreas, escritórios, sócios, histórias, Sobre, Contato e busca. Corrigida a ordem de títulos nos arquivos (cards em `h2` sob o `h1`; `h3` na home), ampliado o alvo dos links de compartilhamento para 24 × 44 px e validados skip link, foco visível, menu mobile com Escape, rótulos de busca, `aria-current` da trilha e reflow de 320 a 1280 px. Cobertura em `tests/e2e/a11y.spec.js`.
-- **F6.4 Produção (30/10/2026):** `tools\build-zip.ps1` gera `dist\tema-base.zip` (47 arquivos, 36 PHP sem erro, `tema-base/` na raiz) e o tema foi versionado em 0.4.0. `docs/production.md` cobre stack, instalação, segurança, desempenho, SEO, contato, LGPD, backup, monitoramento e go-live; `docs/client-guide.md` é o manual do cliente. Hospedagem, staging, SSL, backup, cache/CDN, formulário, LGPD e monitoramento seguem pendentes de contas/decisões do cliente.
+- **F6.4 Produção (30/10/2026):** `tools\build-zip.ps1` gera `dist\tema-base.zip` (53 arquivos, 42 PHP sem erro, `tema-base/` na raiz) e o tema foi versionado em 0.4.0. `docs/production.md` cobre stack, instalação, segurança, desempenho, SEO, contato, LGPD, backup, monitoramento e go-live; `docs/client-guide.md` é o manual do cliente. Hospedagem, staging, SSL, backup, cache/CDN, formulário, LGPD e monitoramento seguem pendentes de contas/decisões do cliente.
 
 #### Ajuste visual da home e controles — 30/10/2026
 
@@ -380,6 +380,22 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - Meta description de história passa a usar `_tb_summary` antes do conteúdo.
 - Comentários e pingbacks fechados globalmente; suporte removido de post/page; feed de comentários desligado; menu de comentários removido do painel.
 - **Verificação:** 12 unitários, 62 E2E, 171 da F1, 65 no `seo-check`, 40 arquivos PHP sem erro.
+
+#### Páginas institucionais e conteúdo relacionado — 03/11/2026
+
+- `page-sobre.php`: conteúdo, time e escritórios; CTA para Contato.
+- `page-contato.php`: conteúdo, canais e cards de contato dos escritórios; sem formulário até decisão do cliente.
+- Single de área ganhou **Sócios da área** via relação `_tb_areas` existente.
+- Single de artigo ganhou **Artigos relacionados** por categoria, com até três posts e seção condicional.
+- Conteúdo das páginas alinhado ao título em 54 rem; nenhum campo novo.
+- **Verificação:** 12 unitários, 68 E2E, 172 da F1, 65 no `seo-check`, 44 arquivos PHP sem erro e Lighthouse de acessibilidade 100 em Sobre.
+
+#### Busca global — 03/11/2026
+
+- `search.php` e `card-search.php`; a consulta inclui posts, páginas, áreas, escritórios, sócios e histórias.
+- Cada resultado tem etiqueta de seção; formulário passou a “Buscar no site”.
+- Histórias agora são pesquisáveis; banners, destaques, depoimentos e anexos ficam fora.
+- **Verificação:** 12 unitários, 70 E2E, 174 da F1, 65 no `seo-check`, 46 arquivos PHP sem erro.
 
 ## 13. Cuidados, armadilhas e precauções
 

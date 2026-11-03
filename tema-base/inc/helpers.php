@@ -222,6 +222,100 @@ function tb_lines( $value ) {
 }
 
 /**
+ * Sócios relacionados a uma área, na ordem do painel.
+ *
+ * @param int $area_id ID da área.
+ * @return WP_Post[]
+ */
+function tb_get_area_socios( $area_id ) {
+	$area_id = (int) $area_id;
+
+	if ( ! $area_id ) {
+		return array();
+	}
+
+	$socios = get_posts(
+		array(
+			'post_type'      => 'socio',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => 'menu_order',
+			'order'          => 'ASC',
+		)
+	);
+
+	return array_values(
+		array_filter(
+			$socios,
+			function ( $socio ) use ( $area_id ) {
+				$areas = array_map( 'absint', (array) get_post_meta( $socio->ID, '_tb_areas', true ) );
+				return in_array( $area_id, $areas, true );
+			}
+		)
+	);
+}
+
+/**
+ * Rótulo da seção de um resultado de busca.
+ *
+ * @param int|WP_Post $post Post.
+ * @return string
+ */
+function tb_search_type_label( $post = null ) {
+	$post = get_post( $post );
+
+	if ( ! $post ) {
+		return '';
+	}
+
+	$labels = array(
+		'post'       => __( 'Artigo', 'tema-base' ),
+		'page'       => __( 'Página', 'tema-base' ),
+		'area'       => __( 'Área de atuação', 'tema-base' ),
+		'escritorio' => __( 'Escritório', 'tema-base' ),
+		'socio'      => __( 'Sócio', 'tema-base' ),
+		'historia'   => __( 'História', 'tema-base' ),
+	);
+
+	if ( isset( $labels[ $post->post_type ] ) ) {
+		return $labels[ $post->post_type ];
+	}
+
+	$object = get_post_type_object( $post->post_type );
+
+	return $object ? $object->labels->singular_name : $post->post_type;
+}
+
+/**
+ * Resumo curto de um resultado de busca.
+ *
+ * @param int|WP_Post $post  Post.
+ * @param int          $words Limite de palavras.
+ * @return string
+ */
+function tb_search_excerpt( $post = null, $words = 28 ) {
+	$post = get_post( $post );
+
+	if ( ! $post ) {
+		return '';
+	}
+
+	if ( has_excerpt( $post ) ) {
+		return wp_trim_words( $post->post_excerpt, $words, '…' );
+	}
+
+	if ( 'historia' === $post->post_type ) {
+		$summary = get_post_meta( $post->ID, '_tb_summary', true );
+
+		if ( '' !== $summary ) {
+			return wp_trim_words( $summary, $words, '…' );
+		}
+	}
+
+	return wp_trim_words( wp_strip_all_tags( $post->post_content ), $words, '…' );
+}
+
+/**
  * URL do blog (página definida em Configurações → Leitura).
  *
  * @return string

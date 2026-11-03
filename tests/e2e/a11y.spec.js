@@ -119,7 +119,7 @@ test('@a11y rodapé e compartilhamento têm controles nomeados', async ({ page }
 		const label = element.id ? document.querySelector(`label[for="${CSS.escape(element.id)}"]`) : null;
 		return label ? label.textContent.trim() : element.getAttribute('aria-label');
 	});
-	expect(inputName).toBe('Buscar artigos');
+	expect(inputName).toBe('Buscar no site');
 
 	await expect(search.locator('button[type="submit"]')).toHaveText(/Buscar/);
 
