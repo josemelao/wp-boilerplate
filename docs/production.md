@@ -118,7 +118,7 @@ O tema entrega a página e o CTA, mas **não inclui formulário funcional**.
 - [ ] 404, busca e páginas institucionais revisadas.
 - [ ] Usuários e permissões conferidos.
 - [ ] Backup inicial pós-conteúdo.
-- [ ] Manual do cliente entregue (`docs/client-guide.md`).
+- [ ] Manual do cliente entregue (`docs/client-guide.md` e **Opções do Site → Manual do cliente**).
 - [ ] Treinamento ou vídeo curto com o cliente.
 
 ## 10. Pendências do cliente

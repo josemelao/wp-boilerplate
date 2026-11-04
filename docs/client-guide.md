@@ -3,6 +3,8 @@
 Guia rápido para publicar e manter o site. O layout é fixo: você edita
 conteúdo, imagens, ordem e textos das opções; o desenho não muda pelo painel.
 
+> Versão rápida dentro do WordPress: **Opções do Site → Manual do cliente**.
+
 ## 1. Acesso
 
 - Painel: `https://dominio/wp-admin/`

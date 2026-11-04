@@ -23,4 +23,5 @@ require_once TB_DIR . '/inc/seo.php';
 require_once TB_DIR . '/inc/post-types.php';
 require_once TB_DIR . '/inc/meta-fields.php';
 require_once TB_DIR . '/inc/options-page.php';
+require_once TB_DIR . '/inc/manual.php';
 require_once TB_DIR . '/inc/admin-ux.php';

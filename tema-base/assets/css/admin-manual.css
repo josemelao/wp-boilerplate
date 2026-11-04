@@ -1,0 +1,93 @@
+.tb-manual {
+	max-width: 980px;
+	margin-top: 20px;
+}
+
+.tb-manual__lead {
+	max-width: 72ch;
+	color: #50575e;
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+.tb-manual__nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 16px;
+	margin: 20px 0;
+	padding: 12px 16px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+}
+
+.tb-manual__nav a {
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.tb-manual__card {
+	margin: 20px 0;
+	padding: 20px 24px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
+}
+
+.tb-manual__card h2 {
+	margin-top: 0;
+	font-size: 18px;
+}
+
+.tb-manual__card p,
+.tb-manual__card li {
+	line-height: 1.6;
+}
+
+.tb-manual__card ol,
+.tb-manual__card ul {
+	margin-left: 1.4em;
+}
+
+.tb-manual__card li {
+	margin-bottom: 10px;
+}
+
+.tb-manual__note {
+	margin: 14px 0;
+	padding: 10px 14px;
+	background: #f6f7f7;
+	border-left: 4px solid #2271b1;
+}
+
+.tb-manual figure {
+	margin: 14px 0;
+}
+
+.tb-manual figure img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	border: 1px solid #dcdcde;
+}
+
+.tb-manual figcaption {
+	margin-top: 6px;
+	color: #646970;
+	font-size: 12px;
+}
+
+.tb-manual__footer {
+	margin-top: 24px;
+	color: #646970;
+	font-size: 12px;
+}
+
+@media screen and (max-width: 782px) {
+	.tb-manual__card {
+		padding: 16px;
+	}
+
+	.tb-manual__nav {
+		flex-direction: column;
+	}
+}

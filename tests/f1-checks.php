@@ -67,6 +67,9 @@ $tb_functions = array(
 	'tb_admin_default_order',
 	'tb_admin_list_help',
 	'tb_open_meta_boxes_preference',
+	'tb_add_manual_page',
+	'tb_render_manual_page',
+	'tb_manual_assets',
 	'tb_reading_notice_needed',
 );
 
@@ -526,6 +529,8 @@ tb_test_check( has_action( 'admin_post_thumbnail_html', 'tb_thumbnail_tip' ), 'd
 tb_test_check( has_action( 'admin_notices', 'tb_reading_notice' ), 'aviso de Leitura registrado' );
 tb_test_check( has_action( 'admin_notices', 'tb_admin_list_help' ), 'ajuda nas listagens dos CPTs registrada' );
 tb_test_check( has_action( 'wp_dashboard_setup', 'tb_remove_dashboard_comments' ), 'widget de comentários removido do painel' );
+tb_test_check( has_action( 'admin_menu', 'tb_add_manual_page' ), 'manual rápido registrado no menu' );
+tb_test_check( has_action( 'admin_enqueue_scripts', 'tb_manual_assets' ), 'estilos do manual rápido registrados' );
 
 if ( function_exists( 'tb_open_meta_boxes_preference' ) ) {
 	$tb_prefs = tb_open_meta_boxes_preference( array() );
@@ -542,6 +547,24 @@ if ( function_exists( 'tb_open_meta_boxes_preference' ) ) {
 }
 
 tb_test_check( has_action( 'admin_init', 'tb_open_meta_boxes_by_default' ), 'caixas de metadados abertas por padrão no admin' );
+
+if ( function_exists( 'tb_render_manual_page' ) ) {
+	wp_set_current_user( 1 );
+	ob_start();
+	tb_render_manual_page();
+	$tb_manual = ob_get_clean();
+
+	tb_test_check( false !== strpos( $tb_manual, 'Manual rápido' ), 'manual rápido renderiza o título' );
+	tb_test_check( false !== strpos( $tb_manual, 'Fixar este post no topo do blog' ), 'manual ensina o caminho de fixar post' );
+	tb_test_check( false !== strpos( $tb_manual, 'Imagem destacada' ), 'manual cobre imagem destacada' );
+	tb_test_check( false !== strpos( $tb_manual, 'Opções do Site' ), 'manual aponta para Opções do Site' );
+}
+
+$tb_manual_images = array( '01-status.png', '02-fixar.png', '03-imagem.png' );
+
+foreach ( $tb_manual_images as $tb_manual_image ) {
+	tb_test_check( file_exists( TB_DIR . '/assets/manual/' . $tb_manual_image ), 'print do manual existe: ' . $tb_manual_image );
+}
 
 if ( function_exists( 'tb_reading_notice_needed' ) ) {
 	update_option( 'show_on_front', 'posts' );

@@ -352,6 +352,9 @@ function tb_render_options_page() {
 		<p class="description">
 			<?php esc_html_e( 'Ajustes de texto e links usados no site. O layout não muda por aqui.', 'tema-base' ); ?>
 		</p>
+		<p>
+			<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=tb-manual' ) ); ?>"><?php esc_html_e( 'Abrir o manual rápido', 'tema-base' ); ?></a>
+		</p>
 		<form method="post" action="options.php">
 			<?php
 			settings_fields( 'tb_options_group' );
