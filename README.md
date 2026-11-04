@@ -25,6 +25,7 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **Busca global (03/11/2026)**: busca em posts, páginas, áreas, escritórios, sócios e histórias, com etiqueta de seção e resultados em lista editorial sem imagens.
 - **Painel e textos curtos (04/11/2026)**: sócio em Perfil/Contato, autor e widget de comentários removidos, menus com URLs relativas, limites de texto e home de Histórias usando o Resumo.
 - **Placeholder e manual rápido (04/11/2026)**: cards sem imagem usam o placeholder institucional, hero tem fallback e o manual do cliente está em Opções do Site → Manual do cliente. O túnel de demonstração tem um atalho local em `.local\demo-cliente.bat` (não versionado).
+- **Header fixo (04/11/2026)**: o cabeçalho acompanha a rolagem com `position: sticky`, sombra discreta depois do topo, offset da barra de admin e menu mobile com rolagem interna.
 
 ## Requisitos
 
@@ -153,6 +154,7 @@ npm run test:e2e:smoke
 
 - `tests\unit\carousel-target.test.js` cobre a decisão de destino do carrossel de Destaques (arrasto lento, flick, limites e deslocamento mínimo).
 - `tests\e2e\smoke.spec.js` cobre a home sem erros de console e as rotas principais (200/404).
+- `tests\e2e\header.spec.js` cobre o header fixo na rolagem, o estado `is-stuck`, o skip link acima do header e o menu mobile dentro da tela.
 - `tests\e2e\featured.spec.js` cobre arrasto, flick, setas, teclado, clique após arrasto e ausência de classes presas.
 - `tests\e2e\stories.spec.js` cobre a troca de conteúdo entre entrada e saída, a navegação pelas setas, a ausência de clique nos itens inativos, o alinhamento das setas, o item que entra rolando pelo topo, o primeiro item saindo pelo topo, um único cartão ativo por frame, o loop com 2 e 3 histórias e a largura mobile de 80%.
 - `tests\e2e\testimonials.spec.js` cobre a seção aberta, as setas laterais, o slide direcional, o autoplay após clique e a ausência de sobreposição em 320 px.
@@ -580,6 +582,16 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - A posição de entrada/saída usa `-22%` fixo, não `nextOffset - 22`: assim **2 e 3 histórias** também saem e entram de fora da seção.
 - Abaixo de 700 px, cartão e faixa ocupam **80% da largura** (10% a 90%), as etiquetas começam em `10% + 1.25rem`, o título **Histórias** fica vertical e o resumo tem 4 linhas.
 - **Testes:** `stories.spec.js` (14), com rotação para cima e para baixo, item do topo entrando rolando, primeiro item saindo pelo topo, um único cartão ativo por frame, loop com 2 e 3 histórias e a geometria mobile. Total E2E: **78**.
+
+## Header fixo na rolagem (04/11/2026)
+
+- `.site-header` usa `position: sticky` com `top: var(--wp-admin--admin-bar--height, 0px)` e `z-index: 90`. A altura continua **76 px** (`--tb-header-height: 4.75rem`), então nada se desloca quando a rolagem começa.
+- O estado `.is-stuck` é ligado por `data-component="sticky-header"` (atributo no `header.php`) em `main.js` depois de **8 px** de rolagem e aplica uma sombra discreta; sem JS ou com `prefers-reduced-motion`, o header continua fixo com a borda de 1 px e a transição global de movimento reduzido cuida da animação.
+- `html` ganhou `scroll-padding-top` com a altura do header + barra de admin (**109 px** no desktop logado), para “Pular para o conteúdo” e âncoras não pararem sob o header.
+- O **skip link** passou de `position: absolute` para `fixed` (mesmo `z-index: 100`, acima do header) e fica logo abaixo da barra de admin quando ela existe.
+- No mobile, o menu aberto ganhou `max-height` de `100dvh` menos header/barra de admin e rolagem interna; o teste cobre 360 × 640 e a conferência manual 360 × 480.
+- Arquivos: `assets/css/main.css`, `assets/js/main.js`, `header.php` e `tests/e2e/header.spec.js` (5 testes).
+- **Verificado em 04/11/2026:** `npm run test:unit` → **12/12**; `npm run test:e2e` → **83/83**; `tools\test.ps1` → **236/236**; `tools\seo-check.ps1` → **65/65**; `node --check tema-base\assets\js\main.js` e `php -l tema-base\header.php` sem erros. Conferido com capturas em 1280 e 360 px, menu mobile aberto e painel logado (header em `y=32` sob a barra de admin).
 
 ## Limitações conhecidas
 

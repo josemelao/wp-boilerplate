@@ -71,6 +71,8 @@
 
 html {
 	-webkit-text-size-adjust: 100%;
+	/* O cabeçalho fixo não pode cobrir o destino de âncoras e do skip link. */
+	scroll-padding-top: calc(var(--tb-header-height) + 1px + var(--wp-admin--admin-bar--height, 0px));
 }
 
 body {
@@ -141,8 +143,8 @@ img {
 }
 
 .skip-link {
-	position: absolute;
-	top: 0;
+	position: fixed;
+	top: var(--wp-admin--admin-bar--height, 0px);
 	left: 0;
 	z-index: 100;
 	padding: 0.75rem 1rem;
@@ -196,8 +198,16 @@ img {
  * ---------------------------------------------------------------------- */
 
 .site-header {
+	position: sticky;
+	top: var(--wp-admin--admin-bar--height, 0px);
+	z-index: 90;
 	border-bottom: 1px solid var(--tb-color-line);
 	background: var(--tb-color-paper);
+	transition: box-shadow 0.18s ease-in-out;
+}
+
+.site-header.is-stuck {
+	box-shadow: 0 6px 18px rgba(18, 20, 23, 0.08);
 }
 
 .site-header__inner {
@@ -2776,6 +2786,11 @@ img {
 
 	.js .site-nav.is-open {
 		display: block;
+		/* O menu rola dentro do cabeçalho fixo em telas baixas. */
+		max-height: calc(100vh - var(--tb-header-height) - var(--wp-admin--admin-bar--height, 0px) - 1rem);
+		max-height: calc(100dvh - var(--tb-header-height) - var(--wp-admin--admin-bar--height, 0px) - 1rem);
+		overflow-y: auto;
+		overscroll-behavior: contain;
 	}
 
 	.site-nav__list {

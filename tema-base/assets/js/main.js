@@ -43,6 +43,36 @@
 	}
 
 	/**
+	 * Cabeçalho fixo: sombra discreta depois que a página sai do topo.
+	 */
+	function initStickyHeader() {
+		var header = document.querySelector('[data-component="sticky-header"]');
+
+		if (!header) {
+			return;
+		}
+
+		var ticking = false;
+
+		function update() {
+			header.classList.toggle('is-stuck', window.scrollY > 8);
+			ticking = false;
+		}
+
+		function onScroll() {
+			if (ticking) {
+				return;
+			}
+
+			ticking = true;
+			window.requestAnimationFrame(update);
+		}
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		update();
+	}
+
+	/**
 	 * Fader comum para o hero e depoimentos.
 	 *
 	 * @param {Element} root Área do componente.
@@ -980,6 +1010,7 @@
 	}
 
 	initMenuToggle();
+	initStickyHeader();
 	document.querySelectorAll('[data-component="hero"], [data-component="testimonials"]').forEach(initFader);
 	document.querySelectorAll('[data-component="carousel"]').forEach(initCarousel);
 	document.querySelectorAll('[data-component="stories"]').forEach(initStories);

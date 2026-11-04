@@ -433,6 +433,16 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - **Verificação em 04/11/2026:** 12 unitários, 75 E2E, 236 da F1, 65 no `seo-check`, 47 arquivos PHP sem erro; zip com 0,52 MB, 58 arquivos e 43 PHP.
 - **Pendente:** aprovação do cliente pelo túnel; identidade final; formulário e LGPD; hospedagem/SSL/backup/cache; decisão sobre migrar os CPTs para plugin; manual completo em PDF; F7.
 
+#### Header fixo na rolagem — 04/11/2026
+
+- `.site-header` passou a usar `position: sticky` com `top: var(--wp-admin--admin-bar--height, 0px)` e `z-index: 90`; a altura de **76 px** (`--tb-header-height: 4.75rem`) não muda, então não há deslocamento de layout.
+- O estado `.is-stuck` é ligado por `data-component="sticky-header"` (novo atributo no `header.php`) em `main.js` depois de **8 px** de rolagem e aplica sombra discreta; sem JS, o header segue fixo com a borda de 1 px.
+- `html` ganhou `scroll-padding-top` com header + barra de admin (**109 px** no desktop logado), e o skip link passou de `absolute` para `fixed`, acima do header (`z-index: 100`), para continuar visível com a página rolada.
+- No mobile, o menu aberto ganhou `max-height` de `100dvh` menos header/barra e rolagem interna (`overflow-y: auto`), com fallback em `100vh`.
+- Novos testes em `tests/e2e/header.spec.js` (5): header em `y=0` após rolar, `is-stuck` só fora do topo, skip link acima do header rolado, âncora sem cobrir o topo e menu mobile dentro da tela.
+- **Verificação em 04/11/2026:** 12 unitários, 83 E2E, 236 da F1, 65 no `seo-check`; `node --check tema-base\assets\js\main.js` e `php -l tema-base\header.php` sem erros; capturas em 1280/360 px, menu mobile e painel logado (header em `y=32`).
+- **Pendente:** o zip de produção (0.4.0) não foi regerado nesta entrega.
+
 ## 13. Cuidados, armadilhas e precauções
 
 1. **Permalinks/rewrite:** depois de mudar CPTs ou slugs, rodar `wp rewrite flush --hard` (ou Configurações → Links permanentes → Salvar). O tema já faz flush ao ser ativado. Sem isso, `/socios/` dá 404.

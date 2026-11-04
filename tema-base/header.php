@@ -18,7 +18,7 @@
 
 <a class="skip-link" href="#conteudo"><?php esc_html_e( 'Pular para o conteúdo', 'tema-base' ); ?></a>
 
-<header class="site-header">
+<header class="site-header" data-component="sticky-header">
 	<div class="tb-container site-header__inner">
 		<div class="site-branding">
 			<?php if ( has_custom_logo() ) : ?>
