@@ -24,9 +24,8 @@ if ( empty( $tb_items ) ) {
 		<ul class="featured__track">
 			<?php foreach ( $tb_items as $tb_item ) : ?>
 				<?php
-				$tb_image_id = get_post_thumbnail_id( $tb_item );
-				$tb_link     = tb_post_meta( $tb_item->ID, '_tb_link' );
-				$tb_label    = tb_post_meta( $tb_item->ID, '_tb_label' );
+				$tb_link  = tb_post_meta( $tb_item->ID, '_tb_link' );
+				$tb_label = tb_post_meta( $tb_item->ID, '_tb_label' );
 				?>
 				<li class="featured__item">
 					<article class="featured-card">
@@ -35,9 +34,7 @@ if ( empty( $tb_items ) ) {
 						<?php else : ?>
 							<div class="featured-card__link">
 						<?php endif; ?>
-						<?php if ( $tb_image_id ) : ?>
-							<?php echo wp_get_attachment_image( $tb_image_id, 'tb-slide', false, array( 'class' => 'featured-card__image', 'alt' => '', 'loading' => 'lazy', 'sizes' => '(max-width: 700px) 86vw, 70vw' ) ); ?>
-						<?php endif; ?>
+						<?php echo tb_card_image( $tb_item->ID, 'tb-slide', 'featured-card__image', '(max-width: 700px) 86vw, 70vw', array( 'alt' => '' ) ); ?>
 						<div class="featured-card__content">
 							<?php if ( $tb_label ) : ?><p class="tb-kicker featured-card__label"><?php echo esc_html( $tb_label ); ?></p><?php endif; ?>
 							<h3 class="featured-card__title"><?php echo esc_html( get_the_title( $tb_item ) ); ?></h3>

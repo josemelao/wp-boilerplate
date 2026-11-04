@@ -21,9 +21,7 @@ $tb_heading_tag   = 'h' . $tb_heading_level;
 ?>
 <article class="area-card">
 	<a class="area-card__link" href="<?php echo esc_url( get_permalink( $tb_area ) ); ?>">
-		<?php if ( has_post_thumbnail( $tb_area ) ) : ?>
-			<?php echo get_the_post_thumbnail( $tb_area, 'tb-card', array( 'class' => 'area-card__image', 'loading' => 'lazy', 'sizes' => '(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 30vw' ) ); ?>
-		<?php endif; ?>
+		<?php echo tb_card_image( $tb_area_id, 'tb-card', 'area-card__image', '(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 30vw' ); ?>
 		<div class="area-card__body">
 			<p class="tb-kicker"><?php esc_html_e( 'Área de atuação', 'tema-base' ); ?></p>
 			<<?php echo esc_html( $tb_heading_tag ); ?> class="area-card__title"><?php echo esc_html( get_the_title( $tb_area ) ); ?></<?php echo esc_html( $tb_heading_tag ); ?>>

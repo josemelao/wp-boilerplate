@@ -15,9 +15,7 @@ $tb_categories = get_the_category( $tb_post_id );
 ?>
 <article class="post-card">
 	<a class="post-card__link" href="<?php echo esc_url( get_permalink( $tb_post ) ); ?>">
-		<?php if ( has_post_thumbnail( $tb_post ) ) : ?>
-			<?php echo get_the_post_thumbnail( $tb_post, 'tb-card', array( 'class' => 'post-card__image', 'loading' => 'lazy', 'sizes' => '(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 30vw' ) ); ?>
-		<?php endif; ?>
+		<?php echo tb_card_image( $tb_post_id, 'tb-card', 'post-card__image', '(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 30vw' ); ?>
 		<div class="post-card__body">
 			<?php if ( ! empty( $tb_categories ) ) : ?><p class="tb-kicker post-card__category"><?php echo esc_html( $tb_categories[0]->name ); ?></p><?php endif; ?>
 			<<?php echo esc_html( $tb_heading_tag ); ?> class="post-card__title"><?php echo esc_html( get_the_title( $tb_post ) ); ?></<?php echo esc_html( $tb_heading_tag ); ?>>

@@ -21,7 +21,7 @@ $tb_count = count( $tb_items );
 			$tb_link_label = tb_post_meta( $tb_item->ID, '_tb_link_label' );
 			$tb_heading_tag = $tb_active ? 'h1' : 'h2';
 			?>
-			<article class="hero__slide<?php echo $tb_active ? ' is-active' : ''; ?>" data-slide aria-hidden="<?php echo $tb_active ? 'false' : 'true'; ?>"<?php echo $tb_active ? '' : ' inert'; ?>>
+			<article class="hero__slide<?php echo $tb_active ? ' is-active' : ''; ?><?php echo $tb_image_id ? '' : ' hero__slide--fallback'; ?>" data-slide aria-hidden="<?php echo $tb_active ? 'false' : 'true'; ?>"<?php echo $tb_active ? '' : ' inert'; ?>>
 				<?php if ( $tb_image_id ) : ?>
 					<?php
 					$tb_image_args = array(

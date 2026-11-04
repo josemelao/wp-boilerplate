@@ -60,6 +60,7 @@ $tb_functions = array(
 	'tb_blog_url',
 	'tb_query',
 	'tb_featured_posts',
+	'tb_card_image',
 	'tb_lines',
 	'tb_save_meta',
 	'tb_meta_boxes',
@@ -249,6 +250,48 @@ if ( $tb_area_test_id && ! is_wp_error( $tb_area_test_id ) ) {
 	);
 	tb_test_check( array( $tb_area_test_id ) === $tb_relation, 'relação mantém apenas IDs válidos e únicos' );
 	wp_delete_post( $tb_area_test_id, true );
+}
+
+/* -------------------------------------------------------------------------
+ * 3b. Imagem de card com placeholder
+ * ---------------------------------------------------------------------- */
+
+WP_CLI::log( '' );
+WP_CLI::log( '== Imagem de card' );
+
+$tb_card_post_id = wp_insert_post(
+	array(
+		'post_type'   => 'post',
+		'post_title'  => 'Post sem imagem F1',
+		'post_status' => 'draft',
+	)
+);
+
+if ( $tb_card_post_id > 0 && ! is_wp_error( $tb_card_post_id ) && function_exists( 'tb_card_image' ) ) {
+	$tb_card_placeholder = tb_card_image( $tb_card_post_id, 'tb-card', 'post-card__image', '(max-width: 700px) 90vw, 30vw' );
+
+	tb_test_check( false !== strpos( $tb_card_placeholder, 'tb-media-placeholder' ), 'tb_card_image gera placeholder sem imagem' );
+	tb_test_check( false !== strpos( $tb_card_placeholder, 'aria-hidden="true"' ), 'placeholder de imagem é decorativo' );
+	tb_test_check( false !== strpos( $tb_card_placeholder, 'post-card__image' ), 'placeholder mantém a classe do card' );
+	tb_test_check( false !== strpos( $tb_card_placeholder, '>JT<' ), 'placeholder usa o monograma institucional' );
+	tb_test_check( false === strpos( $tb_card_placeholder, '<img' ), 'placeholder não renderiza uma imagem' );
+
+	wp_delete_post( $tb_card_post_id, true );
+}
+
+$tb_with_image = get_posts(
+	array(
+		'post_type'      => 'post',
+		'post_status'    => 'publish',
+		'posts_per_page' => 1,
+		'meta_key'       => '_thumbnail_id',
+		'fields'         => 'ids',
+	)
+);
+
+if ( ! empty( $tb_with_image ) && function_exists( 'tb_card_image' ) ) {
+	$tb_card_image = tb_card_image( (int) $tb_with_image[0], 'tb-card', 'post-card__image' );
+	tb_test_check( false !== strpos( $tb_card_image, '<img' ), 'tb_card_image usa a imagem destacada quando existe' );
 }
 
 /* -------------------------------------------------------------------------

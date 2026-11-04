@@ -18,11 +18,7 @@ $tb_heading_tag   = 'h' . $tb_heading_level;
 ?>
 <article class="socio-card">
 	<a class="socio-card__link" href="<?php echo esc_url( get_permalink( $tb_socio ) ); ?>">
-		<?php if ( has_post_thumbnail( $tb_socio ) ) : ?>
-			<?php echo get_the_post_thumbnail( $tb_socio, 'tb-socio', array( 'class' => 'socio-card__image', 'loading' => 'lazy', 'sizes' => '(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 30vw' ) ); ?>
-		<?php else : ?>
-			<div class="socio-card__placeholder" aria-hidden="true"></div>
-		<?php endif; ?>
+		<?php echo tb_card_image( $tb_socio_id, 'tb-socio', 'socio-card__image', '(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 30vw' ); ?>
 		<div class="socio-card__body">
 			<?php if ( $tb_role ) : ?><p class="tb-kicker socio-card__role"><?php echo esc_html( $tb_role ); ?></p><?php endif; ?>
 			<<?php echo esc_html( $tb_heading_tag ); ?> class="socio-card__name"><?php echo esc_html( get_the_title( $tb_socio ) ); ?></<?php echo esc_html( $tb_heading_tag ); ?>>

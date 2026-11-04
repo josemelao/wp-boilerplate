@@ -154,7 +154,7 @@ function tb_thumbnail_tip( $content ) {
 		esc_html(
 			sprintf(
 				/* translators: 1: largura, 2: altura */
-				__( 'Tamanho recomendado: %1$d × %2$d px. A imagem é recortada automaticamente; prefira fotos na horizontal/vertical indicada.', 'tema-base' ),
+				__( 'Tamanho recomendado: %1$d × %2$d px. A imagem é recortada automaticamente; prefira fotos na horizontal/vertical indicada. Sem imagem, o site usa o placeholder institucional.', 'tema-base' ),
 				$size[0],
 				$size[1]
 			)

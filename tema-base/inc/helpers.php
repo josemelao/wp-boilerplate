@@ -415,6 +415,47 @@ function tb_featured_posts( $count = 3 ) {
 }
 
 /**
+ * Imagem de card com placeholder institucional quando não há imagem.
+ *
+ * @param int    $post_id ID do post.
+ * @param string $size    Tamanho da imagem.
+ * @param string $class   Classe CSS do elemento.
+ * @param string $sizes   Atributo sizes.
+ * @param array  $attrs   Atributos extras para a imagem.
+ * @return string
+ */
+function tb_card_image( $post_id, $size = 'tb-card', $class = '', $sizes = '', $attrs = array() ) {
+	$post_id = (int) $post_id;
+
+	if ( $post_id <= 0 ) {
+		return '';
+	}
+
+	if ( has_post_thumbnail( $post_id ) ) {
+		$args = array(
+			'class'   => $class,
+			'loading' => 'lazy',
+		);
+
+		if ( '' !== $sizes ) {
+			$args['sizes'] = $sizes;
+		}
+
+		$args = array_merge( $args, (array) $attrs );
+
+		return get_the_post_thumbnail( $post_id, $size, $args );
+	}
+
+	$mark = apply_filters( 'tb_placeholder_mark', 'JT' );
+
+	return sprintf(
+		'<div class="%1$s" aria-hidden="true"><span class="tb-media-placeholder__mark">%2$s</span></div>',
+		esc_attr( trim( $class . ' tb-media-placeholder' ) ),
+		esc_html( $mark )
+	);
+}
+
+/**
  * Links de compartilhamento para um post.
  *
  * O Instagram não entra porque não possui URL oficial de compartilhamento

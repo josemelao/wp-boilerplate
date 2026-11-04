@@ -34,11 +34,7 @@ if ( have_posts() ) :
 		<article <?php post_class( 'socio-profile' ); ?>>
 			<div class="tb-container socio-profile__layout">
 				<div class="socio-profile__portrait">
-					<?php if ( has_post_thumbnail() ) : ?>
-						<?php the_post_thumbnail( 'tb-socio', array( 'class' => 'socio-profile__image', 'fetchpriority' => 'high', 'loading' => 'eager', 'sizes' => '(max-width: 700px) 90vw, 40vw' ) ); ?>
-					<?php else : ?>
-						<div class="socio-profile__placeholder" aria-hidden="true"></div>
-					<?php endif; ?>
+					<?php echo tb_card_image( get_the_ID(), 'tb-socio', 'socio-profile__image', '(max-width: 700px) 90vw, 40vw', array( 'fetchpriority' => 'high', 'loading' => 'eager' ) ); ?>
 				</div>
 
 				<div class="socio-profile__main">

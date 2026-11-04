@@ -159,6 +159,8 @@ Toda seção **retorna sem imprimir nada** se não houver itens.
 - Campos de texto curto têm `maxlength` e mostram o limite abaixo do campo; o **Resumo** recomenda até 240 caracteres.
 - Na home de Histórias, o texto vem do **Resumo**; o primeiro parágrafo do editor é apenas fallback.
 - Hero, títulos de cards e resumos usam `line-clamp` como rede de segurança visual; leads de single ficam em 4 linhas.
+- Cards sem imagem usam o **placeholder institucional** (monograma JT, `aria-hidden`), e o hero tem fundo de fallback.
+- **Artigos em destaque:** fixados primeiro, por data decrescente; se faltar, completa com os posts mais recentes.
 - **Rascunho** esconde um item sem apagar.
 - Aviso para administradores se Leitura (Configurações → Leitura) não estiver com página inicial estática + página de posts definidas — sem isso, o botão "Ler mais" e o blog quebram.
 - Escrever um **manual curto do cliente** (PDF/Doc, com prints) na fase de entrega.
@@ -403,7 +405,7 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - `search.php` e `card-search.php`; a consulta inclui posts, páginas, áreas, escritórios, sócios e histórias.
 - Cada resultado tem etiqueta de seção; formulário passou a “Buscar no site”.
 - Histórias agora são pesquisáveis; banners, destaques, depoimentos e anexos ficam fora.
-- **Verificação:** 12 unitários, 73 E2E, 217 da F1, 65 no `seo-check`, 46 arquivos PHP sem erro.
+- **Verificação:** 12 unitários, 73 E2E, 224 da F1, 65 no `seo-check`, 46 arquivos PHP sem erro.
 
 ## 13. Cuidados, armadilhas e precauções
 

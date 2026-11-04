@@ -20,9 +20,7 @@ if ( '' === $tb_summary ) {
 ?>
 <article class="story-card">
 	<a class="story-card__link" href="<?php echo esc_url( get_permalink( $tb_story ) ); ?>">
-		<?php if ( has_post_thumbnail( $tb_story ) ) : ?>
-			<?php echo get_the_post_thumbnail( $tb_story, 'tb-card', array( 'class' => 'story-card__image', 'loading' => 'lazy', 'sizes' => '(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 30vw' ) ); ?>
-		<?php endif; ?>
+		<?php echo tb_card_image( $tb_story_id, 'tb-card', 'story-card__image', '(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 30vw' ); ?>
 		<div class="story-card__body">
 			<p class="tb-kicker"><?php esc_html_e( 'História', 'tema-base' ); ?></p>
 			<h3 class="story-card__title"><?php echo esc_html( get_the_title( $tb_story ) ); ?></h3>

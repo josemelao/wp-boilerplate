@@ -19,9 +19,7 @@ $tb_heading_tag   = 'h' . $tb_heading_level;
 ?>
 <article class="office-card">
 	<a class="office-card__link" href="<?php echo esc_url( get_permalink( $tb_office ) ); ?>">
-		<?php if ( has_post_thumbnail( $tb_office ) ) : ?>
-			<?php echo get_the_post_thumbnail( $tb_office, 'tb-card', array( 'class' => 'office-card__image', 'loading' => 'lazy', 'sizes' => '(max-width: 700px) 90vw, 45vw' ) ); ?>
-		<?php endif; ?>
+		<?php echo tb_card_image( $tb_office_id, 'tb-card', 'office-card__image', '(max-width: 700px) 90vw, 45vw' ); ?>
 		<div class="office-card__body">
 			<p class="tb-kicker"><?php esc_html_e( 'Escritório', 'tema-base' ); ?></p>
 			<<?php echo esc_html( $tb_heading_tag ); ?> class="office-card__title"><?php echo esc_html( get_the_title( $tb_office ) ); ?></<?php echo esc_html( $tb_heading_tag ); ?>>

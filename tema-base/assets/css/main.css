@@ -676,8 +676,7 @@ img {
 	text-decoration: none;
 }
 
-.socio-card__image,
-.socio-card__placeholder {
+.socio-card__image {
 	display: block;
 	width: 100%;
 	 aspect-ratio: 4 / 5;
@@ -723,8 +722,7 @@ img {
 	padding-block: clamp(3rem, 7vw, 6rem);
 }
 
-.socio-profile__image,
-.socio-profile__placeholder {
+.socio-profile__image {
 	display: block;
 	width: 100%;
 	 aspect-ratio: 4 / 5;
@@ -3006,4 +3004,36 @@ img {
 	-webkit-line-clamp: 3;
 	line-clamp: 3;
 	overflow: hidden;
+}
+
+/* Placeholder institucional para cards sem imagem. */
+.tb-media-placeholder {
+	position: relative;
+	overflow: hidden;
+	background:
+		repeating-linear-gradient(135deg, transparent 0 22px, rgb(18 20 23 / 4%) 22px 23px),
+		var(--tb-color-paper-soft);
+}
+
+.tb-media-placeholder__mark {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	color: var(--tb-color-ink);
+	font-family: var(--tb-font-heading);
+	font-size: clamp(1.25rem, 4vw, 2.5rem);
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	opacity: 0.14;
+}
+
+.featured-card__image.tb-media-placeholder {
+	position: absolute;
+}
+
+.hero__slide--fallback {
+	background:
+		radial-gradient(circle at 18% 28%, rgb(255 255 255 / 8%), transparent 42%),
+		linear-gradient(135deg, var(--tb-color-ink), var(--tb-color-accent));
 }

@@ -67,7 +67,10 @@ A home é montada por listas. Cada item tem **Ordem** em Atributos → Ordem
 - A seção mostra até quatro itens por vez e gira em loop.
 
 ### Artigos em destaque
-- São posts normais. Fixe até três em Posts → Fixar no topo, se quiser.
+- São posts normais.
+- A home mostra até três: primeiro os **fixados**, do mais recente para o mais antigo; se faltar, completa com os posts mais recentes.
+- Para fixar: editar o post → **Status e visibilidade** → **Fixar no topo**; ou Posts → Edição rápida.
+- Com três fixados, nenhum post novo entra na home até você desfixar um.
 - O título da seção vem de **Opções do Site**.
 
 ## 5. Sócios
@@ -128,6 +131,7 @@ Acesse **Opções do Site** no menu lateral:
 - Títulos: mantenha em até ~60 caracteres. Cards e hero cortam o excesso
   visualmente para preservar o desenho.
 - Imagem destacada: é a imagem do card, do banner ou do perfil.
+- Sem imagem, o site mostra o **placeholder institucional**; o ideal é sempre definir a imagem destacada.
 - Texto alternativo: preencha em Mídia → biblioteca → campo “Texto alternativo”.
   Isso melhora acessibilidade e SEO.
 - Se uma imagem não aparecer, confira se ela está publicada e se o cache foi
