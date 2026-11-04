@@ -24,7 +24,7 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **Páginas Sobre/Contato e conteúdo relacionado (03/11/2026)**: layouts institucionais, sócios da área e artigos por categoria.
 - **Busca global (03/11/2026)**: busca em posts, páginas, áreas, escritórios, sócios e histórias, com etiqueta de seção e resultados em lista editorial sem imagens.
 - **Painel e textos curtos (04/11/2026)**: sócio em Perfil/Contato, autor e widget de comentários removidos, menus com URLs relativas, limites de texto e home de Histórias usando o Resumo.
-- **Placeholder e manual rápido (04/11/2026)**: cards sem imagem usam o placeholder institucional, hero tem fallback e o manual do cliente está em Opções do Site → Manual do cliente.
+- **Placeholder e manual rápido (04/11/2026)**: cards sem imagem usam o placeholder institucional, hero tem fallback e o manual do cliente está em Opções do Site → Manual do cliente. O túnel de demonstração tem um atalho local em `.local\demo-cliente.bat` (não versionado).
 
 ## Requisitos
 

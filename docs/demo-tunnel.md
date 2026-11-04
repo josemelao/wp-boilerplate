@@ -79,6 +79,53 @@ https://alguma-coisa-aleatoria.trycloudflare.com
 Mantenha a janela aberta. A URL é efêmera: se o processo cair ou for reiniciado,
 ela muda. O bloco do `wp-config.php` já cobre a troca.
 
+## Atalho local (Windows)
+
+Para não repetir os passos 3, 4 e 7, use o atalho local. Ele fica em `.local\` e
+é ignorado pelo Git:
+
+- `.local\demo-cliente.bat` — clique duplo.
+- `.local\demo-cliente.ps1` — lógica do menu.
+- `.local\DEMO-TUNEL.txt` — URL, usuário, senha, PID e status.
+
+Menu:
+
+```text
+1. Iniciar tunel e mostrar dados
+2. Parar tunel
+3. Mostrar dados de acesso
+4. Recriar usuario/senha do cliente
+5. Abrir o site no navegador
+6. Abrir o painel no navegador
+7. Encerrar e limpar (para tunel e apaga usuario)
+0. Sair
+```
+
+O atalho:
+
+- sobe o site local se estiver parado;
+- confere ou baixa o `cloudflared`;
+- abre o túnel e captura a URL;
+- garante o usuário **`cliente-demo`** como **Editor**;
+- gera senha aleatória quando o usuário é criado ou recriado;
+- grava os dados em `.local\DEMO-TUNEL.txt`.
+
+Também aceita argumentos:
+
+```powershell
+.local\demo-cliente.bat -Action status
+.local\demo-cliente.bat -Action start
+.local\demo-cliente.bat -Action stop
+.local\demo-cliente.bat -Action reset
+.local\demo-cliente.bat -Action clean -Force
+```
+
+`clean` sem `-Force` pede confirmação. `clean` para o túnel, apaga o usuário demo
+e remove o arquivo de dados.
+
+Os scripts são locais e **não versionados de propósito**: URL e senha nunca vão
+para o Git. Se a pasta `.local/` for apagada, o atalho precisa ser recriado.
+
 ## 4. Criar um usuário temporário
 
 Nunca entregue o administrador. Crie um **Editor**:
