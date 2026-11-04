@@ -157,7 +157,7 @@ test('@stories seta para baixo faz fade simétrico de entrada e saída', async (
 test('@stories seta para cima faz o mesmo fade e retorna ao item anterior', async ({ page }) => {
 	await page.goto('/');
 
-	const activeTitle = page.locator('.stories__entry.is-active .stories__title:visible');
+	const activeTitle = page.locator('.stories__panel-title');
 	const initialText = (await activeTitle.textContent()).trim();
 
 	await page.locator('[data-story-down]').click();
@@ -177,7 +177,7 @@ test('@stories seta para cima faz o mesmo fade e retorna ao item anterior', asyn
 test('@stories itens inativos não são clicáveis', async ({ page }) => {
 	await page.goto('/');
 
-	const activeTitle = page.locator('.stories__entry.is-active .stories__title:visible');
+	const activeTitle = page.locator('.stories__panel-title');
 	const initialText = (await activeTitle.textContent()).trim();
 
 	await expect(activeTitle).toHaveAttribute('href', /.+/);
@@ -313,11 +313,10 @@ test('@stories fundo começa a trocar no clique e texto mantém o tempo', async 
 test('@stories resumo da home vem do campo Resumo', async ({ page }) => {
 	await page.goto('/');
 
-	const active = page.locator('.stories__entry.is-active');
-	await expect(active.locator('[data-story-summary]')).toContainText('A história começa com uma equipe pequena');
+	await expect(page.locator('.stories__panel-summary')).toContainText('A história começa com uma equipe pequena');
 });
 
-test('@stories mobile separa o título e preserva o resumo', async ({ page }) => {
+test('@stories mobile alinha lista e painel como no desktop', async ({ page }) => {
 	for (const width of [320, 390]) {
 		await page.setViewportSize({ width, height: 844 });
 		await page.goto('/');
@@ -329,18 +328,35 @@ test('@stories mobile separa o título e preserva o resumo', async ({ page }) =>
 			.locator('.stories__entry.is-visible:not(.is-active) .stories__title:not([hidden])')
 			.first()
 			.boundingBox();
-		const summary = await page.locator('.stories__entry.is-active .stories__summary').boundingBox();
+		const panel = await page.locator('.stories__panel').boundingBox();
+		const panelTitle = await page.locator('.stories__panel-title').boundingBox();
+		const summary = await page.locator('.stories__panel-summary').boundingBox();
 		const controls = await page.locator('.stories__controls').boundingBox();
 
 		expect(heading, 'título da seção visível').not.toBeNull();
 		expect(firstTitle, 'primeira história visível').not.toBeNull();
+		expect(panel, 'painel ativo visível').not.toBeNull();
+		expect(panelTitle, 'título ativo visível').not.toBeNull();
 		expect(summary, 'resumo ativo visível').not.toBeNull();
 		expect(controls, 'controles visíveis').not.toBeNull();
 
-		expect(heading.x).toBeGreaterThanOrEqual(firstTitle.x + firstTitle.width + 8);
+		expect(heading.x + heading.width).toBeLessThanOrEqual(firstTitle.x - 8);
+		expect(Math.abs(panelTitle.x - firstTitle.x)).toBeLessThanOrEqual(1);
+
+		const list = await page.locator('.stories__list').boundingBox();
+		const after = await page.locator('.stories__list').evaluate((element) => {
+			const style = getComputedStyle(element, '::after');
+			return {
+				left: parseFloat(style.left),
+				width: parseFloat(style.width),
+			};
+		});
+
+		expect(Math.abs(panel.x - (list.x + after.left))).toBeLessThanOrEqual(1);
+		expect(Math.abs(panel.width - after.width)).toBeLessThanOrEqual(1);
 
 		const clamp = await page
-			.locator('.stories__entry.is-active .stories__summary')
+			.locator('.stories__panel-summary')
 			.evaluate((element) => getComputedStyle(element).webkitLineClamp);
 		expect(clamp).toBe('4');
 
@@ -349,49 +365,41 @@ test('@stories mobile separa o título e preserva o resumo', async ({ page }) =>
 	}
 });
 
-test('@stories mobile mantém o card ativo alinhado durante a troca', async ({ page }) => {
+test('@stories mobile mantém o painel alinhado enquanto a lista anima', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto('/');
 	await page.locator('.stories').scrollIntoViewIfNeeded();
 	await page.waitForTimeout(500);
 
+	const panel = page.locator('.stories__panel');
+	const panelTitle = page.locator('.stories__panel-title');
+	const panelSummary = page.locator('.stories__panel-summary');
+	const firstEntry = page.locator('.stories__entry.is-visible:not(.is-active)').first();
+	const firstId = await firstEntry.getAttribute('data-story-id');
+	const movingLabel = page.locator(`.stories__entry[data-story-id="${firstId}"] .stories__title:not([hidden])`);
+
+	const beforePanel = await panel.boundingBox();
+	const beforeLabel = await movingLabel.boundingBox();
+	const initialTitle = (await panelTitle.textContent()).trim();
+
 	await page.locator('[data-story-down]').click();
-	await page.waitForTimeout(50);
+	await page.waitForTimeout(80);
 
-	const list = await page.locator('.stories__list').boundingBox();
-	const after = await page.locator('.stories__list').evaluate((element) => {
-		const style = getComputedStyle(element, '::after');
-		return {
-			top: parseFloat(style.top),
-			left: parseFloat(style.left),
-			width: parseFloat(style.width),
-			height: parseFloat(style.height),
-		};
-	});
-	const panel = {
-		top: list.y + after.top,
-		left: list.x + after.left,
-		width: after.width,
-		height: after.height,
-	};
+	const duringPanel = await panel.boundingBox();
+	const duringTitle = await panelTitle.boundingBox();
+	const duringSummary = await panelSummary.boundingBox();
+	const duringLabel = await movingLabel.boundingBox();
 
-	const active = await page.locator('.stories__entry.is-active').boundingBox();
-	const title = await page.locator('.stories__entry.is-active .stories__title:not([hidden])').boundingBox();
-	const summary = await page.locator('.stories__entry.is-active .stories__summary').boundingBox();
+	expect(Math.abs(duringPanel.y - beforePanel.y)).toBeLessThanOrEqual(1);
+	expect(Math.abs(duringPanel.height - beforePanel.height)).toBeLessThanOrEqual(1);
+	expect(duringTitle.y).toBeGreaterThanOrEqual(duringPanel.y);
+	expect(duringTitle.y + duringTitle.height).toBeLessThanOrEqual(duringPanel.y + duringPanel.height);
+	expect(duringSummary.y).toBeGreaterThanOrEqual(duringPanel.y);
+	expect(duringSummary.y + duringSummary.height).toBeLessThanOrEqual(duringPanel.y + duringPanel.height);
+	expect(Math.abs(duringLabel.y - beforeLabel.y)).toBeGreaterThan(5);
 
-	expect(Math.abs(active.y - panel.top)).toBeLessThanOrEqual(1);
-	expect(Math.abs(active.height - panel.height)).toBeLessThanOrEqual(1);
-	expect(Math.abs(active.x - panel.left)).toBeLessThanOrEqual(1);
-	expect(Math.abs(active.width - panel.width)).toBeLessThanOrEqual(1);
-
-	expect(title.y).toBeGreaterThanOrEqual(panel.top);
-	expect(title.y + title.height).toBeLessThanOrEqual(panel.top + panel.height);
-	expect(summary.y).toBeGreaterThanOrEqual(panel.top);
-	expect(summary.y + summary.height).toBeLessThanOrEqual(panel.top + panel.height);
-
-	const inactiveOpacity = await page
-		.locator('.stories__entry:not(.is-active) .stories__summary')
-		.evaluateAll((elements) => Math.max(0, ...elements.map((element) => Number(getComputedStyle(element).opacity))));
-	expect(inactiveOpacity).toBe(0);
-	expect(await page.locator('[data-story-ghost]').isVisible()).toBe(false);
+	await page.waitForTimeout(700);
+	await expect(panelTitle).not.toHaveText(initialTitle);
+	await expect(panelSummary).not.toHaveText('');
+	expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });

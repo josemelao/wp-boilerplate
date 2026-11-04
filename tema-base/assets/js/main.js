@@ -681,6 +681,9 @@
 		var list = root.querySelector('.stories__list');
 		var backdrops = Array.prototype.slice.call(root.querySelectorAll('[data-story-backdrop]'));
 		var announcement = root.querySelector('[data-story-announcement]');
+		var panel = root.querySelector('[data-story-panel]');
+		var panelLink = root.querySelector('[data-story-panel-link]');
+		var panelSummary = root.querySelector('[data-story-panel-summary]');
 		var animating = false;
 		var duration = 700;
 
@@ -730,6 +733,32 @@
 			entry.style.setProperty('--story-width', (active ? 50 : 26) + '%');
 		}
 
+		function updatePanel(entry) {
+			if (!panel || !entry) {
+				return;
+			}
+
+			var link = entry.querySelector('[data-story-link]');
+			var summary = entry.querySelector('[data-story-summary]');
+
+			if (!link || !summary) {
+				return;
+			}
+
+			function apply() {
+				if (panelLink) {
+					panelLink.href = link.href;
+					panelLink.textContent = link.textContent;
+					panelLink.setAttribute('aria-current', 'true');
+				}
+				if (panelSummary) {
+					panelSummary.textContent = summary.textContent;
+				}
+			}
+
+			apply();
+		}
+
 		function sync(announce, moveFocus) {
 			var currentEntries = entries();
 			var activeEntry = currentEntries[currentEntries.length - 1];
@@ -757,11 +786,12 @@
 				announcement.textContent = 'História selecionada: ' + (activeEntry.getAttribute('data-story-title') || '');
 			}
 			if (moveFocus) {
-				var activeListLink = activeEntry.querySelector('[data-story-link]');
-				if (activeListLink) {
-					activeListLink.focus();
+				if (panelLink) {
+					panelLink.focus();
 				}
 			}
+
+			updatePanel(activeEntry);
 		}
 
 		function rotate(direction, announce, moveFocus) {
@@ -779,6 +809,13 @@
 			var ghost = null;
 			var moving = [];
 
+			if (outgoing) {
+				outgoing.classList.add('is-outgoing');
+				window.setTimeout(function () {
+					outgoing.classList.remove('is-outgoing');
+				}, 320);
+			}
+
 			if (animating || count < 2) {
 				return;
 			}
@@ -787,6 +824,7 @@
 			var incoming = nextEntries[count - 1];
 
 			if (incoming) {
+				updatePanel(incoming);
 				var incomingId = incoming.getAttribute('data-story-id');
 
 				backdrops.forEach(function (backdrop) {
@@ -874,6 +912,9 @@
 				if (ghost) {
 					ghost.remove();
 				}
+				list.querySelectorAll('.is-outgoing').forEach(function (entry) {
+					entry.classList.remove('is-outgoing');
+				});
 				nextEntries.forEach(function (entry) {
 					entry.classList.remove('is-entering');
 					list.appendChild(entry);
