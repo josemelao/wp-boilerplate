@@ -316,3 +316,35 @@ test('@stories resumo da home vem do campo Resumo', async ({ page }) => {
 	const active = page.locator('.stories__entry.is-active');
 	await expect(active.locator('[data-story-summary]')).toContainText('A história começa com uma equipe pequena');
 });
+
+test('@stories mobile separa o título e preserva o resumo', async ({ page }) => {
+	for (const width of [320, 390]) {
+		await page.setViewportSize({ width, height: 844 });
+		await page.goto('/');
+		await page.locator('.stories').scrollIntoViewIfNeeded();
+		await page.waitForTimeout(500);
+
+		const heading = await page.locator('.stories__heading').boundingBox();
+		const firstTitle = await page
+			.locator('.stories__entry.is-visible:not(.is-active) .stories__title:not([hidden])')
+			.first()
+			.boundingBox();
+		const summary = await page.locator('.stories__entry.is-active .stories__summary').boundingBox();
+		const controls = await page.locator('.stories__controls').boundingBox();
+
+		expect(heading, 'título da seção visível').not.toBeNull();
+		expect(firstTitle, 'primeira história visível').not.toBeNull();
+		expect(summary, 'resumo ativo visível').not.toBeNull();
+		expect(controls, 'controles visíveis').not.toBeNull();
+
+		expect(heading.x).toBeGreaterThanOrEqual(firstTitle.x + firstTitle.width + 8);
+
+		const clamp = await page
+			.locator('.stories__entry.is-active .stories__summary')
+			.evaluate((element) => getComputedStyle(element).webkitLineClamp);
+		expect(clamp).toBe('4');
+
+		expect(controls.y).toBeGreaterThanOrEqual(summary.y + summary.height);
+		expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+	}
+});

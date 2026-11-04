@@ -2855,7 +2855,8 @@ img {
 
 	.stories__intro {
 		inset-block: 1.5rem auto;
-		left: var(--tb-gutter);
+		left: auto;
+		right: var(--tb-gutter);
 		width: auto;
 		border: 0;
 	}
@@ -2904,6 +2905,8 @@ img {
 	.stories__summary {
 		width: calc(100% - 0.5rem);
 		font-size: 0.72rem;
+		-webkit-line-clamp: 4;
+		line-clamp: 4;
 	}
 
 	.stories__controls {
