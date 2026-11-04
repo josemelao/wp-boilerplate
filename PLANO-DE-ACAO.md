@@ -32,7 +32,7 @@
 | D7 | CPTs ficam **no tema** nesta fase. | Simplicidade. **Antes de produção**, avaliar mover para plugin/mu-plugin (se trocar o tema, os tipos de conteúdo somem do painel; os dados não são apagados, mas ficam inacessíveis). |
 | D8 | CPTs e metas com **`show_in_rest`** habilitado. | Permite popular e manter o conteúdo via WP-CLI, REST API ou MCP de WordPress. |
 | D9 | O print de referência é **só referência estrutural**. | Identidade visual, textos, imagens e marca precisam ser próprios do cliente. Não copiar logo, fotos, textos ou CSS de site de terceiros. |
-| D10 | "Histórias" usa uma única lista circular: com 4 ou mais posts, mostra 3 títulos comuns (22% da altura cada) e o título ativo (34%); o ativo não é repetido em um painel separado. A superfície clara e as setas ficam fixas; o título e o resumo (primeiro parágrafo, com fallback para `_tb_summary`) mudam com a rotação. As setas/teclas ↑↓ percorrem os itens em loop, sem entradas instantâneas. O título ativo abre `/historias/{slug}/`; os outros selecionam. | Detalhes refinados pelo usuário a partir de screenshots e validação manual em 29/10/2026. |
+| D10 | "Histórias" usa uma lista circular com quatro slots (3 títulos de 22% e a faixa ativa de 34%). O conteúdo do item ativo (título link + resumo) fica em um **painel fixo**, alinhado à faixa, e troca por **crossfade de 320 ms**; a lista desliza um slot por clique, igual para cima e para baixo, sem itens clonados. A superfície clara e as setas ficam fixas; o resumo vem de `_tb_summary` com fallback no primeiro parágrafo. As setas/teclas ↑↓ giram a lista em loop. O título ativo abre `/historias/{slug}/`; os demais são texto estático. | Refinado com o usuário em 29/10/2026 e 04/11/2026, após o item ativo duplicado aparecer no loop com quatro histórias. |
 | D11 | **Ambiente local padronizado = runtime portátil versionado** (`tools/setup-local.ps1`: PHP 8.3.36, MariaDB 11.4.13, WordPress 7.1.4, WP-CLI 2.12.0), Windows x64. LocalWP e `@wordpress/env` não são o caminho oficial. | Todos os colegas, mesmo sem nada instalado, chegam ao mesmo ambiente com um comando — sem GUI, Docker ou admin. LocalWP não é reproduzível (cada um escolhe versões/servidor na interface). |
 
 ## 3. Escopo
@@ -406,7 +406,7 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - `search.php` e `card-search.php`; a consulta inclui posts, páginas, áreas, escritórios, sócios e histórias.
 - Cada resultado tem etiqueta de seção; formulário passou a “Buscar no site”.
 - Histórias agora são pesquisáveis; banners, destaques, depoimentos e anexos ficam fora.
-- **Verificação:** 12 unitários, 73 E2E, 236 da F1, 65 no `seo-check`, 47 arquivos PHP sem erro.
+- **Verificação:** 12 unitários, 75 E2E, 236 da F1, 65 no `seo-check`, 47 arquivos PHP sem erro.
 
 #### Painel, textos, imagens e demonstração — 04/11/2026
 
@@ -416,9 +416,10 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - **Textos curtos:** `maxlength` em etiqueta (40), frase de apoio (160), botão/link (30), fonte (80), cargo (80), OAB (30) e crédito (120), com o limite visível abaixo do campo; `line-clamp` em hero, cards e leads; a home de Histórias passou a usar `_tb_summary` antes do primeiro parágrafo.
 - **Imagens:** `tb_card_image()` centraliza imagem/placeholder; o placeholder institucional usa monograma **JT**, `aria-hidden` e a mesma proporção do card; aplicado a posts, áreas, escritórios, histórias, sócios, Destaques e arquivo de sócios; o hero ganhou fundo de fallback; a caixa da imagem avisa sobre o placeholder.
 - **Destaques:** regra documentada — fixados primeiro (data decrescente), completando com os recentes (data decrescente). No editor o checkbox se chama **“Fixo”** e o texto de ajuda é “Fixar este post no topo do blog”; na Edição rápida o rótulo é “Fixar no topo”.
+- **Histórias no mobile:** em até 700 px, a lista e o painel usam a geometria do desktop: lista à direita, alinhada ao título ativo, e título vertical à esquerda. O painel ativo fica fixo e troca o conteúdo, enquanto a lista desliza. Teste E2E em 320/390 px. Desktop acima de 700 px mantém o visual.
 - **Demonstração:** Cloudflare Quick Tunnel documentado em `docs/demo-tunnel.md`, com URLs dinâmicas no `wp-config.php` local e usuário Editor temporário `cliente-demo` (recriado pelo atalho local `.local\demo-cliente.bat`). URL e credenciais ficam em `.local/DEMO-TUNEL.txt`, não versionado; o atalho inicia/para o túnel e mostra os dados. Site local, MariaDB e túnel estavam ativos no fechamento deste registro.
 - **Manual rápido:** submenu **Opções do Site → Manual do cliente**, com seis seções e três prints anotados; link também no topo de Opções do Site. Arquivos: `inc/manual.php`, `assets/css/admin-manual.css` e `assets/manual/`.
-- **Verificação em 04/11/2026:** 12 unitários, 73 E2E, 236 da F1, 65 no `seo-check`, 47 arquivos PHP sem erro; zip com 0,52 MB, 58 arquivos e 43 PHP.
+- **Verificação em 04/11/2026:** 12 unitários, 75 E2E, 236 da F1, 65 no `seo-check`, 47 arquivos PHP sem erro; zip com 0,52 MB, 58 arquivos e 43 PHP.
 - **Pendente:** aprovação do cliente pelo túnel; identidade final; formulário e LGPD; hospedagem/SSL/backup/cache; decisão sobre migrar os CPTs para plugin; manual completo em PDF; F7.
 
 ## 13. Cuidados, armadilhas e precauções

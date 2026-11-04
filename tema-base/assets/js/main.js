@@ -681,8 +681,14 @@
 		var list = root.querySelector('.stories__list');
 		var backdrops = Array.prototype.slice.call(root.querySelectorAll('[data-story-backdrop]'));
 		var announcement = root.querySelector('[data-story-announcement]');
+		var panel = root.querySelector('[data-story-panel]');
+		var panelLink = root.querySelector('[data-story-panel-link]');
+		var panelSummary = root.querySelector('[data-story-panel-summary]');
 		var animating = false;
 		var duration = 700;
+		var panelFade = 160;
+		var panelTimer = 0;
+		var panelEntryId = '';
 
 		if (!list || !list.children.length) {
 			return;
@@ -730,6 +736,44 @@
 			entry.style.setProperty('--story-width', (active ? 50 : 26) + '%');
 		}
 
+		function updatePanel(entry, immediate) {
+			if (!panel || !entry) {
+				return;
+			}
+
+			var link = entry.querySelector('[data-story-link]');
+			var summary = entry.querySelector('[data-story-summary]');
+			var entryId = entry.getAttribute('data-story-id');
+
+			if (!link || !summary || entryId === panelEntryId) {
+				return;
+			}
+
+			panelEntryId = entryId;
+
+			function apply() {
+				if (panelLink) {
+					panelLink.href = link.href;
+					panelLink.textContent = link.textContent;
+					panelLink.setAttribute('aria-current', 'true');
+				}
+				if (panelSummary) {
+					panelSummary.textContent = summary.textContent;
+				}
+				panel.classList.remove('is-swapping');
+			}
+
+			window.clearTimeout(panelTimer);
+
+			if (immediate || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+				apply();
+				return;
+			}
+
+			panel.classList.add('is-swapping');
+			panelTimer = window.setTimeout(apply, panelFade);
+		}
+
 		function sync(announce, moveFocus) {
 			var currentEntries = entries();
 			var activeEntry = currentEntries[currentEntries.length - 1];
@@ -757,36 +801,33 @@
 				announcement.textContent = 'História selecionada: ' + (activeEntry.getAttribute('data-story-title') || '');
 			}
 			if (moveFocus) {
-				var activeListLink = activeEntry.querySelector('[data-story-link]');
-				if (activeListLink) {
-					activeListLink.focus();
+				if (panelLink) {
+					panelLink.focus();
 				}
 			}
+
+			updatePanel(activeEntry, true);
 		}
 
 		function rotate(direction, announce, moveFocus) {
 			var currentEntries = entries();
 			var count = currentEntries.length;
-			var oldStart = Math.max(0, count - 4);
 			var nextEntries = 'down' === direction
 				? [currentEntries[count - 1]].concat(currentEntries.slice(0, count - 1))
 				: currentEntries.slice(1).concat(currentEntries[0]);
 			var nextStart = Math.max(0, count - 4);
 			var nextVisibleCount = count - nextStart;
 			var nextOffset = (100 - (((nextVisibleCount - 1) * 22) + 34)) / 2;
-			var outgoing = 'down' === direction ? currentEntries[count - 1] : currentEntries[oldStart];
-			var wrapEntry = count <= 4 ? outgoing : null;
-			var ghost = null;
-			var moving = [];
+			var incoming = nextEntries[count - 1];
+			var wrapping = 'down' === direction ? currentEntries[count - 1] : currentEntries[0];
 
 			if (animating || count < 2) {
 				return;
 			}
 			animating = true;
 
-			var incoming = nextEntries[count - 1];
-
 			if (incoming) {
+				updatePanel(incoming);
 				var incomingId = incoming.getAttribute('data-story-id');
 
 				backdrops.forEach(function (backdrop) {
@@ -796,86 +837,49 @@
 				incoming.classList.add('is-entering');
 			}
 
-			if (wrapEntry) {
-				ghost = wrapEntry.cloneNode(true);
-				ghost.removeAttribute('data-story-entry');
-				ghost.setAttribute('data-story-ghost', '');
-				ghost.setAttribute('aria-hidden', 'true');
-				ghost.setAttribute('inert', '');
-				ghost.style.pointerEvents = 'none';
-				setEntryState(ghost, 'up' === direction, true);
-				ghost.setAttribute('aria-hidden', 'true');
-				ghost.setAttribute('inert', '');
-				list.appendChild(ghost);
-			}
+			list.parentElement.style.setProperty('--story-active-top', (nextOffset + ((nextVisibleCount - 1) * 22)) + '%');
 
-			currentEntries.forEach(function (entry, index) {
+			currentEntries.forEach(function (entry) {
 				var nextIndex = nextEntries.indexOf(entry);
-				var visibleBefore = index >= oldStart;
-				var visibleAfter = nextIndex >= nextStart;
 				var active = nextIndex === count - 1;
-				var visible = visibleBefore || visibleAfter || entry === outgoing;
-				var incomingFromBottom = 'up' === direction && entry === currentEntries[0];
-
-				if (incomingFromBottom) {
-					// Posiciona fora da seção sem animar a geometria, mas restaura
-					// a transição antes de ativar a cor para o fade acontecer.
-					entry.style.transition = 'none';
-					setEntryGeometry(entry, 100, active);
-					entry.offsetHeight;
-					entry.style.transition = '';
-				}
+				var visible = nextIndex >= nextStart || entry === wrapping;
 
 				setEntryState(entry, active, visible);
 
-				if (visible) {
-					moving.push(entry);
-				} else if (!incomingFromBottom) {
+				if (entry === wrapping) {
+					// O item que fecha o ciclo salta para o outro extremo sem
+					// atravessar a lista; a opacidade faz a costura do loop.
+					entry.classList.add('is-jumping', 'is-wrapping');
+					setEntryGeometry(entry, nextOffset + ((nextIndex - nextStart) * 22), active);
+				} else if (!visible) {
 					entry.style.transition = 'none';
 				}
 			});
 
-			if (ghost) {
-				var ghostTop = 'down' === direction ? nextOffset - 22 : 100;
-				ghost.style.transition = 'none';
-				setEntryGeometry(ghost, ghostTop, 'up' === direction);
-				ghost.offsetHeight;
-				ghost.style.transition = '';
-				moving.push(ghost);
-			}
-
-			list.parentElement.style.setProperty('--story-active-top', (nextOffset + ((nextVisibleCount - 1) * 22)) + '%');
 			list.offsetHeight;
 
-			currentEntries.forEach(function (entry, index) {
+			currentEntries.forEach(function (entry) {
+				if (entry === wrapping) {
+					return;
+				}
+
 				var nextIndex = nextEntries.indexOf(entry);
 				var active = nextIndex === count - 1;
-				var targetTop = nextOffset + ((nextIndex - nextStart) * 22);
 
-				if ('down' === direction && entry === outgoing) {
-					targetTop = 100;
-				} else if ('up' === direction && entry === currentEntries[oldStart]) {
-					targetTop = nextOffset - 22;
-				}
-				if (moving.indexOf(entry) !== -1) {
-					setEntryGeometry(entry, targetTop, active);
-				} else {
-					setEntryGeometry(entry, targetTop, active);
-					entry.style.transition = '';
-				}
+				setEntryGeometry(entry, nextOffset + ((nextIndex - nextStart) * 22), active);
+				entry.style.transition = '';
 			});
 
-			if (ghost) {
-				var ghostTargetTop = 'down' === direction ? nextOffset : nextOffset + ((nextVisibleCount - 1) * 22);
-				setEntryGeometry(ghost, ghostTargetTop, 'up' === direction);
+			if (wrapping) {
+				window.requestAnimationFrame(function () {
+					wrapping.classList.remove('is-wrapping');
+				});
 			}
 
 			window.setTimeout(function () {
-				if (ghost) {
-					ghost.remove();
-				}
 				nextEntries.forEach(function (entry) {
-					entry.classList.remove('is-entering');
+					entry.classList.remove('is-entering', 'is-jumping', 'is-wrapping');
+					entry.style.transition = '';
 					list.appendChild(entry);
 				});
 				animating = false;

@@ -170,7 +170,7 @@ npm run test:e2e:smoke
 - `tests\e2e\a11y.spec.js` cobre estrutura, alt, ids únicos, ordem de títulos, skip link, foco visível, controles nomeados, menu mobile e reflow de 320 a 1280 px.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 03/11/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **73/73**; `tools\test.ps1` → **236/236**; `tools\seo-check.ps1` → **65/65**; `php -l` em 47 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 03/11/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **75/75**; `tools\test.ps1` → **236/236**; `tools\seo-check.ps1` → **65/65**; `php -l` em 47 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -338,10 +338,10 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 
 - **Destaques:** drag aplicado via `requestAnimationFrame`; settle com mola criticamente amortecida (`SPRING_OMEGA=15`), usando a velocidade real da soltura e sem `scrollTo({ behavior: 'smooth' })`; flick rápido avança no máximo um card; arrasto lento usa o card mais próximo; pausa antes de soltar reduz a velocidade; `prefers-reduced-motion` vai direto ao card; resize recentraliza.
 - A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
-- **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
+- **Histórias:** o conteúdo do item ativo (título link + resumo) fica em um painel fixo alinhado à faixa clara e troca por crossfade de 320 ms; a lista desliza um slot por clique, igual para cima e para baixo. Itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
-- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (9), `tests/e2e/story-single.spec.js` (3), `tests/e2e/smoke.spec.js` (3), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/institutional.spec.js` (3), `tests/e2e/related.spec.js` (3), `tests/e2e/search.spec.js` (4), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3), `tests/e2e/text-limits.spec.js` (1) e `tests/e2e/design.spec.js` (3). Total E2E: **73**.
-- **Verificado em 03/11/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 73/73; `tools\test.ps1` → 236/236; `tools\seo-check.ps1` → 65/65; `php -l` em 47 arquivos e `node --check` nos dois JS sem erros.
+- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (12), `tests/e2e/story-single.spec.js` (3), `tests/e2e/smoke.spec.js` (3), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/institutional.spec.js` (3), `tests/e2e/related.spec.js` (3), `tests/e2e/search.spec.js` (4), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3), `tests/e2e/text-limits.spec.js` (1) e `tests/e2e/design.spec.js` (3). Total E2E: **76**.
+- **Verificado em 04/11/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 76/76; `tools\test.ps1` → 236/236; `tools\seo-check.ps1` → 65/65; `php -l` em 47 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
 ## Primeira passada de identidade visual — F5 (30/10/2026)
@@ -536,7 +536,7 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - Rótulos técnicos foram trocados: “Rótulo pequeno” virou **Etiqueta**, “Texto curto” do banner virou **Frase de apoio** e o resumo da história explica onde aparece.
 - As posições dos CPTs no menu passaram para 30–36, sem disputar Páginas ou Comentários.
 - No WordPress 7.1 as caixas de metadados começam recolhidas; o tema abre a área por padrão para quem tem `edit_posts`, respeitando a preferência do usuário depois disso.
-- **Testes:** F1 com **236** verificações; 73 E2E e 12 unitários seguem passando.
+- **Testes:** F1 com **236** verificações; 75 E2E e 12 unitários seguem passando.
 
 ## Textos curtos e consistência (03/11/2026)
 
@@ -545,7 +545,7 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - O campo mostra o limite em caracteres abaixo dele; o **Resumo** recomenda até 240, sem corte seco.
 - `line-clamp` no CSS: hero e resumos de cards em 3 linhas; resumo de “Outras histórias” em 2; títulos de cards em 3; leads de single em 4.
 - Título e Resumo nativos continuam sem limite rígido; o manual orienta ~60 e ~240 caracteres.
-- **Testes:** `tests/e2e/text-limits.spec.js` (1), `stories.spec.js` (9), F1 com **236** verificações e **73** E2E.
+- **Testes:** `tests/e2e/text-limits.spec.js` (1), `stories.spec.js` (11), F1 com **236** verificações e **75** E2E.
 
 ## Placeholder institucional e destaques (04/11/2026)
 
@@ -555,7 +555,7 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - O hero ganhou fundo de fallback quando o banner não tem imagem.
 - A dica da imagem destacada avisa que o placeholder será usado.
 - A regra dos **Artigos em destaque** foi documentada: fixados primeiro (data decrescente), depois os posts mais recentes.
-- **Testes:** F1 cobre o helper com e sem imagem; 73 E2E e 12 unitários.
+- **Testes:** F1 cobre o helper com e sem imagem; 75 E2E e 12 unitários.
 
 ## Manual rápido no painel (04/11/2026)
 
@@ -565,7 +565,17 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - Três prints anotados: painel de status, popover com “Fixo” e card usando o placeholder.
 - Botão **“Abrir o manual rápido”** também aparece no topo de Opções do Site.
 - Arquivos: `inc/manual.php`, `assets/css/admin-manual.css` e `assets/manual/`.
-- **Testes:** F1 com **236** verificações; 73 E2E e 12 unitários.
+- **Testes:** F1 com **236** verificações; 75 E2E e 12 unitários.
+
+## Histórias: loop sem item fantasma (04/11/2026)
+
+- O conteúdo do item ativo (título link + resumo) mora em um **painel fixo** sobre a faixa clara. O painel não se move e troca o conteúdo por **crossfade de 320 ms** (160 ms saindo, troca, 160 ms entrando), no mesmo tempo do fundo.
+- A lista desliza **um slot por clique, igual para cima e para baixo**: os títulos sobem ou descem uma posição e o item que fecha o ciclo entra pelo outro extremo com fade, sem atravessar a lista.
+- **Não há mais clone/ghost.** O bug acontecia só com 4 histórias (o JS criava o ghost com `count <= 4`): o item real e o clone ficavam ativos e o título vermelho aparecia duas vezes, um deles subindo pela lista.
+- O vermelho (`--tb-color-highlight`) agora existe só no painel; os títulos da lista têm cor própria e nunca herdam o vermelho durante a transição.
+- Abaixo de 700 px, lista e painel ocupam **80% da largura**, alinhados à esquerda em 10%, com o título **Histórias** vertical. Acima de 700 px o layout segue 50/50.
+- `prefers-reduced-motion`: a troca do painel é imediata, sem fade.
+- **Testes:** `stories.spec.js` (12), incluindo um caso que roda as duas direções em 390 e 1280 px e reprova ghost e título vermelho na lista. Total E2E: **76**.
 
 ## Limitações conhecidas
 
