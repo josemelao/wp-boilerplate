@@ -35,6 +35,17 @@
 | D10 | "Histórias" usa uma lista circular com quatro slots (3 títulos de 22% e a faixa ativa de 34%). O cartão ativo é a **última entrada da lista** e desliza junto com ela; o item que fecha o ciclo sai pela borda em `-22%`/`100%` e um clone entra pelo outro extremo, sempre com **um único cartão ativo**. Não há painel separado nem crossfade de conteúdo. A superfície clara e as setas ficam fixas; o resumo vem de `_tb_summary` com fallback no primeiro parágrafo. As setas/teclas ↑↓ giram a lista em loop, igual nas duas direções e com 2 ou mais histórias. O título ativo abre `/historias/{slug}/`; os demais são texto estático. | Refinado com o usuário em 29/10/2026 e 04/11/2026, após o item ativo duplicado aparecer no loop com quatro histórias. |
 | D11 | **Ambiente local padronizado = runtime portátil versionado** (`tools/setup-local.ps1`: PHP 8.3.36, MariaDB 11.4.13, WordPress 7.1.4, WP-CLI 2.12.0), Windows x64. LocalWP e `@wordpress/env` não são o caminho oficial. | Todos os colegas, mesmo sem nada instalado, chegam ao mesmo ambiente com um comando — sem GUI, Docker ou admin. LocalWP não é reproduzível (cada um escolhe versões/servidor na interface). |
 
+> **Referência validada das Histórias — 04/11/2026:** o commit **`82e6988`** (`Restore Stories slide loop and remove the duplicated active card`, hash completo `82e6988dcef4357bbb677d8c42d278f0b43ac190`) é o estado **aprovado pelo usuário**. Se precisar saber como a seção funcionava quando estava certa, consulte esse código:
+>
+> ```powershell
+> git show 82e6988 --stat
+> git show 82e6988:tema-base/assets/js/main.js
+> git show 82e6988:tema-base/assets/css/main.css
+> git show 82e6988:tests/e2e/stories.spec.js
+> ```
+>
+> **Não regredir** para o painel fixo de `394d19e` (conteúdo com crossfade e item do loop saltando) nem para o ghost de `4de2f5f` (dois cartões ativos e título vermelho atravessando a lista). O que define o estado aprovado: cartão ativo é a última entrada da lista; o item que sai nunca recebe `is-active`; o clone entra/sai em `-22%`/`100%` fixos (vale para 2+ histórias); a troca clone → real acontece com transições desligadas; e abaixo de 700 px o cartão/faixa usam 80% da largura.
+
 ## 3. Escopo
 
 **Dentro do escopo**

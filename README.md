@@ -569,6 +569,8 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 
 ## Histórias: slide contínuo e loop sem duplicata (04/11/2026)
 
+> **Estado aprovado e validado pelo usuário neste commit: `82e6988`** (`82e6988dcef4357bbb677d8c42d278f0b43ac190`, `Restore Stories slide loop and remove the duplicated active card`). Se alguma mudança futura quebrar a seção, compare com `git show 82e6988:tema-base/assets/js/main.js`, `...css/main.css` e `tests/e2e/stories.spec.js`. Detalhes e o que não regredir estão no `PLANO-DE-ACAO.md`, logo abaixo da tabela D1–D11.
+
 - O cartão ativo é a **última entrada da lista**, como sempre foi: título, resumo e link vivem nela e deslizam junto com a coluna. Não existe painel separado nem crossfade de conteúdo.
 - A lista desliza **um slot por clique**, igual para cima e para baixo. O item que fecha o ciclo sai pela borda (topo em `-22%` ou base em `100%`) e um clone entra pelo outro extremo, rolando de fora da seção.
 - **Correção do loop:** o item que saía era marcado como ativo ao mesmo tempo que o clone, e ainda era reposicionado em `100%` antes de subir — por isso o título vermelho atravessava a lista. Agora o item que sai nunca recebe `is-active` e o clone é o único cartão ativo durante a transição.
