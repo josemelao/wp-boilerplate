@@ -348,3 +348,50 @@ test('@stories mobile separa o título e preserva o resumo', async ({ page }) =>
 		expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
 	}
 });
+
+test('@stories mobile mantém o card ativo alinhado durante a troca', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/');
+	await page.locator('.stories').scrollIntoViewIfNeeded();
+	await page.waitForTimeout(500);
+
+	await page.locator('[data-story-down]').click();
+	await page.waitForTimeout(50);
+
+	const list = await page.locator('.stories__list').boundingBox();
+	const after = await page.locator('.stories__list').evaluate((element) => {
+		const style = getComputedStyle(element, '::after');
+		return {
+			top: parseFloat(style.top),
+			left: parseFloat(style.left),
+			width: parseFloat(style.width),
+			height: parseFloat(style.height),
+		};
+	});
+	const panel = {
+		top: list.y + after.top,
+		left: list.x + after.left,
+		width: after.width,
+		height: after.height,
+	};
+
+	const active = await page.locator('.stories__entry.is-active').boundingBox();
+	const title = await page.locator('.stories__entry.is-active .stories__title:not([hidden])').boundingBox();
+	const summary = await page.locator('.stories__entry.is-active .stories__summary').boundingBox();
+
+	expect(Math.abs(active.y - panel.top)).toBeLessThanOrEqual(1);
+	expect(Math.abs(active.height - panel.height)).toBeLessThanOrEqual(1);
+	expect(Math.abs(active.x - panel.left)).toBeLessThanOrEqual(1);
+	expect(Math.abs(active.width - panel.width)).toBeLessThanOrEqual(1);
+
+	expect(title.y).toBeGreaterThanOrEqual(panel.top);
+	expect(title.y + title.height).toBeLessThanOrEqual(panel.top + panel.height);
+	expect(summary.y).toBeGreaterThanOrEqual(panel.top);
+	expect(summary.y + summary.height).toBeLessThanOrEqual(panel.top + panel.height);
+
+	const inactiveOpacity = await page
+		.locator('.stories__entry:not(.is-active) .stories__summary')
+		.evaluateAll((elements) => Math.max(0, ...elements.map((element) => Number(getComputedStyle(element).opacity))));
+	expect(inactiveOpacity).toBe(0);
+	expect(await page.locator('[data-story-ghost]').isVisible()).toBe(false);
+});

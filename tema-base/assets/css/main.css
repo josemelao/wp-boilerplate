@@ -2876,6 +2876,20 @@ img {
 		inset: 0;
 	}
 
+	.stories__entry,
+	.stories__entry.is-entering {
+		transition: none !important;
+	}
+
+	.stories__entry[data-story-ghost] {
+		display: none !important;
+	}
+
+	.stories__entry:not(.is-active) .stories__summary {
+		opacity: 0;
+		transition: none;
+	}
+
 	.stories__title {
 		font-size: 0.78rem;
 		letter-spacing: 0.14em;

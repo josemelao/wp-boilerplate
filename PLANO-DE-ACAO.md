@@ -406,7 +406,7 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - `search.php` e `card-search.php`; a consulta inclui posts, páginas, áreas, escritórios, sócios e histórias.
 - Cada resultado tem etiqueta de seção; formulário passou a “Buscar no site”.
 - Histórias agora são pesquisáveis; banners, destaques, depoimentos e anexos ficam fora.
-- **Verificação:** 12 unitários, 74 E2E, 236 da F1, 65 no `seo-check`, 47 arquivos PHP sem erro.
+- **Verificação:** 12 unitários, 75 E2E, 236 da F1, 65 no `seo-check`, 47 arquivos PHP sem erro.
 
 #### Painel, textos, imagens e demonstração — 04/11/2026
 
@@ -416,10 +416,10 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - **Textos curtos:** `maxlength` em etiqueta (40), frase de apoio (160), botão/link (30), fonte (80), cargo (80), OAB (30) e crédito (120), com o limite visível abaixo do campo; `line-clamp` em hero, cards e leads; a home de Histórias passou a usar `_tb_summary` antes do primeiro parágrafo.
 - **Imagens:** `tb_card_image()` centraliza imagem/placeholder; o placeholder institucional usa monograma **JT**, `aria-hidden` e a mesma proporção do card; aplicado a posts, áreas, escritórios, histórias, sócios, Destaques e arquivo de sócios; o hero ganhou fundo de fallback; a caixa da imagem avisa sobre o placeholder.
 - **Destaques:** regra documentada — fixados primeiro (data decrescente), completando com os recentes (data decrescente). No editor o checkbox se chama **“Fixo”** e o texto de ajuda é “Fixar este post no topo do blog”; na Edição rápida o rótulo é “Fixar no topo”.
-- **Histórias no mobile:** em até 700 px, o título vai para o canto superior direito e o resumo do card ativo passa a 4 linhas; teste E2E em 320/390 px. Desktop acima de 700 px inalterado.
+- **Histórias no mobile:** em até 700 px, o título vai para o canto superior direito, o resumo do card ativo passa a 4 linhas e o card ativo não desliza — a troca é imediata, mantendo o fundo em crossfade, para o conteúdo não sair do painel. Teste E2E em 320/390 px. Desktop acima de 700 px inalterado.
 - **Demonstração:** Cloudflare Quick Tunnel documentado em `docs/demo-tunnel.md`, com URLs dinâmicas no `wp-config.php` local e usuário Editor temporário `cliente-demo` (recriado pelo atalho local `.local\demo-cliente.bat`). URL e credenciais ficam em `.local/DEMO-TUNEL.txt`, não versionado; o atalho inicia/para o túnel e mostra os dados. Site local, MariaDB e túnel estavam ativos no fechamento deste registro.
 - **Manual rápido:** submenu **Opções do Site → Manual do cliente**, com seis seções e três prints anotados; link também no topo de Opções do Site. Arquivos: `inc/manual.php`, `assets/css/admin-manual.css` e `assets/manual/`.
-- **Verificação em 04/11/2026:** 12 unitários, 74 E2E, 236 da F1, 65 no `seo-check`, 47 arquivos PHP sem erro; zip com 0,52 MB, 58 arquivos e 43 PHP.
+- **Verificação em 04/11/2026:** 12 unitários, 75 E2E, 236 da F1, 65 no `seo-check`, 47 arquivos PHP sem erro; zip com 0,52 MB, 58 arquivos e 43 PHP.
 - **Pendente:** aprovação do cliente pelo túnel; identidade final; formulário e LGPD; hospedagem/SSL/backup/cache; decisão sobre migrar os CPTs para plugin; manual completo em PDF; F7.
 
 ## 13. Cuidados, armadilhas e precauções
