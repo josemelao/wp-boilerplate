@@ -358,80 +358,75 @@ test('@stories mobile separa o título e usa a lista larga', async ({ page }) =>
 	}
 });
 
-test('@stories mobile desliza a lista e mantém o alinhamento final', async ({ page }) => {
-	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/');
-	await page.locator('.stories').scrollIntoViewIfNeeded();
-	await page.waitForTimeout(500);
+test('@stories animação é a mesma em mobile e desktop', async ({ page }) => {
+	for (const width of [390, 1280]) {
+		await page.setViewportSize({ width, height: 900 });
+		await page.goto('/');
+		await page.locator('.stories').scrollIntoViewIfNeeded();
+		await page.waitForTimeout(500);
 
-	const list = await page.locator('.stories__list').boundingBox();
-	const after = await page.locator('.stories__list').evaluate((element) => {
-		const style = getComputedStyle(element, '::after');
-		return {
-			top: parseFloat(style.top),
-			left: parseFloat(style.left),
-			width: parseFloat(style.width),
-			height: parseFloat(style.height),
+		const list = await page.locator('.stories__list').boundingBox();
+		const after = await page.locator('.stories__list').evaluate((element) => {
+			const style = getComputedStyle(element, '::after');
+			return {
+				top: parseFloat(style.top),
+				left: parseFloat(style.left),
+				width: parseFloat(style.width),
+				height: parseFloat(style.height),
+			};
+		});
+		const surface = {
+			top: list.y + after.top,
+			left: list.x + after.left,
+			width: after.width,
+			height: after.height,
 		};
-	});
-	const surface = {
-		top: list.y + after.top,
-		left: list.x + after.left,
-		width: after.width,
-		height: after.height,
-	};
 
-	const active = page.locator('.stories__entry.is-active');
-	const activeBox = await active.boundingBox();
-	const activeTitle = await active.locator('.stories__title:not([hidden])').boundingBox();
-	const firstEntry = page.locator('.stories__entry.is-visible:not(.is-active)').first();
-	const firstId = await firstEntry.getAttribute('data-story-id');
-	const movingLabel = page.locator(`.stories__entry[data-story-id="${firstId}"] .stories__title:not([hidden])`);
-	const firstLabel = await movingLabel.boundingBox();
+		const active = page.locator('.stories__entry.is-active');
+		const activeBox = await active.boundingBox();
+		const activeTitle = await active.locator('.stories__title:not([hidden])').boundingBox();
+		const outgoingId = await active.getAttribute('data-story-id');
+		const outgoingTitle = page.locator(
+			`.stories__entry:not([data-story-ghost])[data-story-id="${outgoingId}"] .stories__title:not([hidden])`,
+		);
+		const firstEntry = page.locator('.stories__entry.is-visible:not(.is-active)').first();
+		const firstId = await firstEntry.getAttribute('data-story-id');
+		const movingLabel = page.locator(`.stories__entry[data-story-id="${firstId}"] .stories__title:not([hidden])`);
+		const firstLabel = await movingLabel.boundingBox();
 
-	expect(Math.abs(activeBox.y - surface.top)).toBeLessThanOrEqual(1);
-	expect(Math.abs(activeBox.height - surface.height)).toBeLessThanOrEqual(1);
-	expect(Math.abs(activeBox.x - surface.left)).toBeLessThanOrEqual(1);
-	expect(Math.abs(activeBox.width - surface.width)).toBeLessThanOrEqual(1);
-	expect(Math.abs(activeTitle.x - firstLabel.x)).toBeLessThanOrEqual(1);
+		expect(Math.abs(activeBox.y - surface.top)).toBeLessThanOrEqual(1);
+		expect(Math.abs(activeBox.height - surface.height)).toBeLessThanOrEqual(1);
+		expect(Math.abs(activeBox.x - surface.left)).toBeLessThanOrEqual(1);
+		expect(Math.abs(activeBox.width - surface.width)).toBeLessThanOrEqual(1);
+		expect(Math.abs(activeTitle.x - firstLabel.x)).toBeLessThanOrEqual(1);
 
-	const beforeLabelY = firstLabel.y;
-	await page.locator('[data-story-down]').click();
-	await page.waitForTimeout(80);
+		const beforeLabelY = firstLabel.y;
+		await page.locator('[data-story-down]').click();
+		await page.waitForTimeout(80);
 
-	const duringLabelY = (await movingLabel.boundingBox()).y;
-	expect(Math.abs(duringLabelY - beforeLabelY)).toBeGreaterThan(5);
+		const duringActive = await page.locator('.stories__entry.is-active').boundingBox();
+		const duringLabelY = (await movingLabel.boundingBox()).y;
 
-	const duringActive = await page.locator('.stories__entry.is-active').boundingBox();
-	const duringTitle = await page
-		.locator('.stories__entry.is-active .stories__title:not([hidden])')
-		.boundingBox();
-	const duringSummary = await page.locator('.stories__entry.is-active .stories__summary').boundingBox();
+		expect(Math.abs(duringActive.y - surface.top)).toBeGreaterThan(5);
+		expect(Math.abs(duringLabelY - beforeLabelY)).toBeGreaterThan(5);
+		await expect(outgoingTitle).toBeVisible();
 
-	expect(Math.abs(duringActive.y - surface.top)).toBeLessThanOrEqual(1);
-	expect(Math.abs(duringActive.height - surface.height)).toBeLessThanOrEqual(1);
-	expect(Math.abs(duringActive.x - surface.left)).toBeLessThanOrEqual(1);
-	expect(Math.abs(duringActive.width - surface.width)).toBeLessThanOrEqual(1);
-	expect(duringTitle.y).toBeGreaterThanOrEqual(surface.top);
-	expect(duringTitle.y + duringTitle.height).toBeLessThanOrEqual(surface.top + surface.height);
-	expect(duringSummary.y).toBeGreaterThanOrEqual(surface.top);
-	expect(duringSummary.y + duringSummary.height).toBeLessThanOrEqual(surface.top + surface.height);
+		await page.waitForTimeout(700);
 
-	await page.waitForTimeout(700);
+		const activeAfter = await page.locator('.stories__entry.is-active').boundingBox();
+		const activeTitleAfter = await page
+			.locator('.stories__entry.is-active .stories__title:not([hidden])')
+			.boundingBox();
+		const firstAfter = await page
+			.locator('.stories__entry.is-visible:not(.is-active) .stories__title:not([hidden])')
+			.first()
+			.boundingBox();
 
-	const activeAfter = await page.locator('.stories__entry.is-active').boundingBox();
-	const activeTitleAfter = await page
-		.locator('.stories__entry.is-active .stories__title:not([hidden])')
-		.boundingBox();
-	const firstAfter = await page
-		.locator('.stories__entry.is-visible:not(.is-active) .stories__title:not([hidden])')
-		.first()
-		.boundingBox();
-
-	expect(Math.abs(activeAfter.y - surface.top)).toBeLessThanOrEqual(1);
-	expect(Math.abs(activeAfter.height - surface.height)).toBeLessThanOrEqual(1);
-	expect(Math.abs(activeAfter.x - surface.left)).toBeLessThanOrEqual(1);
-	expect(Math.abs(activeAfter.width - surface.width)).toBeLessThanOrEqual(1);
-	expect(Math.abs(activeTitleAfter.x - firstAfter.x)).toBeLessThanOrEqual(1);
-	expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+		expect(Math.abs(activeAfter.y - surface.top)).toBeLessThanOrEqual(1);
+		expect(Math.abs(activeAfter.height - surface.height)).toBeLessThanOrEqual(1);
+		expect(Math.abs(activeAfter.x - surface.left)).toBeLessThanOrEqual(1);
+		expect(Math.abs(activeAfter.width - surface.width)).toBeLessThanOrEqual(1);
+		expect(Math.abs(activeTitleAfter.x - firstAfter.x)).toBeLessThanOrEqual(1);
+		expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+	}
 });

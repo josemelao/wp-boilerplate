@@ -1697,13 +1697,6 @@ img {
 		color var(--story-fade-duration) var(--story-fade-easing);
 }
 
-.stories__entry.is-snapping {
-	transition:
-		background-color 420ms ease,
-		opacity 300ms ease,
-		color var(--story-fade-duration) var(--story-fade-easing);
-}
-
 .stories__entry.is-active {
 	z-index: 2;
 	display: grid;
@@ -1778,11 +1771,6 @@ img {
 
 .stories__entry:not(.is-active) .stories__summary {
 	position: absolute;
-}
-
-.stories__entry.is-outgoing .stories__title,
-.stories__entry.is-outgoing .stories__summary {
-	visibility: hidden;
 }
 
 .stories__controls {

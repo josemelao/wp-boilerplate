@@ -779,13 +779,6 @@
 			var ghost = null;
 			var moving = [];
 
-			if (outgoing) {
-				outgoing.classList.add('is-outgoing');
-				window.setTimeout(function () {
-					outgoing.classList.remove('is-outgoing');
-				}, 320);
-			}
-
 			if (animating || count < 2) {
 				return;
 			}
@@ -865,13 +858,7 @@
 					targetTop = nextOffset - 22;
 				}
 				if (moving.indexOf(entry) !== -1) {
-					if (active) {
-						entry.classList.add('is-snapping');
-					}
 					setEntryGeometry(entry, targetTop, active);
-					if (active) {
-						entry.offsetHeight;
-					}
 				} else {
 					setEntryGeometry(entry, targetTop, active);
 					entry.style.transition = '';
@@ -887,15 +874,8 @@
 				if (ghost) {
 					ghost.remove();
 				}
-				list.querySelectorAll('.is-outgoing').forEach(function (entry) {
-					entry.classList.remove('is-outgoing');
-				});
-				list.querySelectorAll('.is-snapping').forEach(function (entry) {
-					entry.classList.remove('is-snapping');
-				});
 				nextEntries.forEach(function (entry) {
 					entry.classList.remove('is-entering');
-					entry.style.transition = '';
 					list.appendChild(entry);
 				});
 				animating = false;
