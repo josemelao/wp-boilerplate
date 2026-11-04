@@ -90,13 +90,5 @@ $tb_story_teaser = static function ( $tb_item ) {
 			</div>
 		<?php endif; ?>
 	</div>
-	<?php
-	$tb_active_item    = $tb_items[ $tb_active_index ];
-	$tb_active_summary = $tb_story_teaser( $tb_active_item );
-	?>
-	<div class="stories__panel" data-story-panel>
-		<a class="stories__panel-title" data-story-panel-link href="<?php echo esc_url( get_permalink( $tb_active_item ) ); ?>" aria-current="true"><?php echo esc_html( get_the_title( $tb_active_item ) ); ?></a>
-		<p class="stories__panel-summary" data-story-panel-summary><?php echo esc_html( $tb_active_summary ); ?></p>
-	</div>
 	<div class="screen-reader-text" aria-live="polite" data-story-announcement></div>
 </section>

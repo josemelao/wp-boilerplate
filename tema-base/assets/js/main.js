@@ -681,14 +681,8 @@
 		var list = root.querySelector('.stories__list');
 		var backdrops = Array.prototype.slice.call(root.querySelectorAll('[data-story-backdrop]'));
 		var announcement = root.querySelector('[data-story-announcement]');
-		var panel = root.querySelector('[data-story-panel]');
-		var panelLink = root.querySelector('[data-story-panel-link]');
-		var panelSummary = root.querySelector('[data-story-panel-summary]');
 		var animating = false;
 		var duration = 700;
-		var panelFade = 160;
-		var panelTimer = 0;
-		var panelEntryId = '';
 
 		if (!list || !list.children.length) {
 			return;
@@ -736,44 +730,6 @@
 			entry.style.setProperty('--story-width', (active ? 50 : 26) + '%');
 		}
 
-		function updatePanel(entry, immediate) {
-			if (!panel || !entry) {
-				return;
-			}
-
-			var link = entry.querySelector('[data-story-link]');
-			var summary = entry.querySelector('[data-story-summary]');
-			var entryId = entry.getAttribute('data-story-id');
-
-			if (!link || !summary || entryId === panelEntryId) {
-				return;
-			}
-
-			panelEntryId = entryId;
-
-			function apply() {
-				if (panelLink) {
-					panelLink.href = link.href;
-					panelLink.textContent = link.textContent;
-					panelLink.setAttribute('aria-current', 'true');
-				}
-				if (panelSummary) {
-					panelSummary.textContent = summary.textContent;
-				}
-				panel.classList.remove('is-swapping');
-			}
-
-			window.clearTimeout(panelTimer);
-
-			if (immediate || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
-				apply();
-				return;
-			}
-
-			panel.classList.add('is-swapping');
-			panelTimer = window.setTimeout(apply, panelFade);
-		}
-
 		function sync(announce, moveFocus) {
 			var currentEntries = entries();
 			var activeEntry = currentEntries[currentEntries.length - 1];
@@ -801,33 +757,37 @@
 				announcement.textContent = 'História selecionada: ' + (activeEntry.getAttribute('data-story-title') || '');
 			}
 			if (moveFocus) {
-				if (panelLink) {
-					panelLink.focus();
+				var activeListLink = activeEntry.querySelector('[data-story-link]');
+				if (activeListLink) {
+					activeListLink.focus();
 				}
 			}
-
-			updatePanel(activeEntry, true);
 		}
 
 		function rotate(direction, announce, moveFocus) {
 			var currentEntries = entries();
 			var count = currentEntries.length;
+			var oldStart = Math.max(0, count - 4);
 			var nextEntries = 'down' === direction
 				? [currentEntries[count - 1]].concat(currentEntries.slice(0, count - 1))
 				: currentEntries.slice(1).concat(currentEntries[0]);
 			var nextStart = Math.max(0, count - 4);
 			var nextVisibleCount = count - nextStart;
 			var nextOffset = (100 - (((nextVisibleCount - 1) * 22) + 34)) / 2;
-			var incoming = nextEntries[count - 1];
-			var wrapping = 'down' === direction ? currentEntries[count - 1] : currentEntries[0];
+			var outgoing = 'down' === direction ? currentEntries[count - 1] : currentEntries[oldStart];
+			var previouslyActive = currentEntries[count - 1];
+			var wrapEntry = count <= 4 ? outgoing : null;
+			var ghost = null;
+			var moving = [];
 
 			if (animating || count < 2) {
 				return;
 			}
 			animating = true;
 
+			var incoming = nextEntries[count - 1];
+
 			if (incoming) {
-				updatePanel(incoming);
 				var incomingId = incoming.getAttribute('data-story-id');
 
 				backdrops.forEach(function (backdrop) {
@@ -837,53 +797,110 @@
 				incoming.classList.add('is-entering');
 			}
 
-			list.parentElement.style.setProperty('--story-active-top', (nextOffset + ((nextVisibleCount - 1) * 22)) + '%');
+			if (wrapEntry) {
+				ghost = wrapEntry.cloneNode(true);
+				ghost.removeAttribute('data-story-entry');
+				ghost.setAttribute('data-story-ghost', '');
+				ghost.setAttribute('aria-hidden', 'true');
+				ghost.setAttribute('inert', '');
+				ghost.style.pointerEvents = 'none';
+				ghost.classList.add('is-jumping');
 
-			currentEntries.forEach(function (entry) {
+				if ('down' === direction) {
+					// O clone que volta pelo topo é uma etiqueta da lista:
+					// já nasce branco, sem repetir o vermelho do cartão que sai.
+					ghost.classList.add('is-instant');
+				}
+
+				setEntryState(ghost, false, true);
+				list.appendChild(ghost);
+				setEntryGeometry(ghost, 'down' === direction ? -22 : 100, false);
+				list.offsetHeight;
+
+				ghost.classList.remove('is-instant');
+				setEntryState(ghost, 'up' === direction, true);
+				setEntryGeometry(ghost, 'down' === direction ? -22 : 100, 'up' === direction);
+			}
+
+			currentEntries.forEach(function (entry, index) {
 				var nextIndex = nextEntries.indexOf(entry);
-				var active = nextIndex === count - 1;
-				var visible = nextIndex >= nextStart || entry === wrapping;
+				var visibleBefore = index >= oldStart;
+				var visibleAfter = nextIndex >= nextStart;
+				// O item que sai do ciclo nunca carrega o estado ativo: quem
+				// representa a história no cartão é o clone do outro extremo.
+				var active = nextIndex === count - 1 && entry !== outgoing;
+				var visible = visibleBefore || visibleAfter || entry === outgoing;
+				var incomingFromBottom = !wrapEntry && 'up' === direction && entry === currentEntries[0];
+
+				if (incomingFromBottom) {
+					// Posiciona fora da seção sem animar a geometria, mas restaura
+					// a transição antes de ativar a cor para o fade acontecer.
+					entry.style.transition = 'none';
+					setEntryGeometry(entry, 100, active);
+					entry.offsetHeight;
+					entry.style.transition = '';
+				}
+
+				// O cartão que sai perde o conteúdo rápido: assim o texto antigo
+				// não fica por cima do texto que está entrando na mesma faixa.
+				if (entry === previouslyActive && entry !== incoming) {
+					entry.classList.add('is-leaving');
+				}
 
 				setEntryState(entry, active, visible);
 
-				if (entry === wrapping) {
-					// O item que fecha o ciclo salta para o outro extremo sem
-					// atravessar a lista; a opacidade faz a costura do loop.
-					entry.classList.add('is-jumping', 'is-wrapping');
-					setEntryGeometry(entry, nextOffset + ((nextIndex - nextStart) * 22), active);
-				} else if (!visible) {
+				if (visible) {
+					moving.push(entry);
+				} else if (!incomingFromBottom) {
 					entry.style.transition = 'none';
 				}
 			});
 
+			list.parentElement.style.setProperty('--story-active-top', (nextOffset + ((nextVisibleCount - 1) * 22)) + '%');
 			list.offsetHeight;
 
-			currentEntries.forEach(function (entry) {
-				if (entry === wrapping) {
-					return;
-				}
+			if (ghost) {
+				ghost.classList.remove('is-jumping');
+			}
 
+			currentEntries.forEach(function (entry, index) {
 				var nextIndex = nextEntries.indexOf(entry);
-				var active = nextIndex === count - 1;
+				var active = nextIndex === count - 1 && entry !== outgoing;
+				var targetTop = nextOffset + ((nextIndex - nextStart) * 22);
 
-				setEntryGeometry(entry, nextOffset + ((nextIndex - nextStart) * 22), active);
-				entry.style.transition = '';
+				if ('down' === direction && entry === outgoing) {
+					targetTop = 100;
+				} else if ('up' === direction && entry === outgoing) {
+					targetTop = -22;
+				}
+				if (moving.indexOf(entry) !== -1) {
+					setEntryGeometry(entry, targetTop, active);
+				} else {
+					setEntryGeometry(entry, targetTop, active);
+					entry.style.transition = '';
+				}
 			});
 
-			if (wrapping) {
-				window.requestAnimationFrame(function () {
-					wrapping.classList.remove('is-wrapping');
-				});
+			if (ghost) {
+				var ghostTargetTop = 'down' === direction ? nextOffset : nextOffset + ((nextVisibleCount - 1) * 22);
+				setEntryGeometry(ghost, ghostTargetTop, 'up' === direction);
 			}
 
 			window.setTimeout(function () {
 				nextEntries.forEach(function (entry) {
-					entry.classList.remove('is-entering', 'is-jumping', 'is-wrapping');
-					entry.style.transition = '';
+					entry.classList.remove('is-entering', 'is-leaving');
+					entry.style.transition = 'none';
 					list.appendChild(entry);
 				});
-				animating = false;
 				sync(announce, moveFocus);
+				if (ghost) {
+					ghost.remove();
+				}
+				list.offsetHeight;
+				nextEntries.forEach(function (entry) {
+					entry.style.transition = '';
+				});
+				animating = false;
 			}, duration);
 		}
 

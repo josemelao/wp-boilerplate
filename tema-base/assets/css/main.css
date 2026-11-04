@@ -1697,14 +1697,34 @@ img {
 		color var(--story-fade-duration) var(--story-fade-easing);
 }
 
+/* O clone do loop salta para o outro extremo sem animar a geometria,
+   mas mantém o fade de cor da entrada. */
 .stories__entry.is-jumping {
 	transition:
-		opacity var(--story-fade-duration) var(--story-fade-easing),
+		opacity 300ms ease,
 		color var(--story-fade-duration) var(--story-fade-easing);
 }
 
-.stories__entry.is-wrapping {
-	opacity: 0;
+/* O clone que volta como etiqueta troca de cor num frame, sem piscar vermelho. */
+.stories__entry.is-instant {
+	transition: none;
+}
+
+/* O cartão que sai perde texto e vermelho antes de o próximo entrar na faixa. */
+.stories__entry.is-leaving {
+	transition:
+		top 620ms cubic-bezier(0.22, 0.61, 0.36, 1),
+		left 620ms cubic-bezier(0.22, 0.61, 0.36, 1),
+		width 620ms cubic-bezier(0.22, 0.61, 0.36, 1),
+		height 620ms cubic-bezier(0.22, 0.61, 0.36, 1),
+		padding 620ms cubic-bezier(0.22, 0.61, 0.36, 1),
+		background-color 420ms ease,
+		opacity 300ms ease,
+		color 160ms ease;
+}
+
+.stories__entry.is-leaving .stories__summary {
+	transition: opacity 160ms ease;
 }
 
 .stories__entry.is-active {
@@ -1744,10 +1764,6 @@ img {
 	display: none;
 }
 
-.stories__entry [data-story-label] {
-	color: rgb(255 255 255 / 88%);
-}
-
 .stories__entry.is-active .stories__title {
 	grid-column: 1;
 	grid-row: 1;
@@ -1785,71 +1801,6 @@ img {
 
 .stories__entry:not(.is-active) .stories__summary {
 	position: absolute;
-}
-
-.stories__entry.is-active [data-story-link],
-.stories__entry.is-active [data-story-summary],
-.stories__entry .stories__summary {
-	visibility: hidden;
-}
-
-.stories__panel {
-	position: absolute;
-	z-index: 2;
-	top: 66%;
-	left: 50%;
-	width: 50%;
-	height: 34%;
-	display: grid;
-	align-content: center;
-	padding: clamp(1.2rem, 3.2vw, 3.5rem);
-	pointer-events: none;
-}
-
-.stories__panel-title,
-.stories__panel-summary {
-	transition: opacity 160ms ease;
-}
-
-.stories__panel.is-swapping .stories__panel-title,
-.stories__panel.is-swapping .stories__panel-summary {
-	opacity: 0;
-}
-
-.stories__panel-title {
-	display: block;
-	width: calc(100% - 8rem);
-	color: var(--tb-color-highlight);
-	font-size: clamp(1rem, 1.7vw, 1.8rem);
-	font-weight: 600;
-	letter-spacing: 0.16em;
-	line-height: 1.3;
-	text-transform: uppercase;
-	text-decoration: none;
-	pointer-events: auto;
-}
-
-.stories__panel-title:hover,
-.stories__panel-title:focus-visible {
-	text-decoration: underline;
-	text-underline-offset: 0.2em;
-}
-
-.stories__panel-title:focus-visible {
-	outline-color: var(--tb-color-focus);
-}
-
-.stories__panel-summary {
-	width: calc(100% - 8rem);
-	margin: 0.45rem 0 0;
-	color: var(--tb-color-ink);
-	font-size: clamp(0.78rem, 0.9vw, 1rem);
-	line-height: 1.5;
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
-	overflow: hidden;
-	pointer-events: none;
 }
 
 .stories__controls {
@@ -2986,24 +2937,6 @@ img {
 	}
 
 	.stories__summary {
-		width: calc(100% - 0.5rem);
-		font-size: 0.72rem;
-		-webkit-line-clamp: 4;
-		line-clamp: 4;
-	}
-
-	.stories__panel {
-		left: 10%;
-		width: 80%;
-		padding: 1rem 1.25rem 3.25rem;
-	}
-
-	.stories__panel-title {
-		width: calc(100% - 0.5rem);
-		font-size: 0.9rem;
-	}
-
-	.stories__panel-summary {
 		width: calc(100% - 0.5rem);
 		font-size: 0.72rem;
 		-webkit-line-clamp: 4;

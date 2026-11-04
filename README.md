@@ -154,7 +154,7 @@ npm run test:e2e:smoke
 - `tests\unit\carousel-target.test.js` cobre a decisão de destino do carrossel de Destaques (arrasto lento, flick, limites e deslocamento mínimo).
 - `tests\e2e\smoke.spec.js` cobre a home sem erros de console e as rotas principais (200/404).
 - `tests\e2e\featured.spec.js` cobre arrasto, flick, setas, teclado, clique após arrasto e ausência de classes presas.
-- `tests\e2e\stories.spec.js` cobre o fade simétrico de título e subtexto, a navegação pelas setas, a ausência de clique nos itens inativos e o alinhamento das setas.
+- `tests\e2e\stories.spec.js` cobre a troca de conteúdo entre entrada e saída, a navegação pelas setas, a ausência de clique nos itens inativos, o alinhamento das setas, o item que entra rolando pelo topo, o primeiro item saindo pelo topo, um único cartão ativo por frame, o loop com 2 e 3 histórias e a largura mobile de 80%.
 - `tests\e2e\testimonials.spec.js` cobre a seção aberta, as setas laterais, o slide direcional, o autoplay após clique e a ausência de sobreposição em 320 px.
 - `tests\e2e\area-single.spec.js` cobre serviços, setores, CTA, outras áreas e o esconder dos blocos vazios.
 - `tests\e2e\office-single.spec.js` cobre horário, contato, CTA, outro escritório, estado vazio e alinhamento da largura.
@@ -338,10 +338,10 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 
 - **Destaques:** drag aplicado via `requestAnimationFrame`; settle com mola criticamente amortecida (`SPRING_OMEGA=15`), usando a velocidade real da soltura e sem `scrollTo({ behavior: 'smooth' })`; flick rápido avança no máximo um card; arrasto lento usa o card mais próximo; pausa antes de soltar reduz a velocidade; `prefers-reduced-motion` vai direto ao card; resize recentraliza.
 - A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
-- **Histórias:** o conteúdo do item ativo (título link + resumo) fica em um painel fixo alinhado à faixa clara e troca por crossfade de 320 ms; a lista desliza um slot por clique, igual para cima e para baixo. Itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
+- **Histórias:** o cartão ativo é a última entrada da lista e desliza junto com ela; o item que fecha o ciclo sai pela borda e um clone entra pelo outro extremo, com um único cartão ativo por vez. Itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
-- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (12), `tests/e2e/story-single.spec.js` (3), `tests/e2e/smoke.spec.js` (3), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/institutional.spec.js` (3), `tests/e2e/related.spec.js` (3), `tests/e2e/search.spec.js` (4), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3), `tests/e2e/text-limits.spec.js` (1) e `tests/e2e/design.spec.js` (3). Total E2E: **76**.
-- **Verificado em 04/11/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 76/76; `tools\test.ps1` → 236/236; `tools\seo-check.ps1` → 65/65; `php -l` em 47 arquivos e `node --check` nos dois JS sem erros.
+- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (14), `tests/e2e/story-single.spec.js` (3), `tests/e2e/smoke.spec.js` (3), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/institutional.spec.js` (3), `tests/e2e/related.spec.js` (3), `tests/e2e/search.spec.js` (4), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3), `tests/e2e/text-limits.spec.js` (1) e `tests/e2e/design.spec.js` (3). Total E2E: **78**.
+- **Verificado em 04/11/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 78/78; `tools\test.ps1` → 236/236; `tools\seo-check.ps1` → 65/65; `php -l` em 47 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
 ## Primeira passada de identidade visual — F5 (30/10/2026)
@@ -567,15 +567,17 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - Arquivos: `inc/manual.php`, `assets/css/admin-manual.css` e `assets/manual/`.
 - **Testes:** F1 com **236** verificações; 75 E2E e 12 unitários.
 
-## Histórias: loop sem item fantasma (04/11/2026)
+## Histórias: slide contínuo e loop sem duplicata (04/11/2026)
 
-- O conteúdo do item ativo (título link + resumo) mora em um **painel fixo** sobre a faixa clara. O painel não se move e troca o conteúdo por **crossfade de 320 ms** (160 ms saindo, troca, 160 ms entrando), no mesmo tempo do fundo.
-- A lista desliza **um slot por clique, igual para cima e para baixo**: os títulos sobem ou descem uma posição e o item que fecha o ciclo entra pelo outro extremo com fade, sem atravessar a lista.
-- **Não há mais clone/ghost.** O bug acontecia só com 4 histórias (o JS criava o ghost com `count <= 4`): o item real e o clone ficavam ativos e o título vermelho aparecia duas vezes, um deles subindo pela lista.
-- O vermelho (`--tb-color-highlight`) agora existe só no painel; os títulos da lista têm cor própria e nunca herdam o vermelho durante a transição.
-- Abaixo de 700 px, lista e painel ocupam **80% da largura**, alinhados à esquerda em 10%, com o título **Histórias** vertical. Acima de 700 px o layout segue 50/50.
-- `prefers-reduced-motion`: a troca do painel é imediata, sem fade.
-- **Testes:** `stories.spec.js` (12), incluindo um caso que roda as duas direções em 390 e 1280 px e reprova ghost e título vermelho na lista. Total E2E: **76**.
+- O cartão ativo é a **última entrada da lista**, como sempre foi: título, resumo e link vivem nela e deslizam junto com a coluna. Não existe painel separado nem crossfade de conteúdo.
+- A lista desliza **um slot por clique**, igual para cima e para baixo. O item que fecha o ciclo sai pela borda (topo em `-22%` ou base em `100%`) e um clone entra pelo outro extremo, rolando de fora da seção.
+- **Correção do loop:** o item que saía era marcado como ativo ao mesmo tempo que o clone, e ainda era reposicionado em `100%` antes de subir — por isso o título vermelho atravessava a lista. Agora o item que sai nunca recebe `is-active` e o clone é o único cartão ativo durante a transição.
+- No fim do giro, clone e item real trocam com as transições desligadas por um frame. Sem isso o item real descia do topo até o cartão.
+- O cartão que sai perde texto e vermelho em **160 ms** (`is-leaving`), para o conteúdo antigo não ficar por cima do que entra.
+- O clone que volta como etiqueta nasce branco (`is-instant`), sem piscar vermelho no topo.
+- A posição de entrada/saída usa `-22%` fixo, não `nextOffset - 22`: assim **2 e 3 histórias** também saem e entram de fora da seção.
+- Abaixo de 700 px, cartão e faixa ocupam **80% da largura** (10% a 90%), as etiquetas começam em `10% + 1.25rem`, o título **Histórias** fica vertical e o resumo tem 4 linhas.
+- **Testes:** `stories.spec.js` (14), com rotação para cima e para baixo, item do topo entrando rolando, primeiro item saindo pelo topo, um único cartão ativo por frame, loop com 2 e 3 histórias e a geometria mobile. Total E2E: **78**.
 
 ## Limitações conhecidas
 
