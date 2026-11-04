@@ -255,6 +255,18 @@ function tb_open_meta_boxes_by_default() {
 add_action( 'admin_init', 'tb_open_meta_boxes_by_default' );
 
 /**
+ * Remove o widget de comentários do painel.
+ *
+ * O tema fecha comentários globalmente e esconde o menu; o widget só gera ruído.
+ *
+ * @return void
+ */
+function tb_remove_dashboard_comments() {
+	remove_meta_box( 'dashboard_recent_comments', 'dashboard', 'normal' );
+}
+add_action( 'wp_dashboard_setup', 'tb_remove_dashboard_comments' );
+
+/**
  * Ajuda curta no topo das listagens dos CPTs.
  *
  * @return void

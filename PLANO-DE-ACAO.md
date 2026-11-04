@@ -155,6 +155,7 @@ Toda seção **retorna sem imprimir nada** se não houver itens.
 - Campos agrupados quando há muitos: o sócio tem boxes **Perfil profissional** e **Contato**.
 - Textareas usam a fonte normal do painel (sem `code`) e o box de autor fica oculto em posts/páginas.
 - A área de **Caixas de metadados** abre por padrão para quem edita, respeitando a preferência do usuário depois disso.
+- O widget de comentários não aparece no painel e os links internos dos menus usam caminhos relativos.
 - Campos de texto curto têm `maxlength` e mostram o limite abaixo do campo; o **Resumo** recomenda até 240 caracteres.
 - Na home de Histórias, o texto vem do **Resumo**; o primeiro parágrafo do editor é apenas fallback.
 - Hero, títulos de cards e resumos usam `line-clamp` como rede de segurança visual; leads de single ficam em 4 linhas.
@@ -402,7 +403,7 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - `search.php` e `card-search.php`; a consulta inclui posts, páginas, áreas, escritórios, sócios e histórias.
 - Cada resultado tem etiqueta de seção; formulário passou a “Buscar no site”.
 - Histórias agora são pesquisáveis; banners, destaques, depoimentos e anexos ficam fora.
-- **Verificação:** 12 unitários, 72 E2E, 216 da F1, 65 no `seo-check`, 46 arquivos PHP sem erro.
+- **Verificação:** 12 unitários, 73 E2E, 217 da F1, 65 no `seo-check`, 46 arquivos PHP sem erro.
 
 ## 13. Cuidados, armadilhas e precauções
 

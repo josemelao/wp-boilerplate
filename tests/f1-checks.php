@@ -482,6 +482,7 @@ tb_test_check( has_action( 'pre_get_posts', 'tb_admin_default_order' ), 'ordem p
 tb_test_check( has_action( 'admin_post_thumbnail_html', 'tb_thumbnail_tip' ), 'dica de tamanho da imagem registrada' );
 tb_test_check( has_action( 'admin_notices', 'tb_reading_notice' ), 'aviso de Leitura registrado' );
 tb_test_check( has_action( 'admin_notices', 'tb_admin_list_help' ), 'ajuda nas listagens dos CPTs registrada' );
+tb_test_check( has_action( 'wp_dashboard_setup', 'tb_remove_dashboard_comments' ), 'widget de comentários removido do painel' );
 
 if ( function_exists( 'tb_open_meta_boxes_preference' ) ) {
 	$tb_prefs = tb_open_meta_boxes_preference( array() );

@@ -167,7 +167,7 @@ npm run test:e2e:smoke
 - `tests\e2e\a11y.spec.js` cobre estrutura, alt, ids únicos, ordem de títulos, skip link, foco visível, controles nomeados, menu mobile e reflow de 320 a 1280 px.
 - Os testes E2E só leem o conteúdo local; não apagam posts nem alteram opções.
 
-Verificação desta entrega em 03/11/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **72/72**; `tools\test.ps1` → **216/216**; `tools\seo-check.ps1` → **65/65**; `php -l` em 46 arquivos e `node --check` nos dois arquivos JS sem erros.
+Verificação desta entrega em 03/11/2026: `npm run test:unit` → **12/12**; `npm run test:e2e` → **73/73**; `tools\test.ps1` → **217/217**; `tools\seo-check.ps1` → **65/65**; `php -l` em 46 arquivos e `node --check` nos dois arquivos JS sem erros.
 
 ## Ambiente padronizado
 
@@ -337,8 +337,8 @@ Validação manual confirmada pelo usuário: login e permissões do Editor; cont
 - A decisão de destino ficou pura em `tema-base/assets/js/carousel-target.js`, com teste unitário.
 - **Histórias:** fade simétrico de 320 ms para título e subtexto (`branco → vermelho` ao entrar, `vermelho → branco` ao sair); subtexto passou de `hidden` para opacidade; itens inativos são texto estático, sem clique; o título ativo continua link para a página individual.
 - **Setas de Histórias:** SVG em vez de glifos, alinhamento horizontal consistente; desktop 52 × 40 px e mobile 44 × 36 px; no mobile os controles ficaram na linha inferior do cartão para não esmagar o texto.
-- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (9), `tests/e2e/story-single.spec.js` (3), `tests/e2e/smoke.spec.js` (2), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/institutional.spec.js` (3), `tests/e2e/related.spec.js` (3), `tests/e2e/search.spec.js` (4), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3), `tests/e2e/text-limits.spec.js` (1) e `tests/e2e/design.spec.js` (3). Total E2E: **72**.
-- **Verificado em 03/11/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 72/72; `tools\test.ps1` → 216/216; `tools\seo-check.ps1` → 65/65; `php -l` em 46 arquivos e `node --check` nos dois JS sem erros.
+- **Testes:** `tests/unit/` (12), `tests/e2e/featured.spec.js` (8), `tests/e2e/stories.spec.js` (9), `tests/e2e/story-single.spec.js` (3), `tests/e2e/smoke.spec.js` (3), `tests/e2e/testimonials.spec.js` (4), `tests/e2e/inner-pages.spec.js` (3), `tests/e2e/area-single.spec.js` (3), `tests/e2e/office-single.spec.js` (3), `tests/e2e/socio-single.spec.js` (2), `tests/e2e/institutional.spec.js` (3), `tests/e2e/related.spec.js` (3), `tests/e2e/search.spec.js` (4), `tests/e2e/content-modules.spec.js` (4), `tests/e2e/footer.spec.js` (1), `tests/e2e/media.spec.js` (1), `tests/e2e/seo.spec.js` (6), `tests/e2e/a11y.spec.js` (6), `tests/e2e/hero.spec.js` (3), `tests/e2e/text-limits.spec.js` (1) e `tests/e2e/design.spec.js` (3). Total E2E: **73**.
+- **Verificado em 03/11/2026:** `npm run test:unit` → 12/12; `npm run test:e2e` → 73/73; `tools\test.ps1` → 217/217; `tools\seo-check.ps1` → 65/65; `php -l` em 46 arquivos e `node --check` nos dois JS sem erros.
 - **Ajuste fino:** `--story-fade-duration` no CSS controla o fade das Histórias; em `main.js`, `FLICK_VELOCITY`, `MIN_DRAG`, `RELEASE_DECAY`, `SPRING_OMEGA` e `DRAG_RESISTANCE` controlam o carrossel.
 
 ## Primeira passada de identidade visual — F5 (30/10/2026)
@@ -527,11 +527,13 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - O box do sócio foi dividido em **Perfil profissional** (cargo, áreas, formação, idiomas e OAB) e **Contato** (e-mail, telefone e LinkedIn).
 - Textareas deixaram a classe `code`: formação, idiomas, horário e serviços aparecem em fonte normal.
 - O suporte a **autor** foi removido de posts e páginas, já que o autor não aparece no site; o box não confunde mais quem edita.
+- O widget de **comentários** saiu do painel; o tema já fechava os comentários globalmente.
+- Links internos dos **menus** usam caminhos relativos, então funcionam no local, no túnel e em produção.
 - Cada listagem de CPT mostra um aviso com a regra de ordem e o tamanho de imagem recomendado.
 - Rótulos técnicos foram trocados: “Rótulo pequeno” virou **Etiqueta**, “Texto curto” do banner virou **Frase de apoio** e o resumo da história explica onde aparece.
 - As posições dos CPTs no menu passaram para 30–36, sem disputar Páginas ou Comentários.
 - No WordPress 7.1 as caixas de metadados começam recolhidas; o tema abre a área por padrão para quem tem `edit_posts`, respeitando a preferência do usuário depois disso.
-- **Testes:** F1 com **216** verificações; 72 E2E e 12 unitários seguem passando.
+- **Testes:** F1 com **217** verificações; 73 E2E e 12 unitários seguem passando.
 
 ## Textos curtos e consistência (03/11/2026)
 
@@ -540,7 +542,7 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 - O campo mostra o limite em caracteres abaixo dele; o **Resumo** recomenda até 240, sem corte seco.
 - `line-clamp` no CSS: hero e resumos de cards em 3 linhas; resumo de “Outras histórias” em 2; títulos de cards em 3; leads de single em 4.
 - Título e Resumo nativos continuam sem limite rígido; o manual orienta ~60 e ~240 caracteres.
-- **Testes:** `tests/e2e/text-limits.spec.js` (1), `stories.spec.js` (9), F1 com **216** verificações e **72** E2E.
+- **Testes:** `tests/e2e/text-limits.spec.js` (1), `stories.spec.js` (9), F1 com **217** verificações e **73** E2E.
 
 ## Limitações conhecidas
 

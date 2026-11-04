@@ -474,10 +474,10 @@ flush_rewrite_rules();
 
 $demo_menu_items = array(
 	array( 'title' => 'Início', 'type' => 'page', 'id' => (int) $home_id ),
-	array( 'title' => 'Áreas', 'type' => 'custom', 'url' => home_url( '/areas-de-atuacao/' ) ),
-	array( 'title' => 'Sócios', 'type' => 'custom', 'url' => home_url( '/socios/' ) ),
+	array( 'title' => 'Áreas', 'type' => 'custom', 'url' => '/areas-de-atuacao/' ),
+	array( 'title' => 'Sócios', 'type' => 'custom', 'url' => '/socios/' ),
 	array( 'title' => 'Artigos', 'type' => 'page', 'id' => (int) $blog_id ),
-	array( 'title' => 'Escritórios', 'type' => 'custom', 'url' => home_url( '/escritorios/' ) ),
+	array( 'title' => 'Escritórios', 'type' => 'custom', 'url' => '/escritorios/' ),
 	array( 'title' => 'Sobre', 'type' => 'page', 'id' => $page_ids['sobre'] ),
 	array( 'title' => 'Contato', 'type' => 'page', 'id' => $page_ids['contato'] ),
 );
