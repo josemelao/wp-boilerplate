@@ -22,6 +22,9 @@ Site institucional em WordPress com **tema próprio** (`tema-base`), layout trav
 - **Single de sócio (30/10/2026)**: áreas linkadas, formação, idiomas, OAB e sidebar de perfil.
 - **Single de história (30/10/2026)**: crédito da imagem, outras histórias e leitura preservada.
 - **Páginas Sobre/Contato e conteúdo relacionado (03/11/2026)**: layouts institucionais, sócios da área e artigos por categoria.
+- **Busca global (03/11/2026)**: busca em posts, páginas, áreas, escritórios, sócios e histórias, com etiqueta de seção e resultados em lista editorial sem imagens.
+- **Painel e textos curtos (04/11/2026)**: sócio em Perfil/Contato, autor e widget de comentários removidos, menus com URLs relativas, limites de texto e home de Histórias usando o Resumo.
+- **Placeholder e manual rápido (04/11/2026)**: cards sem imagem usam o placeholder institucional, hero tem fallback e o manual do cliente está em Opções do Site → Manual do cliente.
 
 ## Requisitos
 
@@ -614,4 +617,6 @@ O `-Reset` para os serviços, apaga o runtime e reinstala. O conteúdo local (po
 
 1. **Validar com o cliente:** apresentar o site pelo túnel temporário (`docs/demo-tunnel.md`) e coletar ajustes de conteúdo, identidade e prioridades.
 2. **F6.4 — Homologação e produção:** staging, SSL, backup, contato, LGPD, cache/CDN, monitoramento e checklist de `docs/production.md`.
-3. **F7 — Backlog:** setores, news, carreiras, eventos, newsletter e multilíngue, conforme demanda.
+3. **Manual completo:** expandir o manual rápido, gerar o PDF e fazer o treinamento com o cliente.
+4. **Decidir os CPTs:** manter no tema ou migrar para plugin/mu-plugin antes do go-live (D7).
+5. **F7 — Backlog:** setores, news, carreiras, eventos, newsletter e multilíngue, conforme demanda.

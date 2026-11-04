@@ -408,6 +408,19 @@ O seed de demonstração (`tools/seed-demo.ps1`) popula um WordPress local com c
 - Histórias agora são pesquisáveis; banners, destaques, depoimentos e anexos ficam fora.
 - **Verificação:** 12 unitários, 73 E2E, 236 da F1, 65 no `seo-check`, 47 arquivos PHP sem erro.
 
+#### Painel, textos, imagens e demonstração — 04/11/2026
+
+**Checkout:** branch `codex/trabalho`; o código está em `0263133` e este registro é o commit seguinte. Sem push.
+
+- **Polimento do painel:** o sócio foi dividido em **Perfil profissional** e **Contato**; textareas perderam a classe `code`; o suporte a autor saiu de posts/páginas; o widget de comentários saiu do painel; links internos dos menus passaram a usar caminhos relativos; as posições de menu dos CPTs foram para 30–36; as caixas de metadados abrem por padrão para novos editores.
+- **Textos curtos:** `maxlength` em etiqueta (40), frase de apoio (160), botão/link (30), fonte (80), cargo (80), OAB (30) e crédito (120), com o limite visível abaixo do campo; `line-clamp` em hero, cards e leads; a home de Histórias passou a usar `_tb_summary` antes do primeiro parágrafo.
+- **Imagens:** `tb_card_image()` centraliza imagem/placeholder; o placeholder institucional usa monograma **JT**, `aria-hidden` e a mesma proporção do card; aplicado a posts, áreas, escritórios, histórias, sócios, Destaques e arquivo de sócios; o hero ganhou fundo de fallback; a caixa da imagem avisa sobre o placeholder.
+- **Destaques:** regra documentada — fixados primeiro (data decrescente), completando com os recentes (data decrescente). No editor o checkbox se chama **“Fixo”** e o texto de ajuda é “Fixar este post no topo do blog”; na Edição rápida o rótulo é “Fixar no topo”.
+- **Demonstração:** Cloudflare Quick Tunnel documentado em `docs/demo-tunnel.md`, com URLs dinâmicas no `wp-config.php` local e usuário Editor temporário `cliente-demo` (ID 6). URL e credenciais ficam em `.local/DEMO-TUNEL.txt`, não versionado. Site local, MariaDB e túnel estavam ativos no fechamento deste registro.
+- **Manual rápido:** submenu **Opções do Site → Manual do cliente**, com seis seções e três prints anotados; link também no topo de Opções do Site. Arquivos: `inc/manual.php`, `assets/css/admin-manual.css` e `assets/manual/`.
+- **Verificação em 04/11/2026:** 12 unitários, 73 E2E, 236 da F1, 65 no `seo-check`, 47 arquivos PHP sem erro; zip com 0,52 MB, 58 arquivos e 43 PHP.
+- **Pendente:** aprovação do cliente pelo túnel; identidade final; formulário e LGPD; hospedagem/SSL/backup/cache; decisão sobre migrar os CPTs para plugin; manual completo em PDF; F7.
+
 ## 13. Cuidados, armadilhas e precauções
 
 1. **Permalinks/rewrite:** depois de mudar CPTs ou slugs, rodar `wp rewrite flush --hard` (ou Configurações → Links permanentes → Salvar). O tema já faz flush ao ser ativado. Sem isso, `/socios/` dá 404.
