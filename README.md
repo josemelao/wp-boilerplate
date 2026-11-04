@@ -569,11 +569,11 @@ Decisão: **híbrido**. O tema entrega o essencial agora e se desliga automatica
 
 ## Ajuste mobile das Histórias (04/11/2026)
 
-- Em até 700 px, a lista e o painel usam a mesma geometria do desktop: lista à direita, alinhada ao título ativo, e título **Histórias** vertical à esquerda.
-- O painel ativo é fixo no canto inferior direito; a lista desliza e o painel troca o conteúdo sem sair do lugar.
-- O resumo do painel ativo tem 4 linhas no mobile; em 320 px ele termina em “feito…” e mantém 25 px de folga até os controles.
-- A antiga troca instantânea foi removida: a animação de deslize da lista voltou, mas o conteúdo ativo não atravessa mais o painel.
-- Desktop acima de 700 px mantém o mesmo visual.
+- Em até 700 px, a lista e o card ativo ocupam **80% da largura**; o título **Histórias** fica vertical à esquerda.
+- A lista desliza como no desktop; o card ativo entra alinhado ao painel desde o primeiro frame e não atravessa a área.
+- O título que sai fica oculto por ~320 ms para não cruzar o card ativo; depois reaparece na lista.
+- Lista e card compartilham a mesma borda esquerda; o resumo do card ativo tem 4 linhas.
+- O fundo continua em crossfade; desktop acima de 700 px inalterado.
 - **Testes:** `stories.spec.js` (11), larguras 320/390/700 px e **75** E2E.
 
 ## Limitações conhecidas
